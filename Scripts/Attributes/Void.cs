@@ -3,7 +3,7 @@
 namespace EditorAttributes
 {
 	/// <summary>
-	/// Empty struct to a holder property to attributes
+	/// Empty struct to use as a holder property for attributes
 	/// </summary>
 	[Serializable]
 	public struct Void { }
