@@ -1,0 +1,13 @@
+{
+	"name": "com.v0lt.EditorAttributes",
+	"version": "1.0.0",
+	"displayName": "EditorAttributes"
+	"description": "Some handy unity editor attributes",
+	"unity": "2022.3",
+	"author": 
+	{
+		"name": "v0lt",
+		"email": "v0lt130852@gmail.com",
+		"url": ""
+	}
+}
