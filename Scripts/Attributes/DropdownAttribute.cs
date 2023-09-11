@@ -7,7 +7,7 @@ namespace EditorAttributes
 		public readonly string stringArrayName;
 
 		/// <summary>
-		/// Attribute to make a dropdown menu out of a string array
+		/// Attribute to make a string dropdown menu out of a string array
 		/// </summary>
 		/// <param name="stringArrayName">The name of the string array</param>
 		public DropdownAttribute(string stringArrayName) => this.stringArrayName = stringArrayName;
