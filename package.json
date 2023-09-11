@@ -3,7 +3,21 @@
 	"version": "1.0.0",
 	"displayName": "EditorAttributes",
 	"description": "Some handy unity editor attributes",
-	"unity": "2022.3",
+	
+	"keywords": [
+		"editor",
+		"editor-attributes",
+		"attributes"
+	],
+	
+	"samples": [
+        {
+            "displayName": "AttributesExample",
+            "description": "Provides a scriptable object script showing how all attributes work",
+            "path": "Samples~/AttributesExample"
+        }
+    ]
+	
 	"author": 
 	{
 		"name": "v0lt",
