@@ -8,20 +8,20 @@ namespace EditorAttributes
 		public readonly int enumValue;
 
 		/// <summary>
-		/// Attribute to hide fields in the inspector based on a boolean condition
+		/// Attribute to hide fields based on a boolean condition
 		/// </summary>
 		/// <param name="conditionName">The name of the boolean condition to evaluate</param>
 		public HideFieldAttribute(string conditionName) => this.conditionName = conditionName;
 
 		/// <summary>
-		/// Attribute to hide fields in the inspector based on a enum condition
+		/// Attribute to hide fields based on a enum condition
 		/// </summary>
 		/// <param name="conditionName">The name of the enum condition to evaluate</param>
-		/// <param name="enumValue">The value of the enum as an integer</param>
-		public HideFieldAttribute(string conditionName, int enumValue)
+		/// <param name="enumValue">The value of the enum</param>
+		public HideFieldAttribute(string conditionName, object enumValue)
 		{
 			this.conditionName = conditionName;
-			this.enumValue = enumValue;
+			this.enumValue = (int)enumValue;
 		}
 	}
 }

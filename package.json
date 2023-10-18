@@ -1,8 +1,9 @@
 {
 	"name": "com.v0lt.editor-attributes",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"displayName": "EditorAttributes",
 	"description": "Some handy unity editor attributes",
+	"changelogUrl": "",
 	"documentationUrl": "https://docs.google.com/document/d/1GmIl81g3X9lGUQ3b4t5xLxsTlbuisrcWmGgJUvZtqUY/edit?usp=sharing",
 	
 	"keywords": [

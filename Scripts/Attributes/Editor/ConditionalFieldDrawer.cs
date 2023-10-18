@@ -16,21 +16,24 @@ namespace EditorAttributes.Editor
 
 			eventDrawer ??= new UnityEventDrawer();
 
-			if (CanDrawProperty(conditionalAttribute, property, out int invalidPropertyIndex))
+			int invalidPropertyIndex = -1;
+
+			switch (conditionalAttribute.conditionResult)
 			{
-				try
-				{
-					eventDrawer.OnGUI(position, property, label);
-				}
-				catch (NullReferenceException)
-				{
-					EditorGUI.PropertyField(position, property, label);
-				}
+				case ConditionResult.ShowHide:
+					if (CanDrawProperty(conditionalAttribute, property, out invalidPropertyIndex)) DrawProperty(position, property, label);
+					break;
+
+				case ConditionResult.EnableDisable:
+					GUI.enabled = CanDrawProperty(conditionalAttribute, property, out invalidPropertyIndex);
+
+					DrawProperty(position, property, label);
+
+					GUI.enabled = true;
+					break;
 			}
-			else if (invalidPropertyIndex != -1)
-			{
-				EditorGUILayout.HelpBox($"The provided condition \"{conditionalAttribute.booleanNames[invalidPropertyIndex]}\" is not a valid boolean", MessageType.Warning);
-			}
+
+			if (invalidPropertyIndex != -1) EditorGUILayout.HelpBox($"The provided condition \"{conditionalAttribute.booleanNames[invalidPropertyIndex]}\" is not a valid boolean", MessageType.Warning);
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
@@ -39,25 +42,47 @@ namespace EditorAttributes.Editor
 
 			eventDrawer ??= new UnityEventDrawer();
 
-			if (CanDrawProperty(conditionalAttribute, property, out _))
+			switch (conditionalAttribute.conditionResult)
 			{
-				return GetCorrectPropertyHeight(property, label);
-			}
-			else
-			{
-				return -EditorGUIUtility.standardVerticalSpacing; // Remove the space for the hidden field
+				default:
+				case ConditionResult.ShowHide:
+					if (CanDrawProperty(conditionalAttribute, property, out _))
+					{
+						try
+						{
+							return eventDrawer.GetPropertyHeight(property, label);
+						}
+						catch (NullReferenceException)
+						{
+							return EditorGUI.GetPropertyHeight(property, label);
+						}
+					}
+					else
+					{
+						return -EditorGUIUtility.standardVerticalSpacing; // Remove the space for the hidden field
+					}
+
+				case ConditionResult.EnableDisable:
+					try
+					{
+						return eventDrawer.GetPropertyHeight(property, label);
+					}
+					catch (NullReferenceException)
+					{
+						return EditorGUI.GetPropertyHeight(property, label);
+					}
 			}
 		}
 
-		private float GetCorrectPropertyHeight(SerializedProperty property, GUIContent label)
+		private void DrawProperty(Rect position, SerializedProperty property, GUIContent label)
 		{
 			try
 			{
-				return eventDrawer.GetPropertyHeight(property, label);
+				eventDrawer.OnGUI(position, property, label);
 			}
 			catch (NullReferenceException)
 			{
-				return EditorGUI.GetPropertyHeight(property, label);
+				EditorGUI.PropertyField(position, property, label, true);
 			}
 		}
 

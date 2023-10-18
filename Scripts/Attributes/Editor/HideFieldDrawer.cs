@@ -13,7 +13,6 @@ namespace EditorAttributes.Editor
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var hideAttribute = attribute as HideFieldAttribute;
-
 			var conditionalProperty = property.serializedObject.FindProperty(hideAttribute.conditionName);
 
 			eventDrawer ??= new UnityEventDrawer();
@@ -24,7 +23,7 @@ namespace EditorAttributes.Editor
 
 				DrawProperty(conditionalValue, position, property, label);
 			}
-			else if (conditionalProperty != null && conditionalProperty.propertyType == SerializedPropertyType.Integer)
+			else if (conditionalProperty != null && conditionalProperty.propertyType == SerializedPropertyType.Enum)
 			{
 				bool conditionalValue = conditionalProperty.intValue == hideAttribute.enumValue;
 
@@ -32,7 +31,7 @@ namespace EditorAttributes.Editor
 			}
 			else
 			{
-				EditorGUILayout.HelpBox($"The provided condition \"{hideAttribute.conditionName}\" is not a valid boolean or an enum", MessageType.Warning);
+				EditorGUILayout.HelpBox($"The provided condition \"{hideAttribute.conditionName}\" is not a valid boolean or enum", MessageType.Warning);
 			}
 		}
 
@@ -50,7 +49,7 @@ namespace EditorAttributes.Editor
 
 				return GetPropertyHeight(conditionalValue, property, label);
 			}
-			else if (conditionalProperty != null && conditionalProperty.propertyType == SerializedPropertyType.Integer)
+			else if (conditionalProperty != null && conditionalProperty.propertyType == SerializedPropertyType.Enum)
 			{
 				bool conditionalValue = conditionalProperty.intValue == hideAttribute.enumValue;
 

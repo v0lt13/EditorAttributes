@@ -1,14 +1,20 @@
+using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEditorInternal;
 
 namespace EditorAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(HelpBoxAttribute))]
     public class HelpBoxDrawer : PropertyDrawer
     {
+		private UnityEventDrawer eventDrawer;
+
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var messageBox = attribute as HelpBoxAttribute;
+
+			eventDrawer ??= new UnityEventDrawer();
 
 			EditorGUILayout.HelpBox(messageBox.message, (MessageType)messageBox.messageType);
 
@@ -19,9 +25,18 @@ namespace EditorAttributes.Editor
 		{
 			var messageBox = attribute as HelpBoxAttribute;
 
+			eventDrawer ??= new UnityEventDrawer();
+
 			if (messageBox.drawProperty)
 			{
-				return EditorGUI.GetPropertyHeight(property, label);
+				try
+				{
+					return eventDrawer.GetPropertyHeight(property, label);
+				}
+				catch (NullReferenceException)
+				{
+					return EditorGUI.GetPropertyHeight(property, label);
+				}
 			}
 			else
 			{
@@ -32,7 +47,15 @@ namespace EditorAttributes.Editor
 		private void DrawDefaultProperty(Rect position, SerializedProperty property, GUIContent label)
 		{
 			EditorGUI.BeginChangeCheck();
-			EditorGUI.PropertyField(position, property, label, true);
+
+			try
+			{
+				eventDrawer.OnGUI(position, property, label);
+			}
+			catch (NullReferenceException)
+			{
+				EditorGUI.PropertyField(position, property, label, true);
+			}
 
 			if (EditorGUI.EndChangeCheck()) property.serializedObject.ApplyModifiedProperties();
 		}
