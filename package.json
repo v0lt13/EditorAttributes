@@ -1,24 +1,16 @@
 {
 	"name": "com.v0lt.editor-attributes",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"displayName": "EditorAttributes",
-	"description": "Some handy unity editor attributes",
-	"changelogUrl": "",
-	"documentationUrl": "https://docs.google.com/document/d/1GmIl81g3X9lGUQ3b4t5xLxsTlbuisrcWmGgJUvZtqUY/edit?usp=sharing",
+	"description": "EditorAttributes is a unity package that adds some extra editor attributes to your project to easly customize your editors without having to write any editor code.",
+	"changelogUrl": "https://editorattributesdocs.readthedocs.io/en/latest/changelogs.html",
+	"documentationUrl": "https://editorattributesdocs.readthedocs.io/",
 	
 	"keywords": [
 		"editor",
 		"editor-attributes",
 		"attributes"
 	],
-	
-	"samples": [
-        {
-            "displayName": "AttributesExample",
-            "description": "Provides a scriptable object script showing how all attributes work",
-            "path": "Samples~/AttributesExample"
-        }
-    ],
 	
 	"author": 
 	{

@@ -1,5 +1,5 @@
 # EditorAttributes
-Some handy unity editor attributes for showing or hiding fields depending on conditions, making readonly fields, buttons, and more
+EditorAttributes is a unity package that adds some extra editor attributes to your project to easly customize your editors without having to write any editor code.
 
 # Documentation link
-https://docs.google.com/document/d/1GmIl81g3X9lGUQ3b4t5xLxsTlbuisrcWmGgJUvZtqUY/edit?usp=sharing
+https://editorattributesdocs.readthedocs.io/
