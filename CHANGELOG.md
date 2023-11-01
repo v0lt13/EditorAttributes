@@ -1,3 +1,14 @@
+EditorAttributes v1.2.0 Changelog:
+- Added Rename attribute
+- Added HideInEditMode attribute
+- Added DisableInEditMode attribute
+- Properties and functions can now be used as parameters
+- The MessageBox now supports enums
+- The Dropdown attribute is no longer limited to strings
+- You can now have functions with parameters as buttons
+- Updated the summaries for some attributes
+- Internal refactoring and general optimization
+
 EditorAttributes v1.1.1 Changelog:
 - Removed offline documentation
 - Removed samples

@@ -1,61 +1,43 @@
-using System;
 using UnityEditor;
 using UnityEngine;
-using UnityEditorInternal;
+using System.Collections.Generic;
 
 namespace EditorAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(ConditionalFieldAttribute))]
-    public class ConditionalFieldDrawer : PropertyDrawer
+    public class ConditionalFieldDrawer : PropertyDrawerBase
     {
-		private UnityEventDrawer eventDrawer;
-
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var conditionalAttribute = attribute as ConditionalFieldAttribute;
 
-			eventDrawer ??= new UnityEventDrawer();
-
-			int invalidPropertyIndex = -1;
-
-			switch (conditionalAttribute.conditionResult)
+			switch (conditionalAttribute.ConditionResult)
 			{
 				case ConditionResult.ShowHide:
-					if (CanDrawProperty(conditionalAttribute, property, out invalidPropertyIndex)) DrawProperty(position, property, label);
+					if (CanDrawProperty(conditionalAttribute, conditionalAttribute.BooleanNames, property, true)) DrawProperty(position, property, label);
 					break;
 
 				case ConditionResult.EnableDisable:
-					GUI.enabled = CanDrawProperty(conditionalAttribute, property, out invalidPropertyIndex);
+					GUI.enabled = CanDrawProperty(conditionalAttribute, conditionalAttribute.BooleanNames, property, true);
 
 					DrawProperty(position, property, label);
 
 					GUI.enabled = true;
 					break;
 			}
-
-			if (invalidPropertyIndex != -1) EditorGUILayout.HelpBox($"The provided condition \"{conditionalAttribute.booleanNames[invalidPropertyIndex]}\" is not a valid boolean", MessageType.Warning);
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
 			var conditionalAttribute = attribute as ConditionalFieldAttribute;
 
-			eventDrawer ??= new UnityEventDrawer();
-
-			switch (conditionalAttribute.conditionResult)
+			switch (conditionalAttribute.ConditionResult)
 			{
 				default:
 				case ConditionResult.ShowHide:
-					if (CanDrawProperty(conditionalAttribute, property, out _))
+					if (CanDrawProperty(conditionalAttribute, conditionalAttribute.BooleanNames, property))
 					{
-						try
-						{
-							return eventDrawer.GetPropertyHeight(property, label);
-						}
-						catch (NullReferenceException)
-						{
-							return EditorGUI.GetPropertyHeight(property, label);
-						}
+						return GetCorrectPropertyHeight(property, label);
 					}
 					else
 					{
@@ -63,74 +45,65 @@ namespace EditorAttributes.Editor
 					}
 
 				case ConditionResult.EnableDisable:
-					try
-					{
-						return eventDrawer.GetPropertyHeight(property, label);
-					}
-					catch (NullReferenceException)
-					{
-						return EditorGUI.GetPropertyHeight(property, label);
-					}
+					return GetCorrectPropertyHeight(property, label);
 			}
 		}
 
-		private void DrawProperty(Rect position, SerializedProperty property, GUIContent label)
+		private bool CanDrawProperty(ConditionalFieldAttribute attribute, string[] conditionNames, SerializedProperty property, bool drawErrorBox = false)
 		{
-			try
-			{
-				eventDrawer.OnGUI(position, property, label);
-			}
-			catch (NullReferenceException)
-			{
-				EditorGUI.PropertyField(position, property, label, true);
-			}
-		}
+			var booleanList = new List<bool>();
 
-		private bool CanDrawProperty(ConditionalFieldAttribute attribute, SerializedProperty property, out int invalidPropertyIndex)
-		{
-			invalidPropertyIndex = -1;
-
-			for (int i = 0; i < attribute.booleanNames.Length; i++)
+			foreach (var conditionName in conditionNames)
 			{
-				var condition = attribute.booleanNames[i];
-				var serializedProperty = property.serializedObject.FindProperty(condition);
+				var memberInfo = GetValidMemberInfo(conditionName, property);
+				var serializedProperty = property.serializedObject.FindProperty(conditionName);
 
-				if (serializedProperty != null && serializedProperty.propertyType == SerializedPropertyType.Boolean)
+				if (memberInfo != null && GetMemberInfoType(memberInfo) == typeof(bool))
+				{
+					var propertyValue = (bool)GetMemberInfoValue(memberInfo, property.serializedObject.targetObject);
+
+					booleanList.Add(propertyValue);
+				}
+				else if (serializedProperty != null && serializedProperty.propertyType == SerializedPropertyType.Boolean)
 				{
 					var propertyValue = serializedProperty.boolValue;
 
-					if (!(attribute.negatedValues == null || attribute.negatedValues.Length == 0))
-					{
-						if (attribute.negatedValues[i]) propertyValue = !propertyValue; 
-					}
-
-					switch (attribute.conditionType)
-					{
-						case ConditionType.AND:
-							if (!propertyValue) return false;
-							continue;
-
-						case ConditionType.OR:
-							if (propertyValue) return true;
-							continue;
-
-						case ConditionType.NAND:
-							if (!propertyValue) return true;
-							continue;
-
-						case ConditionType.NOR:
-							if (propertyValue) return false;
-							continue;
-					}
+					booleanList.Add(propertyValue);
 				}
 				else
 				{
-					invalidPropertyIndex = i;
-					return false;
+					if (drawErrorBox) EditorGUILayout.HelpBox($"The provided condition \"{conditionName}\" is not a valid boolean", MessageType.Error);
 				}
 			}
 
-			return attribute.conditionType switch
+			for (int i = 0; i < booleanList.Count; i++)
+			{
+				if (!(attribute.NegatedValues == null || attribute.NegatedValues.Length == 0))
+				{
+					if (attribute.NegatedValues[i]) booleanList[i] = !booleanList[i];
+				}
+
+				switch (attribute.ConditionType)
+				{
+					case ConditionType.AND:
+						if (!booleanList[i]) return false;
+						continue;
+
+					case ConditionType.OR:
+						if (booleanList[i]) return true;
+						continue;
+
+					case ConditionType.NAND:
+						if (!booleanList[i]) return true;
+						continue;
+
+					case ConditionType.NOR:
+						if (booleanList[i]) return false;
+						continue;
+				}
+			}
+
+			return attribute.ConditionType switch
 			{
 				ConditionType.AND => true,
 				ConditionType.NOR => true,

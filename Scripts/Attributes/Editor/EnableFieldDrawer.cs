@@ -1,67 +1,23 @@
-using System;
 using UnityEditor;
 using UnityEngine;
-using UnityEditorInternal;
+using System.Reflection;
 
 namespace EditorAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(EnableFieldAttribute))]
-    public class EnableFieldDrawer : PropertyDrawer
+    public class EnableFieldDrawer : PropertyDrawerBase
     {
-		private UnityEventDrawer eventDrawer;
+		private MemberInfo conditionalProperty;
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var enableAttribute = attribute as EnableFieldAttribute;
 
-			eventDrawer ??= new UnityEventDrawer();
+			conditionalProperty = GetValidMemberInfo(enableAttribute.ConditionName, property);
 
-			var conditionalProperty = property.serializedObject.FindProperty(enableAttribute.conditionName);
-
-			if (conditionalProperty != null && conditionalProperty.propertyType == SerializedPropertyType.Boolean)
-			{
-				bool conditionalValue = conditionalProperty.boolValue;
-
-				DrawProperty(conditionalValue, position, property, label);
-			}
-			else if (conditionalProperty != null && conditionalProperty.propertyType == SerializedPropertyType.Enum)
-			{
-				bool conditionalValue = conditionalProperty.intValue == enableAttribute.enumValue;
-
-				DrawProperty(conditionalValue, position, property, label);
-			}
-			else
-			{
-				EditorGUILayout.HelpBox($"The provided condition \"{enableAttribute.conditionName}\" is not a valid boolean or enum", MessageType.Warning);
-			}
-		}
-
-		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-		{
-			eventDrawer ??= new UnityEventDrawer();
-
-			try
-			{
-				return eventDrawer.GetPropertyHeight(property, label);
-			}
-			catch (NullReferenceException)
-			{
-				return EditorGUI.GetPropertyHeight(property, label);
-			}
-		}
-
-		private void DrawProperty(bool condition, Rect position, SerializedProperty property, GUIContent label)
-		{
-			GUI.enabled = condition;
-
-			try
-			{
-				eventDrawer.OnGUI(position, property, label);
-			}
-			catch (NullReferenceException)
-			{
-				EditorGUI.PropertyField(position, property, label, true);
-			}
+			GUI.enabled = GetConditionValue<EnableFieldAttribute>(conditionalProperty, property, true);
+			
+			DrawProperty(position, property, label);
 
 			GUI.enabled = true;
 		}

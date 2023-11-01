@@ -4,9 +4,10 @@ namespace EditorAttributes
 {
     public class HelpBoxAttribute : PropertyAttribute
     {
-        public readonly string message;
-        public readonly bool drawProperty;
-        public readonly MessageMode messageType;
+        public string Message { get; private set; }
+		public bool DrawProperty { get; private set; }
+
+		public MessageMode MessageType { get; private set; }
 
 		/// <summary>
 		/// Attribute to display a help box
@@ -15,9 +16,9 @@ namespace EditorAttributes
 		/// <param name="messageType">The type of the message</param>
 		public HelpBoxAttribute(string message, MessageMode messageType = MessageMode.Log)
 		{
-			drawProperty = true;
-			this.message = message;
-			this.messageType = messageType;
+			DrawProperty = true;
+			Message = message;
+			MessageType = messageType;
 		}
 
 		/// <summary>
@@ -28,9 +29,9 @@ namespace EditorAttributes
 		/// <param name="messageType">The type of the message</param>
 		public HelpBoxAttribute(string message, bool drawProperty, MessageMode messageType = MessageMode.Log)
 		{
-			this.message = message;
-			this.drawProperty = drawProperty;
-			this.messageType = messageType;
+			Message = message;
+			DrawProperty = drawProperty;
+			MessageType = messageType;
 		}
 	}
 }

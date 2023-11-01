@@ -3,23 +3,17 @@ using UnityEngine;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(HelpBoxAttribute))]
-    public class HelpBoxDrawer : PropertyDrawerBase
+    [CustomPropertyDrawer(typeof(HideInEditModeAttribute))]
+    public class HideInEditModeDrawer : PropertyDrawerBase
     {
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
-			var messageBox = attribute as HelpBoxAttribute;
-
-			EditorGUILayout.HelpBox(messageBox.Message, (MessageType)messageBox.MessageType);
-
-			if (messageBox.DrawProperty) DrawProperty(position, property, label);
+			if (Application.isPlaying) DrawProperty(position, property, label);
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
-			var messageBox = attribute as HelpBoxAttribute;
-
-			if (messageBox.DrawProperty)
+			if (Application.isPlaying)
 			{
 				return GetCorrectPropertyHeight(property, label);
 			}

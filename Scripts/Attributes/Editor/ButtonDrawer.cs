@@ -4,15 +4,18 @@ using UnityEngine;
 namespace EditorAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(ButtonAttribute))]
-    public class ButtonDrawer : PropertyDrawer
+    public class ButtonDrawer : PropertyDrawerBase
     {
+		object[] parameterValues;
+		bool foldout;
+
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var buttonAttribute = attribute as ButtonAttribute;
 
-			var functionName = buttonAttribute.functionName;
+			var functionName = buttonAttribute.FunctionName;
 			var target = property.serializedObject.targetObject;
-			var function = target.GetType().GetMethod(functionName);
+			var function = FindFunction(functionName, property);
 
 			if (function == null)
 			{
@@ -20,13 +23,30 @@ namespace EditorAttributes.Editor
 				return;
 			}
 
-			if (function.GetParameters().Length > 0f)
+			var functionParameters = function.GetParameters();
+
+			if (parameterValues == null || parameterValues.Length != functionParameters.Length)
 			{
-				EditorGUILayout.HelpBox("Function cannot have parameters", MessageType.Error);
-				return;
+				parameterValues = new object[functionParameters.Length];
+
+				for (int i = 0; i < functionParameters.Length; i++) parameterValues[i] = functionParameters[i].DefaultValue;
 			}
 
-			if (GUI.Button(position, buttonAttribute.buttonLabel == string.Empty ? function.Name : buttonAttribute.buttonLabel)) function.Invoke(target, null);
+			if (functionParameters.Length > 0f)
+			{
+				foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldout, "Parameters");
+
+				if (foldout)
+				{
+					for (int i = 0; i < functionParameters.Length; i++) parameterValues[i] = DrawField(functionParameters[i].ParameterType, functionParameters[i].Name, parameterValues[i]);
+				}
+
+				EditorGUILayout.EndFoldoutHeaderGroup();
+
+				EditorGUILayout.Space(10f);
+			}
+			
+			if (GUI.Button(position, string.IsNullOrWhiteSpace(buttonAttribute.ButtonLabel) ? function.Name : buttonAttribute.ButtonLabel)) function.Invoke(target, parameterValues);
 		}
 	}
 }

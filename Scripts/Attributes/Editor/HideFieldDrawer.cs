@@ -1,100 +1,32 @@
-using System;
 using UnityEditor;
 using UnityEngine;
-using UnityEditorInternal;
+using System.Reflection;
 
 namespace EditorAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(HideFieldAttribute))]
-    public class HideFieldDrawer : PropertyDrawer
+    public class HideFieldDrawer : PropertyDrawerBase
     {
-		private UnityEventDrawer eventDrawer;
-		
+		private MemberInfo conditionalProperty;
+
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var hideAttribute = attribute as HideFieldAttribute;
-			var conditionalProperty = property.serializedObject.FindProperty(hideAttribute.conditionName);
 
-			eventDrawer ??= new UnityEventDrawer();
+			conditionalProperty = GetValidMemberInfo(hideAttribute.ConditionName, property);
 
-			if (conditionalProperty != null && conditionalProperty.propertyType == SerializedPropertyType.Boolean)
-			{
-				bool conditionalValue = conditionalProperty.boolValue;
-
-				DrawProperty(conditionalValue, position, property, label);
-			}
-			else if (conditionalProperty != null && conditionalProperty.propertyType == SerializedPropertyType.Enum)
-			{
-				bool conditionalValue = conditionalProperty.intValue == hideAttribute.enumValue;
-
-				DrawProperty(conditionalValue, position, property, label);
-			}
-			else
-			{
-				EditorGUILayout.HelpBox($"The provided condition \"{hideAttribute.conditionName}\" is not a valid boolean or enum", MessageType.Warning);
-			}
+			if (!GetConditionValue<HideFieldAttribute>(conditionalProperty, property, true)) DrawProperty(position, property, label);
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
-			var hideAttribute = attribute as HideFieldAttribute;
-
-			var conditionalProperty = property.serializedObject.FindProperty(hideAttribute.conditionName);
-
-			eventDrawer ??= new UnityEventDrawer();
-
-			if (conditionalProperty != null && conditionalProperty.propertyType == SerializedPropertyType.Boolean)
-			{
-				bool conditionalValue = conditionalProperty.boolValue;
-
-				return GetPropertyHeight(conditionalValue, property, label);
-			}
-			else if (conditionalProperty != null && conditionalProperty.propertyType == SerializedPropertyType.Enum)
-			{
-				bool conditionalValue = conditionalProperty.intValue == hideAttribute.enumValue;
-
-				return GetPropertyHeight(conditionalValue, property, label);
-			}
-
-			return GetCorrectPropertyHeight(property, label);
-		}
-
-		private float GetPropertyHeight(bool conditionalValue, SerializedProperty property, GUIContent label)
-		{
-			if (!conditionalValue)
+			if (!GetConditionValue<HideFieldAttribute>(conditionalProperty, property))
 			{
 				return GetCorrectPropertyHeight(property, label);
 			}
 			else
 			{
 				return -EditorGUIUtility.standardVerticalSpacing; // Remove the space for the hidden field
-			}
-		}
-
-		private float GetCorrectPropertyHeight(SerializedProperty property, GUIContent label)
-		{
-			try
-			{
-				return eventDrawer.GetPropertyHeight(property, label);
-			}
-			catch (NullReferenceException)
-			{
-				return EditorGUI.GetPropertyHeight(property, label);
-			}
-		}
-
-		private void DrawProperty(bool conditionalValue, Rect position, SerializedProperty property, GUIContent label)
-		{
-			if (!conditionalValue)
-			{
-				try
-				{
-					eventDrawer.OnGUI(position, property, label);
-				}
-				catch (NullReferenceException)
-				{
-					EditorGUI.PropertyField(position, property, label, true);
-				}
 			}
 		}
 	}

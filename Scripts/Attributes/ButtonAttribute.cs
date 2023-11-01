@@ -4,8 +4,8 @@ namespace EditorAttributes
 {
     public class ButtonAttribute : PropertyAttribute 
 	{
-		public readonly string functionName;
-		public readonly string buttonLabel;
+		public string FunctionName { get; private set; }
+		public string ButtonLabel { get; private set; }
 
 		/// <summary>
 		/// Attribute to add a button in the inspector
@@ -14,8 +14,8 @@ namespace EditorAttributes
 		/// <param name="buttonLabel">The label displayed on the button</param>
 		public ButtonAttribute(string functionName, string buttonLabel = "")
 		{
-			this.functionName = functionName;
-			this.buttonLabel = buttonLabel;
+			FunctionName = functionName;
+			ButtonLabel = buttonLabel;
 		}
 	}
 }

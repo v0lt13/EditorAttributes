@@ -4,12 +4,12 @@ namespace EditorAttributes
 {
     public class DropdownAttribute : PropertyAttribute 
 	{
-		public readonly string stringArrayName;
+		public string ArrayName { get; private set; }
 
 		/// <summary>
-		/// Attribute to make a string dropdown menu out of a string array
+		/// Attribute to make a dropdown menu out of a collection of elements
 		/// </summary>
-		/// <param name="stringArrayName">The name of the string array</param>
-		public DropdownAttribute(string stringArrayName) => this.stringArrayName = stringArrayName;
+		/// <param name="arrayName">The name of the array or list</param>
+		public DropdownAttribute(string arrayName) => ArrayName = arrayName;
 	}
 }

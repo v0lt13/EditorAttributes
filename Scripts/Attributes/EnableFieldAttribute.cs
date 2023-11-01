@@ -2,26 +2,26 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-	public class EnableFieldAttribute : PropertyAttribute
+	public class EnableFieldAttribute : PropertyAttribute, IConditionalAttribute
     {
-        public readonly string conditionName;
-		public readonly int enumValue;
+		public string ConditionName { get; private set; }
+		public int EnumValue { get; private set; }
 
 		/// <summary>
-		/// Attribute to enable fields based on a boolean condition
+		/// Attribute to enable a field based on a condition
 		/// </summary>
-		/// <param name="conditionName">The name of the boolean condition to evaluate</param>
-		public EnableFieldAttribute(string conditionName) => this.conditionName = conditionName;
+		/// <param name="conditionName">The name of the condition to evaluate</param>
+		public EnableFieldAttribute(string conditionName) => ConditionName = conditionName;
 
 		/// <summary>
-		/// Attribute to eanble fields in the inspector based on a enum condition
+		/// Attribute to enable a field based on a condition
 		/// </summary>
-		/// <param name="conditionName">The name of the enum condition to evaluate</param>
+		/// <param name="conditionName">The name of the condition to evaluate</param>
 		/// <param name="enumValue">The value of the enum</param>
 		public EnableFieldAttribute(string conditionName, object enumValue)
 		{
-			this.conditionName = conditionName;
-			this.enumValue = (int)enumValue;
+			ConditionName = conditionName;
+			EnumValue = (int)enumValue;
 		}
 	}
 }

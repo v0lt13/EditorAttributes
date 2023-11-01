@@ -18,52 +18,53 @@ namespace EditorAttributes
 
 	public class ConditionalFieldAttribute : PropertyAttribute
     {
-        public readonly string[] booleanNames;
-        public readonly bool[] negatedValues;
-        public readonly ConditionType conditionType;
-        public readonly ConditionResult conditionResult;
+        public string[] BooleanNames { get; private set; }
+        public bool[] NegatedValues { get; private set; }
+
+		public ConditionType ConditionType { get; private set; }
+		public ConditionResult ConditionResult { get; private set; }
 
 		/// <summary>
-		/// Attribute to show/hide a field based on a bunch of conditions
+		/// Attribute to show/hide or disable/enable a field based on a bunch of conditions
 		/// </summary>
 		/// <param name="conditionType">How to evaluate the the specified booleans</param>
 		/// <param name="booleanNames">The names of the booleans to evaluate</param>
 		public ConditionalFieldAttribute(ConditionType conditionType, params string[] booleanNames)
 		{
-			this.booleanNames = booleanNames;
-			this.conditionType = conditionType;
-			conditionResult = ConditionResult.ShowHide;
+			BooleanNames = booleanNames;
+			ConditionType = conditionType;
+			ConditionResult = ConditionResult.ShowHide;
 		}
 
-        /// <summary>
-        /// Attribute to show/hide a field based on a bunch of conditions
-        /// </summary>
-        /// <param name="conditionType">How to evaluate the the specified booleans</param>
-        /// <param name="conditionResult">What happens to the property when the condition evaluates to true</param>
-        /// <param name="booleanNames">The names of the booleans to evaluate</param>
-        public ConditionalFieldAttribute(ConditionType conditionType, ConditionResult conditionResult, params string[] booleanNames)
+		/// <summary>
+		/// Attribute to show/hide or disable/enable a field based on a bunch of conditions
+		/// </summary>
+		/// <param name="conditionType">How to evaluate the the specified booleans</param>
+		/// <param name="conditionResult">What happens to the property when the condition evaluates to true</param>
+		/// <param name="booleanNames">The names of the booleans to evaluate</param>
+		public ConditionalFieldAttribute(ConditionType conditionType, ConditionResult conditionResult, params string[] booleanNames)
         {
-            this.booleanNames = booleanNames;
-            this.conditionType = conditionType;
-            this.conditionResult = conditionResult;
+            BooleanNames = booleanNames;
+            ConditionType = conditionType;
+            ConditionResult = conditionResult;
         }
 
 		/// <summary>
-		/// Attribute to show/hide a field based on a bunch of conditions
+		/// Attribute to show/hide or disable/enable a field based on a bunch of conditions
 		/// </summary>
 		/// <param name="conditionType">How to evaluate the the specified booleans</param>
 		/// <param name="negatedValues">Specify which booleans to negate</param>
 		/// <param name="booleanNames">The names of the booleans to evaluate</param>
 		public ConditionalFieldAttribute(ConditionType conditionType, bool[] negatedValues, params string[] booleanNames)
 		{
-			this.booleanNames = booleanNames;
-			this.negatedValues = negatedValues;
-			this.conditionType = conditionType;
-			conditionResult = ConditionResult.ShowHide;
+			BooleanNames = booleanNames;
+			NegatedValues = negatedValues;
+			ConditionType = conditionType;
+			ConditionResult = ConditionResult.ShowHide;
 		}
 
 		/// <summary>
-		/// Attribute to show/hide a field based on a bunch of conditions
+		/// Attribute to show/hide or disable/enable a field based on a bunch of conditions
 		/// </summary>
 		/// <param name="conditionType">How to evaluate the the specified booleans</param>
 		/// <param name="negatedValues">Specify which booleans to negate</param>
@@ -71,10 +72,10 @@ namespace EditorAttributes
 		/// <param name="booleanNames">The names of the booleans to evaluate</param>
 		public ConditionalFieldAttribute(ConditionType conditionType, ConditionResult conditionResult, bool[] negatedValues, params string[] booleanNames)
 		{
-			this.booleanNames = booleanNames;
-            this.negatedValues = negatedValues;
-			this.conditionType = conditionType;
-            this.conditionResult = conditionResult;
+			BooleanNames = booleanNames;
+            NegatedValues = negatedValues;
+			ConditionType = conditionType;
+            ConditionResult = conditionResult;
 		}
 	}
 }

@@ -13,10 +13,10 @@ namespace EditorAttributes.Editor
 		
 			EditorGUILayout.BeginHorizontal();
 		
-			EditorGUIUtility.labelWidth = horizontalGroup.labelWidth;
-			EditorGUIUtility.fieldWidth = horizontalGroup.fieldWidth;
+			EditorGUIUtility.labelWidth = horizontalGroup.LabelWidth;
+			EditorGUIUtility.fieldWidth = horizontalGroup.FieldWidth;
 		
-			foreach (string variableName in horizontalGroup.fieldsToGroup)
+			foreach (string variableName in horizontalGroup.FieldsToGroup)
 			{
 				var variableProperty = serializedObject.FindProperty(variableName);
 				

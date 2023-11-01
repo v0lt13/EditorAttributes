@@ -2,26 +2,26 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-	public class HideFieldAttribute : PropertyAttribute
+	public class HideFieldAttribute : PropertyAttribute, IConditionalAttribute
     {
-        public readonly string conditionName;
-		public readonly int enumValue;
+        public string ConditionName { get; private set; }
+		public int EnumValue { get; private set; }
 
 		/// <summary>
-		/// Attribute to hide fields based on a boolean condition
+		/// Attribute to hide fields based on a condition
 		/// </summary>
-		/// <param name="conditionName">The name of the boolean condition to evaluate</param>
-		public HideFieldAttribute(string conditionName) => this.conditionName = conditionName;
+		/// <param name="conditionName">The name of the condition to evaluate</param>
+		public HideFieldAttribute(string conditionName) => ConditionName = conditionName;
 
 		/// <summary>
-		/// Attribute to hide fields based on a enum condition
+		/// Attribute to hide fields based on a condition
 		/// </summary>
-		/// <param name="conditionName">The name of the enum condition to evaluate</param>
+		/// <param name="conditionName">The name of the condition to evaluate</param>
 		/// <param name="enumValue">The value of the enum</param>
 		public HideFieldAttribute(string conditionName, object enumValue)
 		{
-			this.conditionName = conditionName;
-			this.enumValue = (int)enumValue;
+			ConditionName = conditionName;
+			EnumValue = (int)enumValue;
 		}
 	}
 }
