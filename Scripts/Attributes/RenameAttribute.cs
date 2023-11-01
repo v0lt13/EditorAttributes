@@ -18,7 +18,7 @@ namespace EditorAttributes
 	    public CaseType CaseType { get; set; }
 
         /// <summary>
-        /// Rename a field in the inspector
+        /// Attribute to rename a field in the inspector
         /// </summary>
         /// <param name="name">The new name of the field</param>
         /// <param name="caseType">In what case to rename the field</param>
