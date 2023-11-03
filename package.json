@@ -12,6 +12,13 @@
 		"attributes"
 	],
 	
+	"samples": [
+    {
+        "displayName": "AttributesSamples",
+        "description": "Provides a sample scene with components on empty gameobjects showing how all attributes work",
+        "path": "Samples"
+    }
+	
 	"author": 
 	{
 		"name": "v0lt",

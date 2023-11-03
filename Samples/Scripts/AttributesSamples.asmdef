@@ -1,0 +1,16 @@
+{
+    "name": "AttributesSamples",
+    "rootNamespace": "EditorAttributeSamples",
+    "references": [
+        "GUID:febaf25a60dafbd44941357b21678606"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
