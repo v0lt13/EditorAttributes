@@ -6,18 +6,21 @@
 	"changelogUrl": "https://editorattributesdocs.readthedocs.io/en/latest/changelogs.html",
 	"documentationUrl": "https://editorattributesdocs.readthedocs.io/",
 	
-	"keywords": [
+	"keywords": 
+	[
 		"editor",
 		"editor-attributes",
 		"attributes"
 	],
 	
-	"samples":
-    {
-        "displayName": "AttributesSamples",
-        "description": "Provides a sample scene with components on empty gameobjects showing how all attributes work",
-        "path": "Samples~"
-    }
+	"samples": 
+	[
+		{
+			"displayName": "AttributesSamples",
+			"description": "Provides a sample scene with components on empty gameobjects showing how all attributes work",
+			"path": "Samples~"
+		}
+	]
 	
 	"author": 
 	{
