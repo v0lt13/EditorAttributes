@@ -130,7 +130,24 @@ namespace EditorAttributes.Editor
 
 		protected PropertyInfo FindProperty(string propertyName, SerializedProperty property) => property.serializedObject.targetObject.GetType().GetProperty(propertyName);
 
-		protected MethodInfo FindFunction(string functionName, SerializedProperty property) => property.serializedObject.targetObject.GetType().GetMethod(functionName);
+		protected MethodInfo FindFunction(string functionName, SerializedProperty property)
+		{
+			try
+			{
+				return property.serializedObject.targetObject.GetType().GetMethod(functionName);
+			}
+			catch (AmbiguousMatchException)
+			{
+				var functions = property.serializedObject.targetObject.GetType().GetMethods();
+
+				foreach (var function in functions)
+				{
+					if (function.Name == functionName) return function;
+				}
+
+				return null;
+			}
+		}
 
 		protected virtual MemberInfo GetValidMemberInfo(string parameterName, SerializedProperty serializedProperty)
 		{

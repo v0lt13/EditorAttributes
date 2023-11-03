@@ -1,3 +1,8 @@
+EditorAttributes v1.2.1 Changelog:
+- Fixed public fields, properties and functions of type List not working with the dropdown attribute
+- Handled an AmbiguousMatchException when creating a button that uses a function with overloads
+- Buttons with parameters now show in a nice box
+
 EditorAttributes v1.2.0 Changelog:
 - Added Rename attribute
 - Added HideInEditMode attribute

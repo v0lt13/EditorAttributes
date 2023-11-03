@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace EditorAttributes.Editor
 {
@@ -32,21 +33,28 @@ namespace EditorAttributes.Editor
 				for (int i = 0; i < functionParameters.Length; i++) parameterValues[i] = functionParameters[i].DefaultValue;
 			}
 
+			if (functionParameters.Length > 0f) EditorGUILayout.BeginVertical(new GUIStyle(EditorStyles.helpBox));
+
+			if (GUILayout.Button(string.IsNullOrWhiteSpace(buttonAttribute.ButtonLabel) ? function.Name : buttonAttribute.ButtonLabel)) function.Invoke(target, parameterValues);
+
 			if (functionParameters.Length > 0f)
 			{
+
 				foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldout, "Parameters");
 
 				if (foldout)
 				{
-					for (int i = 0; i < functionParameters.Length; i++) parameterValues[i] = DrawField(functionParameters[i].ParameterType, functionParameters[i].Name, parameterValues[i]);
+					for (int i = 0; i < functionParameters.Length; i++)
+					{
+						parameterValues[i] = DrawField(functionParameters[i].ParameterType, functionParameters[i].Name, parameterValues[i]);
+					}
 				}
 
 				EditorGUILayout.EndFoldoutHeaderGroup();
-
-				EditorGUILayout.Space(10f);
+				EditorGUILayout.EndVertical();
 			}
-			
-			if (GUI.Button(position, string.IsNullOrWhiteSpace(buttonAttribute.ButtonLabel) ? function.Name : buttonAttribute.ButtonLabel)) function.Invoke(target, parameterValues);
 		}
+
+		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => -EditorGUIUtility.standardVerticalSpacing;
 	}
 }
