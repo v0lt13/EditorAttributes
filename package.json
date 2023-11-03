@@ -12,7 +12,7 @@
 		"attributes"
 	],
 	
-	"samples": [
+	"samples":
     {
         "displayName": "AttributesSamples",
         "description": "Provides a sample scene with components on empty gameobjects showing how all attributes work",
