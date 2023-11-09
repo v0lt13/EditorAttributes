@@ -4,7 +4,7 @@ using UnityEngine;
 namespace EditorAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(HorizontalGroupAttribute))]
-    public class HorizontalGroupDrawer : PropertyDrawer
+    public class HorizontalGroupDrawer : PropertyDrawerBase
     {
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
@@ -22,7 +22,7 @@ namespace EditorAttributes.Editor
 				
 				if (variableProperty != null) EditorGUILayout.PropertyField(variableProperty, true);
 			}
-		
+
 			EditorGUILayout.EndHorizontal();
 		}
 

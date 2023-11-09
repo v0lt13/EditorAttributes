@@ -29,7 +29,7 @@ namespace EditorAttributes.Editor
 		protected virtual float GetCorrectPropertyHeight(SerializedProperty property, GUIContent label)
 		{
 			eventDrawer ??= new UnityEventDrawer();
-
+			
 			try
 			{
 				return eventDrawer.GetPropertyHeight(property, label);
@@ -101,23 +101,19 @@ namespace EditorAttributes.Editor
 			{
 				var unityProperty = property.serializedObject.FindProperty(conditionAttribute.ConditionName);
 
-				if (unityProperty == null)
+				if (unityProperty != null)
 				{
-					if (drawErrorBox) EditorGUILayout.HelpBox($"The provided condition \"{conditionAttribute.ConditionName}\" is not a valid boolean or an enum", MessageType.Error);
+					switch (unityProperty.propertyType)
+					{
+						case SerializedPropertyType.Boolean:
+							return unityProperty.boolValue;
 
-					return false;
-				}
+						case SerializedPropertyType.Enum:
+							return unityProperty.intValue == conditionAttribute.EnumValue;
 
-				switch (unityProperty.propertyType)
-				{
-					case SerializedPropertyType.Boolean:
-						return unityProperty.boolValue;
-
-					case SerializedPropertyType.Enum:
-						return unityProperty.intValue == conditionAttribute.EnumValue;
-
-					default:
-						break;
+						default:
+							break;
+					}					
 				}
 			}
 
@@ -155,9 +151,8 @@ namespace EditorAttributes.Editor
 
 			memberInfo = FindField(parameterName, serializedProperty);
 
-			if (memberInfo == null) memberInfo = FindProperty(parameterName, serializedProperty);
-
-			if (memberInfo == null) memberInfo = FindFunction(parameterName, serializedProperty);
+			memberInfo ??= FindProperty(parameterName, serializedProperty);
+			memberInfo ??= FindFunction(parameterName, serializedProperty);
 
 			return memberInfo;
 		}
@@ -198,7 +193,7 @@ namespace EditorAttributes.Editor
 			return null;
 		}
 
-		protected object DrawField(Type fieldType, string fieldName, object fieldValue)
+		public static object DrawField(Type fieldType, string fieldName, object fieldValue)
 		{
 			fieldName = char.ToUpper(fieldName[0]) + fieldName[1..]; // Uppercase the first character of the name
 
@@ -257,6 +252,10 @@ namespace EditorAttributes.Editor
 			else if (fieldType == typeof(AnimationCurve))
 			{
 				return EditorGUILayout.CurveField(fieldName, Convert.IsDBNull(fieldValue) ? AnimationCurve.Linear(0f, 0f, 1f, 1f) : (AnimationCurve)fieldValue);
+			}
+			else if (fieldType == typeof(LayerMask))
+			{
+				return EditorGUILayout.LayerField(fieldName, Convert.IsDBNull(fieldValue) ? 0 : Convert.ToInt32(fieldValue));
 			}
 			else if (fieldType == typeof(Rect))
 			{

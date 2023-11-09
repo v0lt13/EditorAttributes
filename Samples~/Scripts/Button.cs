@@ -7,14 +7,15 @@ namespace EditorAttributeSamples
 	public class Button : MonoBehaviour
 	{
 		[Header("Button Attribute:")]
-		[Button(nameof(PrintMessage), "Button")]
-		[SerializeField] private Void buttonHolder;
-		[Space]
-		[Button(nameof(ButtonWithParams))]
-		[SerializeField] private Void buttonParamsHolder;
+		[SerializeField, Space(-18f), Rename("")] private Void headerHolder;
 
+		[Button("Button")]
 		public void PrintMessage() => print("Hello World!");
 
+		[Button]
 		public void ButtonWithParams(string messageToPrint) => print(messageToPrint);
+
+		[Button("Button", 30f)]
+		private void TallButton() => print("Tall button");
 	}
 }

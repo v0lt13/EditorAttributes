@@ -1,21 +1,23 @@
+using System;
 using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class ButtonAttribute : PropertyAttribute 
+	[AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
+	public class ButtonAttribute : PropertyAttribute 
 	{
-		public string FunctionName { get; private set; }
 		public string ButtonLabel { get; private set; }
+		public float ButtonHeight { get; private set; }
 
 		/// <summary>
 		/// Attribute to add a button in the inspector
 		/// </summary>
-		/// <param name="functionName">The name of the function to call when the button is pressed</param>
 		/// <param name="buttonLabel">The label displayed on the button</param>
-		public ButtonAttribute(string functionName, string buttonLabel = "")
+		/// <param name="buttonHeight">The height of the button</param>
+		public ButtonAttribute(string buttonLabel = "", float buttonHeight = 17f)
 		{
-			FunctionName = functionName;
 			ButtonLabel = buttonLabel;
+			ButtonHeight = buttonHeight;
 		}
 	}
 }
