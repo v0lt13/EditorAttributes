@@ -19,8 +19,15 @@ namespace EditorAttributes.Editor
 			foreach (string variableName in horizontalGroup.FieldsToGroup)
 			{
 				var variableProperty = serializedObject.FindProperty(variableName);
-				
-				if (variableProperty != null) EditorGUILayout.PropertyField(variableProperty, true);
+
+				if (variableProperty.type == "Void")
+				{
+					EditorGUI.PropertyField(position, variableProperty, true);
+				}
+				else if (variableProperty != null)
+				{
+					EditorGUILayout.PropertyField(variableProperty, true);
+				}
 			}
 
 			EditorGUILayout.EndHorizontal();
