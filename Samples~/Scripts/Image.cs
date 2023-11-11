@@ -7,10 +7,10 @@ namespace EditorAttributeSamples
 	public class Image : MonoBehaviour
 	{
 		[Header("Image Attribute:")]
-		[Image("Assets/Samples/EditorAttributesIcon.png")]
+		[Image("Assets/Samples/EditorAttributes/1.4.0/AttributesSamples/EditorAttributesIcon.png")]
 		[SerializeField] private int field01;
 
-		[Image("Assets/Samples/EditorAttributesIcon.png", 50f, 50f)]
+		[Image("Assets/Samples/EditorAttributes/1.4.0/AttributesSamples/EditorAttributesIcon.png", 50f, 50f)]
 		[SerializeField] private int field02;
 	}
 }
