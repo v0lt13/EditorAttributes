@@ -1,5 +1,5 @@
 EditorAttributes v1.4.0 Changelog:
-- Added Prefix/Sufix attribute
+- Added Prefix/Suffix attribute
 - Added DrawLine attribute
 - Added TagDropdown attribute
 - Added Image attribute

@@ -419,7 +419,7 @@ GameObject:
   - component: {fileID: 760960143}
   - component: {fileID: 760960142}
   m_Layer: 0
-  m_Name: Prefix/SufixAttribute
+  m_Name: Prefix/SuffixAttribute
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
