@@ -62,7 +62,7 @@ namespace EditorAttributes
 		/// <summary>
 		/// Attribute to draw a line in the inspector
 		/// </summary>
-		/// <param name="hexColor">Color in hexadecimal</param>
+		/// <param name="hexColor">The color in hexadecimal</param>
 		/// <param name="alpha">Alpha amount</param>
 		public LineAttribute(string hexColor, float alpha = 1f)
 		{
