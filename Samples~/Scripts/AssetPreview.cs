@@ -3,6 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/assetpreview.html")]
     public class AssetPreview : MonoBehaviour
     {
 		[SerializeField, AssetPreview] private Sprite spriteAsset;
