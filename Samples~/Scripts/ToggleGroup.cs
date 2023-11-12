@@ -5,6 +5,7 @@ namespace EditorAttributeSamples
 {
     public class ToggleGroup : MonoBehaviour
     {
+    		[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/togglegroup.html")]
 		[ToggleGroup("ToggleGroup", nameof(intField), nameof(stringField), nameof(boolField))]
 		[SerializeField] private Void groupHolder;
 
