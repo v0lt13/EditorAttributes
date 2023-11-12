@@ -18,7 +18,7 @@ namespace EditorAttributes.Editor
 			public Dictionary<string, object[]> parameterValues = new();
 		}
 
-		private const string PATH = "ProjectSettings/EditorAttributes";
+		public const string PARAMS_DATA_LOCATION = "ProjectSettings/EditorAttributes";
 
 		public static void DrawButton(MethodInfo function, ButtonAttribute buttonAttribute, Dictionary<MethodInfo, bool> foldouts, Dictionary<MethodInfo, object[]> parameterValues, object target)
         {
@@ -61,7 +61,7 @@ namespace EditorAttributes.Editor
 			}
 		}
 		
-		public static string GetFunctionID(MethodInfo function, object target) => $"{target}_{function.Name}_{string.Join("_", function.GetParameters().Select(p => p.ParameterType.Name))}";
+		public static string GetFunctionID(MethodInfo function, object target) => $"{target}_{function.Name}_{string.Join("_", function.GetParameters().Select(param => param.ParameterType.Name))}";
 
 		public static bool IsButtonFunction(MethodInfo function)
 		{
@@ -87,15 +87,17 @@ namespace EditorAttributes.Editor
 				if (parameterValues.TryGetValue(function, out object[] parameterValue)) data.parameterValues[id] = parameterValue;
 			}
 
+			if (data.foldouts.Count == 0 && data.parameterValues.Count == 0) return; 
+
 			string jsonData = JsonConvert.SerializeObject(data);
-			File.WriteAllTextAsync(Path.Combine(PATH, $"{target}ParamsData.json"), jsonData);
+			File.WriteAllTextAsync(Path.Combine(PARAMS_DATA_LOCATION, $"{target}ParamsData.json"), jsonData);
 		}
 
 		public static void LoadParamsData(MethodInfo[] functions, object target, ref Dictionary<MethodInfo, bool> foldouts, ref Dictionary<MethodInfo, object[]> parameterValues)
 		{
-			if (!Directory.Exists(PATH)) Directory.CreateDirectory(PATH);
+			if (!Directory.Exists(PARAMS_DATA_LOCATION)) Directory.CreateDirectory(PARAMS_DATA_LOCATION);
 
-			var filePath = Path.Combine(PATH, $"{target}ParamsData.json");
+			var filePath = Path.Combine(PARAMS_DATA_LOCATION, $"{target}ParamsData.json");
 
 			if (File.Exists(filePath))
 			{
@@ -113,9 +115,6 @@ namespace EditorAttributes.Editor
 					keyToMethod[id] = function;
 				}
 
-				var newFoldouts = new Dictionary<MethodInfo, bool>();
-				var newParameterValues = new Dictionary<MethodInfo, object[]>();
-
 				foreach (var key in data.foldouts.Keys)
 				{
 					if (keyToMethod.TryGetValue(key, out var method))
@@ -124,10 +123,12 @@ namespace EditorAttributes.Editor
 						parameterValues[method] = data.parameterValues[key];
 					}
 				}
-
-				foldouts = newFoldouts;
-				parameterValues = newParameterValues;
 			}
-		}		
+		}
+		
+		public static void DeleteParamsData(string filePath)
+		{
+			if (File.Exists(filePath)) File.Delete(filePath);
+		}
 	}
 }

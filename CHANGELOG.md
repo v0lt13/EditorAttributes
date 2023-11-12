@@ -1,3 +1,10 @@
+EditorAttributes v1.5.0 Changelog:
+- Added AssetPreview attribute
+- Added FoldoutGroup attribute
+- Added ToggleGroup attribute
+- Added the ability to show/hide or enable/disable buttons
+- Button parameters now persist after you deselect an object
+
 EditorAttributes v1.4.0 Changelog:
 - Added Prefix/Suffix attribute
 - Added DrawLine attribute

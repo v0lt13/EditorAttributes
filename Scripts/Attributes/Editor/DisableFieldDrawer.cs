@@ -15,7 +15,7 @@ namespace EditorAttributes.Editor
 
 			conditionalProperty = GetValidMemberInfo(disableAttribute.ConditionName, property);
 
-			GUI.enabled = !GetConditionValue<DisableFieldAttribute>(conditionalProperty, property, true);
+			GUI.enabled = !GetConditionValue<DisableFieldAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject, true);
 
 			DrawProperty(position, property, label);
 

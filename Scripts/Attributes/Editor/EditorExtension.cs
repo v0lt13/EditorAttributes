@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEngine;
 using UnityEditor;
 using System.Reflection;
@@ -8,6 +9,8 @@ namespace EditorAttributes.Editor
 	[CanEditMultipleObjects, CustomEditor(typeof(Object), true)]
 	public class EditorExtension : UnityEditor.Editor
 	{
+		private string buttonParamsDataFilePath;
+
 		private Dictionary<MethodInfo, bool> foldouts = new();
 		private Dictionary<MethodInfo, object[]> parameterValues = new();
 
@@ -16,7 +19,14 @@ namespace EditorAttributes.Editor
 		void OnEnable()
 		{
 			functions = target.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-			//ButtonDrawer.LoadParamsData(functions, target, ref foldouts, ref parameterValues);
+			ButtonDrawer.LoadParamsData(functions, target, ref foldouts, ref parameterValues);
+
+			buttonParamsDataFilePath = Path.Combine(ButtonDrawer.PARAMS_DATA_LOCATION, $"{target}ParamsData.json");
+		}
+
+		void OnDisable()
+		{
+			if (target == null) ButtonDrawer.DeleteParamsData(buttonParamsDataFilePath);
 		}
 
 		public override void OnInspectorGUI()
@@ -24,7 +34,7 @@ namespace EditorAttributes.Editor
 			DrawDefaultInspector();
 			DrawButtons();
 
-			//if (GUI.changed) ButtonDrawer.SaveParamsData(functions, target, foldouts, parameterValues);
+			if (GUI.changed) ButtonDrawer.SaveParamsData(functions, target, foldouts, parameterValues);
 		}
 
 		private void DrawButtons()
@@ -35,7 +45,33 @@ namespace EditorAttributes.Editor
 
 				if (buttonAttribute == null) continue;
 
-				ButtonDrawer.DrawButton(function, buttonAttribute, foldouts, parameterValues, target);
+				var conditionalProperty = PropertyDrawerBase.GetValidMemberInfo(buttonAttribute.ConditionName, target);
+
+				if (conditionalProperty != null)
+				{
+					var conditionValue = PropertyDrawerBase.GetConditionValue<ButtonAttribute>(conditionalProperty, buttonAttribute, target, true);
+
+					if (buttonAttribute.Negate) conditionValue = !conditionValue;
+
+					switch (buttonAttribute.ConditionResult)
+					{
+						case ConditionResult.ShowHide:
+							if (conditionValue) ButtonDrawer.DrawButton(function, buttonAttribute, foldouts, parameterValues, target);
+							break;
+
+						case ConditionResult.EnableDisable:
+							GUI.enabled = conditionValue;
+
+							ButtonDrawer.DrawButton(function, buttonAttribute, foldouts, parameterValues, target);
+
+							GUI.enabled = true;
+							break;
+					}
+				}
+				else
+				{
+					ButtonDrawer.DrawButton(function, buttonAttribute, foldouts, parameterValues, target);
+				}
 			}
 		}
 	}

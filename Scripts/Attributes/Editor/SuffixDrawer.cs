@@ -16,7 +16,7 @@ namespace EditorAttributes.Editor
 
             DrawProperty(new Rect(position.x, position.y, position.width - textSize.x - suffixAttribute.Offset, position.height), property, label);
 
-			GUI.Label(new Rect(position.xMax - textSize.x, position.y, position.width, position.height), suffixAttribute.Suffix, new GUIStyle(EditorStyles.miniLabel));
+			GUI.Label(new Rect(position.xMax - textSize.x, position.y, position.width, position.height), suffixAttribute.Suffix, EditorStyles.miniLabel);
 		}
 	}
 }

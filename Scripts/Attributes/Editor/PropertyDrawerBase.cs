@@ -10,6 +10,8 @@ namespace EditorAttributes.Editor
     {
 		protected UnityEventDrawer eventDrawer;
 
+		private const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => GetCorrectPropertyHeight(property, label);
 
 		protected virtual void DrawProperty(Rect position, SerializedProperty property, GUIContent label)
@@ -40,7 +42,7 @@ namespace EditorAttributes.Editor
 			}
 		}
 
-		protected void SetProperyValueAsString(string value, ref SerializedProperty property)
+		protected static void SetProperyValueAsString(string value, ref SerializedProperty property)
 		{
 			try
 			{
@@ -69,7 +71,7 @@ namespace EditorAttributes.Editor
 			}
 		}
 
-		protected string GetPropertyValueAsString(SerializedProperty property)
+		protected static string GetPropertyValueAsString(SerializedProperty property)
 		{
 			return property.propertyType switch
 			{
@@ -80,61 +82,39 @@ namespace EditorAttributes.Editor
 			};
 		}
 
-		protected bool GetConditionValue<T>(MemberInfo memberInfo, SerializedProperty property, bool drawErrorBox = false) where T : PropertyAttribute, IConditionalAttribute
+		public static bool GetConditionValue<T>(MemberInfo memberInfo, PropertyAttribute attribute, object targetObject, bool drawErrorBox = false) where T : PropertyAttribute, IConditionalAttribute
 		{
-			var conditionAttribute = attribute as T;
+			var conditionAttribute = attribute as T;			
+			
+			var memberInfoType = GetMemberInfoType(memberInfo);
 
-			try
+			if (memberInfoType == typeof(bool))
 			{
-				var memberInfoType = GetMemberInfoType(memberInfo);
-
-				if (memberInfoType == typeof(bool))
-				{
-					return (bool)GetMemberInfoValue(memberInfo, property.serializedObject.targetObject);
-				}
-				else if (memberInfoType.IsEnum)
-				{
-					return (int)GetMemberInfoValue(memberInfo, property.serializedObject.targetObject) == conditionAttribute.EnumValue;
-				}
+				return (bool)GetMemberInfoValue(memberInfo, targetObject);
 			}
-			catch (NullReferenceException)
+			else if (memberInfoType.IsEnum)
 			{
-				var unityProperty = property.serializedObject.FindProperty(conditionAttribute.ConditionName);
-
-				if (unityProperty != null)
-				{
-					switch (unityProperty.propertyType)
-					{
-						case SerializedPropertyType.Boolean:
-							return unityProperty.boolValue;
-
-						case SerializedPropertyType.Enum:
-							return unityProperty.intValue == conditionAttribute.EnumValue;
-
-						default:
-							break;
-					}					
-				}
-			}
+				return (int)GetMemberInfoValue(memberInfo, targetObject) == conditionAttribute.EnumValue;
+			}			
 
 			if (drawErrorBox) EditorGUILayout.HelpBox($"The provided condition \"{conditionAttribute.ConditionName}\" is not a valid boolean or an enum", MessageType.Error);
 
 			return false;
 		}
 
-		protected FieldInfo FindField(string fieldName, SerializedProperty property) => property.serializedObject.targetObject.GetType().GetField(fieldName);
+		protected static FieldInfo FindField(string fieldName, SerializedProperty property) => property.serializedObject.targetObject.GetType().GetField(fieldName, BINDING_FLAGS);
 
-		protected PropertyInfo FindProperty(string propertyName, SerializedProperty property) => property.serializedObject.targetObject.GetType().GetProperty(propertyName);
+		protected static PropertyInfo FindProperty(string propertyName, SerializedProperty property) => property.serializedObject.targetObject.GetType().GetProperty(propertyName, BINDING_FLAGS);
 
-		protected MethodInfo FindFunction(string functionName, SerializedProperty property)
+		protected static MethodInfo FindFunction(string functionName, object targetObject)
 		{
 			try
 			{
-				return property.serializedObject.targetObject.GetType().GetMethod(functionName);
+				return targetObject.GetType().GetMethod(functionName, BINDING_FLAGS);
 			}
 			catch (AmbiguousMatchException)
 			{
-				var functions = property.serializedObject.targetObject.GetType().GetMethods();
+				var functions = targetObject.GetType().GetMethods();
 
 				foreach (var function in functions)
 				{
@@ -145,7 +125,19 @@ namespace EditorAttributes.Editor
 			}
 		}
 
-		protected virtual MemberInfo GetValidMemberInfo(string parameterName, SerializedProperty serializedProperty)
+		public static MemberInfo GetValidMemberInfo(string parameterName, object targetObject)
+		{
+			MemberInfo memberInfo;
+
+			memberInfo = targetObject.GetType().GetField(parameterName, BINDING_FLAGS);
+
+			memberInfo ??= targetObject.GetType().GetProperty(parameterName, BINDING_FLAGS);
+			memberInfo ??= FindFunction(parameterName, targetObject);
+
+			return memberInfo;
+		}
+
+		protected static MemberInfo GetValidMemberInfo(string parameterName, SerializedProperty serializedProperty)
 		{
 			MemberInfo memberInfo;
 
@@ -157,25 +149,7 @@ namespace EditorAttributes.Editor
 			return memberInfo;
 		}
 
-		protected object GetMemberInfoValue(MemberInfo memberInfo, object targetObject)
-		{
-			if (memberInfo is FieldInfo fieldInfo)
-			{
-				return fieldInfo.GetValue(targetObject);
-			}
-			else if (memberInfo is PropertyInfo propertyInfo)
-			{
-				return propertyInfo.GetValue(targetObject);
-			}
-			else if (memberInfo is MethodInfo methodInfo)
-			{
-				return methodInfo.Invoke(targetObject, null);
-			}
-
-			return null;
-		}
-
-		protected Type GetMemberInfoType(MemberInfo memberInfo)
+		protected static Type GetMemberInfoType(MemberInfo memberInfo)
 		{
 			if (memberInfo is FieldInfo fieldInfo)
 			{
@@ -188,6 +162,24 @@ namespace EditorAttributes.Editor
 			else if (memberInfo is MethodInfo methodInfo)
 			{
 				return methodInfo.ReturnType;
+			}
+
+			return null;
+		}
+
+		protected static object GetMemberInfoValue(MemberInfo memberInfo, object targetObject)
+		{
+			if (memberInfo is FieldInfo fieldInfo)
+			{
+				return fieldInfo.GetValue(targetObject);
+			}
+			else if (memberInfo is PropertyInfo propertyInfo)
+			{
+				return propertyInfo.GetValue(targetObject);
+			}
+			else if (memberInfo is MethodInfo methodInfo)
+			{
+				return methodInfo.Invoke(targetObject, null);
 			}
 
 			return null;

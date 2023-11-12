@@ -15,12 +15,12 @@ namespace EditorAttributes.Editor
 
 			conditionalProperty = GetValidMemberInfo(showAttribute.ConditionName, property);
 
-			if (GetConditionValue<ShowFieldAttribute>(conditionalProperty, property, true)) DrawProperty(position, property, label);
+			if (GetConditionValue<ShowFieldAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject, true)) DrawProperty(position, property, label);
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
-			if (GetConditionValue<ShowFieldAttribute>(conditionalProperty, property))
+			if (conditionalProperty != null && GetConditionValue<ShowFieldAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject))
 			{
 				return GetCorrectPropertyHeight(property, label);
 			}

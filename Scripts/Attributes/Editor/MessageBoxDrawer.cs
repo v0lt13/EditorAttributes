@@ -15,7 +15,7 @@ namespace EditorAttributes.Editor
 
 			conditionalProperty = GetValidMemberInfo(messageBox.ConditionName, property);
 
-			if (GetConditionValue<MessageBoxAttribute>(conditionalProperty, property, true)) EditorGUILayout.HelpBox(messageBox.Message, (MessageType)messageBox.MessageType);
+			if (GetConditionValue<MessageBoxAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject, true)) EditorGUILayout.HelpBox(messageBox.Message, (MessageType)messageBox.MessageType);
 
 			if (messageBox.DrawProperty) DrawProperty(position, property, label);
 		}

@@ -33,6 +33,6 @@ namespace EditorAttributes.Editor
 			EditorGUILayout.EndHorizontal();
 		}
 
-		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => -EditorGUIUtility.standardVerticalSpacing; // Remove the space for the hidden field
+		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => -EditorGUIUtility.standardVerticalSpacing; // Remove the space for the holder field
 	}
 }

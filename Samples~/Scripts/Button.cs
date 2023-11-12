@@ -9,6 +9,8 @@ namespace EditorAttributeSamples
 		[Header("Button Attribute:")]
 		[SerializeField, Space(-18f), Rename("")] private Void headerHolder;
 
+		[SerializeField] private bool toggleButtons;
+
 		[Button("Button")]
 		public void PrintMessage() => print("Hello World!");
 
@@ -16,6 +18,12 @@ namespace EditorAttributeSamples
 		public void ButtonWithParams(string messageToPrint) => print(messageToPrint);
 
 		[Button("Button", 30f)]
-		private void TallButton() => print("Tall button");
+		public void TallButton() => print("Tall button");
+
+		[Button(nameof(toggleButtons), ConditionResult.EnableDisable, true)]
+		public void ButtonYouCanDisable() => print("Hello World!");
+
+		[Button(nameof(toggleButtons), ConditionResult.ShowHide, true)]
+		public void ButtonYouCanHide() => print("Hello World!");
 	}
 }

@@ -12,7 +12,7 @@ namespace EditorAttributes.Editor
 
 			var textSize = GUI.skin.GetStyle("miniLabel").CalcSize(new GUIContent(prefixAttribute.Prefix));
 
-			EditorGUI.PrefixLabel(new Rect(EditorGUIUtility.labelWidth - textSize.x + prefixAttribute.Offset, position.y, position.width, position.height), new GUIContent(prefixAttribute.Prefix), new(EditorStyles.miniLabel));
+			EditorGUI.PrefixLabel(new Rect(EditorGUIUtility.labelWidth - textSize.x + prefixAttribute.Offset, position.y, position.width, position.height), new GUIContent(prefixAttribute.Prefix), EditorStyles.miniLabel);
 		    DrawProperty(position, property, label);
     	}
     }
