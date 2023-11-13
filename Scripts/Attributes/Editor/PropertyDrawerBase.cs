@@ -106,6 +106,8 @@ namespace EditorAttributes.Editor
 
 		protected static PropertyInfo FindProperty(string propertyName, SerializedProperty property) => property.serializedObject.targetObject.GetType().GetProperty(propertyName, BINDING_FLAGS);
 
+		protected static MethodInfo FindFunction(string functionName, SerializedProperty property) => FindFunction(functionName, property.serializedObject.targetObject);
+
 		protected static MethodInfo FindFunction(string functionName, object targetObject)
 		{
 			try
@@ -262,6 +264,50 @@ namespace EditorAttributes.Editor
 				EditorGUILayout.HelpBox($"The type {fieldType} is not supported", MessageType.Warning);
 				return null;
 			}
+		}
+
+		public static Color GUIColorToColor(IColorAttribute colorAttribute)
+		{
+			return colorAttribute.GUIColor switch
+			{
+				GUIColor.White => Color.white,
+				GUIColor.Black => Color.black,
+				GUIColor.Gray => Color.gray,
+				GUIColor.Red => Color.red,
+				GUIColor.Green => Color.green,
+				GUIColor.Blue => Color.blue,
+				GUIColor.Cyan => Color.cyan,
+				GUIColor.Magenta => Color.magenta,
+				GUIColor.Yellow => Color.yellow,
+				GUIColor.Orange => new Color(1f, 149f / 255f, 0f),
+				GUIColor.Brown => new Color(161f / 255f, 62f / 255f, 0f),
+				GUIColor.Purple => new Color(158f / 255f, 5f / 255f, 247f / 255f),
+				GUIColor.Pink => new Color(247f / 255f, 5f / 255f, 171f / 255f),
+				GUIColor.Lime => new Color(145f / 255f, 1f, 0f),
+				_ => new Color(colorAttribute.R / 255f, colorAttribute.G / 255f, colorAttribute.B / 255f)
+			};
+		}
+
+		public static Color GUIColorToColor(IColorAttribute colorAttribute, float alpha)
+		{
+			return colorAttribute.GUIColor switch
+			{
+				GUIColor.White => new Color(Color.white.r, Color.white.g, Color.white.b, alpha),
+				GUIColor.Black => new Color(Color.black.r, Color.black.g, Color.black.b, alpha),
+				GUIColor.Gray => new Color(Color.gray.r, Color.gray.g, Color.gray.b, alpha),
+				GUIColor.Red => new Color(Color.red.r, Color.red.g, Color.red.b, alpha),
+				GUIColor.Green => new Color(Color.green.r, Color.green.g, Color.green.b, alpha),
+				GUIColor.Blue => new Color(Color.blue.r, Color.blue.g, Color.blue.b, alpha),
+				GUIColor.Cyan => new Color(Color.cyan.r, Color.cyan.g, Color.cyan.b, alpha),
+				GUIColor.Magenta => new Color(Color.magenta.r, Color.magenta.g, Color.magenta.b, alpha),
+				GUIColor.Yellow => new Color(Color.yellow.r, Color.yellow.g, Color.yellow.b, alpha),
+				GUIColor.Orange => new Color(1f, 149f / 255f, 0f, alpha),
+				GUIColor.Brown => new Color(161f / 255f, 62f / 255f, 0f, alpha),
+				GUIColor.Purple => new Color(158f / 255f, 5f / 255f, 247f / 255f, alpha),
+				GUIColor.Pink => new Color(247f / 255f, 5f / 255f, 171f / 255f, alpha),
+				GUIColor.Lime => new Color(145f / 255f, 1f, 0f, alpha),
+				_ => new Color(colorAttribute.R / 255f, colorAttribute.G / 255f, colorAttribute.B / 255f, alpha)
+			};
 		}
 	}
 }

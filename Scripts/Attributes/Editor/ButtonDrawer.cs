@@ -97,32 +97,39 @@ namespace EditorAttributes.Editor
 		{
 			if (!Directory.Exists(PARAMS_DATA_LOCATION)) Directory.CreateDirectory(PARAMS_DATA_LOCATION);
 
-			var filePath = Path.Combine(PARAMS_DATA_LOCATION, $"{target}ParamsData.json");
-
-			if (File.Exists(filePath))
+			try
 			{
-				string jsonData = File.ReadAllText(filePath);
+				var filePath = Path.Combine(PARAMS_DATA_LOCATION, $"{target}ParamsData.json");
 
-				var data = JsonConvert.DeserializeObject<FunctionParamData>(jsonData);
-				var keyToMethod = new Dictionary<string, MethodInfo>();
-
-				foreach (var function in functions)
+				if (File.Exists(filePath))
 				{
-					if (!IsButtonFunction(function)) continue;
+					string jsonData = File.ReadAllText(filePath);
 
-					string id = GetFunctionID(function, target);
+					var data = JsonConvert.DeserializeObject<FunctionParamData>(jsonData);
+					var keyToMethod = new Dictionary<string, MethodInfo>();
 
-					keyToMethod[id] = function;
-				}
-
-				foreach (var key in data.foldouts.Keys)
-				{
-					if (keyToMethod.TryGetValue(key, out var method))
+					foreach (var function in functions)
 					{
-						foldouts[method] = data.foldouts[key];
-						parameterValues[method] = data.parameterValues[key];
+						if (!IsButtonFunction(function)) continue;
+
+						string id = GetFunctionID(function, target);
+
+						keyToMethod[id] = function;
+					}
+
+					foreach (var key in data.foldouts.Keys)
+					{
+						if (keyToMethod.TryGetValue(key, out var method))
+						{
+							foldouts[method] = data.foldouts[key];
+							parameterValues[method] = data.parameterValues[key];
+						}
 					}
 				}
+			}
+			catch (ArgumentException)
+			{
+				return;
 			}
 		}
 		

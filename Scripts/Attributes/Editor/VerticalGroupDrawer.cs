@@ -10,8 +10,10 @@ namespace EditorAttributes.Editor
 		{
 			var verticalGroup = attribute as VerticalGroupAttribute;
 			var serializedObject = property.serializedObject;
-		
-			EditorGUILayout.BeginVertical();
+
+			var verticalGroupStyle = verticalGroup.DrawInBox ? EditorStyles.helpBox : EditorStyles.inspectorFullWidthMargins;
+
+			EditorGUILayout.BeginVertical(verticalGroupStyle);
 
 			EditorGUIUtility.labelWidth = verticalGroup.LabelWidth;
 			EditorGUIUtility.fieldWidth = verticalGroup.FieldWidth;

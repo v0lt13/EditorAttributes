@@ -32,7 +32,10 @@ namespace EditorAttributes.Editor
 
 			if (isExpanded)
 			{
+				var groupStyle = toggleGroup.DrawInBox ? EditorStyles.helpBox : EditorStyles.inspectorFullWidthMargins;
+
 				GUI.enabled = isToggled;
+				EditorGUILayout.BeginVertical(groupStyle);
 
 				foreach (string variableName in toggleGroup.FieldsToGroup)
 				{
@@ -41,6 +44,7 @@ namespace EditorAttributes.Editor
 					if (variableProperty != null) EditorGUILayout.PropertyField(variableProperty, true);
 				}
 
+				EditorGUILayout.EndVertical();
 				GUI.enabled = true;
 			}
 

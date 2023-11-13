@@ -2,26 +2,7 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public enum LineColor
-    {
-        White,
-        Black,
-        Gray,
-        Red,
-        Green,
-        Lime,
-        Blue,
-        Cyan,
-        Yellow,
-        Orange,
-        Brown,
-        Magenta,
-        Purple,
-        Pink,
-        UseRGB
-    }
-
-    public class LineAttribute : PropertyAttribute
+    public class LineAttribute : PropertyAttribute, IColorAttribute
     {
         public float R { get; private set; }
         public float G { get; private set; }
@@ -30,16 +11,16 @@ namespace EditorAttributes
 
         public string HexColor { get; private set; }
 
-        public LineColor LineColor { get; private set; }
+        public GUIColor GUIColor { get; private set; }
 
 		/// <summary>
 		/// Attribute to draw a line in the inspector
 		/// </summary>
 		/// <param name="color">The color of the line</param>
 		/// <param name="alpha">Alpha amount</param>
-		public LineAttribute(LineColor color = LineColor.White, float alpha = 1f)
+		public LineAttribute(GUIColor color = GUIColor.White, float alpha = 1f)
 		{
-            LineColor = color;
+            GUIColor = color;
 			A = alpha;
 		}
 
@@ -52,7 +33,7 @@ namespace EditorAttributes
 		/// <param name="alpha">Alpha amount</param>
 		public LineAttribute(float red, float green, float blue, float alpha = 1f)
         {
-            LineColor = LineColor.UseRGB;
+            GUIColor = GUIColor.UseRGB;
             R = red;
             G = green;
             B = blue; 

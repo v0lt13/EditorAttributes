@@ -15,9 +15,8 @@ namespace EditorAttributes.Editor
 		{
 			var dropdownAttribute = attribute as DropdownAttribute;
 
-			var arrayProperty = property.serializedObject.FindProperty(dropdownAttribute.ArrayName);
 			var memberInfo = GetValidMemberInfo(dropdownAttribute.ArrayName, property);
-			var stringArray = GetArrayValues(arrayProperty, property.serializedObject, memberInfo);
+			var stringArray = GetArrayValues(property.serializedObject, memberInfo);
 
 			int selectedIndex = 0;
 
@@ -31,42 +30,26 @@ namespace EditorAttributes.Editor
 			if (selectedIndex >= 0 && selectedIndex < stringArray.Length) SetProperyValueAsString(stringArray[selectedIndex], ref property);
 		}
 
-		public string[] GetArrayValues(SerializedProperty arrayProperty, SerializedObject serializedObject, MemberInfo memberInfo)
+		public string[] GetArrayValues(SerializedObject serializedObject, MemberInfo memberInfo)
 		{
 			var stringList = new List<string>();
 
-			try
+			var memberInfoType = GetMemberInfoType(memberInfo);
+
+			if (memberInfoType.IsArray || memberInfoType.GetInterfaces().Contains(typeof(IList)))
 			{
-				var memberInfoType = GetMemberInfoType(memberInfo);
+				var memberInfoValue = GetMemberInfoValue(memberInfo, serializedObject.targetObject);
 
-				if (memberInfoType.IsArray || memberInfoType.GetInterfaces().Contains(typeof(IList)))
+				if (memberInfoValue is Array array)
 				{
-					var memberInfoValue = GetMemberInfoValue(memberInfo, serializedObject.targetObject);
-
-					if (memberInfoValue is Array array)
-					{
-						foreach (var item in array) stringList.Add(item.ToString());
-					}
-					else if (memberInfoValue is IList list)
-					{
-						foreach (var item in list) stringList.Add(item.ToString());
-					}
-
-					return stringList.ToArray();
+					foreach (var item in array) stringList.Add(item.ToString());
 				}
-			}
-			catch (NullReferenceException)
-			{
-				if (arrayProperty != null && arrayProperty.isArray)
+				else if (memberInfoValue is IList list)
 				{
-					for (int i = 0; i < arrayProperty.arraySize; i++)
-					{
-						var arrayElementProperty = arrayProperty.GetArrayElementAtIndex(i);
-						stringList.Add(GetPropertyValueAsString(arrayElementProperty));
-					}
-
-					return stringList.ToArray();
+					foreach (var item in list) stringList.Add(item.ToString());
 				}
+
+				return stringList.ToArray();
 			}
 
 			EditorGUILayout.HelpBox("Could not find the array or the attached property is not valid", MessageType.Error);

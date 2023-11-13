@@ -1,3 +1,11 @@
+EditorAttributes v1.6.0 Changelog:
+- Added ColorField attribute
+- Added GUIColor attribute
+- Added option to draw groups inside boxes
+- Fixed functions not beeing found
+- Handled Illegal characters in path ArgumentException on the button
+- Updated FoldoutGroup GUI
+
 EditorAttributes v1.5.0 Changelog:
 - Added AssetPreview attribute
 - Added FoldoutGroup attribute

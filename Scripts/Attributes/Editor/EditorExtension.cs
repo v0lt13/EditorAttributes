@@ -19,9 +19,17 @@ namespace EditorAttributes.Editor
 		void OnEnable()
 		{
 			functions = target.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+
 			ButtonDrawer.LoadParamsData(functions, target, ref foldouts, ref parameterValues);
 
-			buttonParamsDataFilePath = Path.Combine(ButtonDrawer.PARAMS_DATA_LOCATION, $"{target}ParamsData.json");
+			try
+			{
+				buttonParamsDataFilePath = Path.Combine(ButtonDrawer.PARAMS_DATA_LOCATION, $"{target}ParamsData.json");
+			}
+			catch (System.ArgumentException)
+			{
+				return;
+			}
 		}
 
 		void OnDisable()

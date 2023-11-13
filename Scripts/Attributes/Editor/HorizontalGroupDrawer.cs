@@ -10,8 +10,10 @@ namespace EditorAttributes.Editor
 		{
 			var horizontalGroup = attribute as HorizontalGroupAttribute;
 			var serializedObject = property.serializedObject;
-		
-			EditorGUILayout.BeginHorizontal();
+
+			var horizontalGroupStyle = horizontalGroup.DrawInBox ? EditorStyles.helpBox : EditorStyles.inspectorFullWidthMargins;
+
+			EditorGUILayout.BeginHorizontal(horizontalGroupStyle);
 		
 			EditorGUIUtility.labelWidth = horizontalGroup.LabelWidth;
 			EditorGUIUtility.fieldWidth = horizontalGroup.FieldWidth;
