@@ -216,9 +216,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 407b5ce8cd2701b41ac833e5f7b2fe51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intField: 0
-  stringField: 
-  boolField: 0
+  intField01: 0
+  stringField01: 
+  boolField01: 0
+  intField02: 0
+  stringField02: 
+  boolField02: 0
 --- !u!1 &259305638
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,9 +314,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8d16364a8c14c84695eff13dde25ea1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intField: 0
-  stringField: 
-  boolField: 0
+  intField01: 0
+  stringField01: 
+  boolField01: 0
+  intField02: 0
+  stringField02: 
+  boolField02: 0
 --- !u!1 &580859659
 GameObject:
   m_ObjectHideFlags: 0
@@ -607,9 +613,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edd00b3f5f18c5b48a1fa65da8c7f7c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intField: 0
-  stringField: 
-  boolField: 0
+  intField01: 0
+  stringField01: 
+  boolField01: 0
+  intField02: 0
+  stringField02: 
+  boolField02: 0
 --- !u!1 &1057385859
 GameObject:
   m_ObjectHideFlags: 0
@@ -1100,6 +1109,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1584672296}
+  - component: {fileID: 1584672297}
   m_Layer: 0
   m_Name: ColorFieldAttribute
   m_TagString: Untagged
@@ -1122,6 +1132,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1815105669}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1584672297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1584672295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8ee5f8da0f5d5c4281487cb804b7bec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intField: 0
+  stringField: 
+  boolField: 0
 --- !u!1 &1630434748
 GameObject:
   m_ObjectHideFlags: 0
@@ -1314,11 +1339,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be310c9b15918904aad22cf6726b1e76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intField: 0
-  stringField: 
-  boolField: 0
-  vectorField: {x: 0, y: 0, z: 0}
-  arrayField: []
+  intField01: 0
+  stringField01: 
+  boolField01: 0
+  intField02: 0
+  stringField02: 
+  boolField02: 0
 --- !u!1 &1803397086
 GameObject:
   m_ObjectHideFlags: 0
@@ -1328,6 +1354,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1803397087}
+  - component: {fileID: 1803397088}
   m_Layer: 0
   m_Name: GUIColorAttribute
   m_TagString: Untagged
@@ -1350,6 +1377,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1815105669}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1803397088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1803397086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0714f518b28f194bb749626e09c7470, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intField01: 0
+  stringField01: 
+  boolField01: 0
+  intField02: 0
+  stringField02: 
+  boolField02: 0
+  intField03: 0
+  stringField03: 
+  boolField03: 0
 --- !u!1 &1815105668
 GameObject:
   m_ObjectHideFlags: 0
