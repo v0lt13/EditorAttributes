@@ -18,7 +18,7 @@ namespace EditorAttributes.Editor
 
 		void OnEnable()
 		{
-			functions = target.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+			functions = target.GetType().GetMethods(PropertyDrawerBase.BINDING_FLAGS);
 
 			ButtonDrawer.LoadParamsData(functions, target, ref foldouts, ref parameterValues);
 

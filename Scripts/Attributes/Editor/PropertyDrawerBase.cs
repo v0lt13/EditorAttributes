@@ -10,7 +10,7 @@ namespace EditorAttributes.Editor
     {
 		protected UnityEventDrawer eventDrawer;
 
-		private const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+		public const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => GetCorrectPropertyHeight(property, label);
 

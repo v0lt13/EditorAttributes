@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Newtonsoft.Json;
 using System.Reflection;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace EditorAttributes.Editor
 {
