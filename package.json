@@ -6,6 +6,10 @@
 	"changelogUrl": "https://editorattributesdocs.readthedocs.io/en/latest/changelogs.html",
 	"documentationUrl": "https://editorattributesdocs.readthedocs.io/",
 	
+	"dependencies": {
+		"com.unity.nuget.newtonsoft-json": "3.2.1"
+	},
+	
 	"keywords": 
 	[
 		"editor",
