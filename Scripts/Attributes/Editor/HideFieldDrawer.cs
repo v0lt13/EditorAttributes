@@ -1,26 +1,26 @@
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
 
 namespace EditorAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(HideFieldAttribute))]
     public class HideFieldDrawer : PropertyDrawerBase
     {
-		private MemberInfo conditionalProperty;
+		private bool hideField;
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var hideAttribute = attribute as HideFieldAttribute;
+			var conditionalProperty = GetValidMemberInfo(hideAttribute.ConditionName, property);
 
-			conditionalProperty = GetValidMemberInfo(hideAttribute.ConditionName, property);
+			hideField = !GetConditionValue<HideFieldAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject);
 
-			if (!GetConditionValue<HideFieldAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject, true)) DrawProperty(position, property, label);
+			if (hideField) DrawProperty(position, property, label);
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
-			if (conditionalProperty != null && !GetConditionValue<HideFieldAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject))
+			if (hideField)
 			{
 				return GetCorrectPropertyHeight(property, label);
 			}

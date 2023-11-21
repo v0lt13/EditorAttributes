@@ -57,7 +57,7 @@ namespace EditorAttributes.Editor
 
 				if (conditionalProperty != null)
 				{
-					var conditionValue = PropertyDrawerBase.GetConditionValue<ButtonAttribute>(conditionalProperty, buttonAttribute, target, true);
+					var conditionValue = PropertyDrawerBase.GetConditionValue<ButtonAttribute>(conditionalProperty, buttonAttribute, target);
 
 					if (buttonAttribute.Negate) conditionValue = !conditionValue;
 

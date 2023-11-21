@@ -18,7 +18,7 @@ namespace EditorAttributes
 		{
 			FieldsToGroup = fieldsToGroup;
 			DrawInBox = false;
-			LabelWidth = 150f;
+			LabelWidth = 100f;
 			FieldWidth = 50f;
 		}
 
@@ -31,7 +31,7 @@ namespace EditorAttributes
 		{
 			FieldsToGroup = fieldsToGroup;
 			DrawInBox = drawInBox;
-			LabelWidth = 150f;
+			LabelWidth = 100f;
 			FieldWidth = 50f;
 		}
 
@@ -42,7 +42,7 @@ namespace EditorAttributes
 		/// <param name="fieldWidth">The width of the input fields</param>
 		/// <param name="drawInBox">Draw the group in a nice box</param>
 		/// <param name="fieldsToGroup">The name of the fields to group</param>
-		public HorizontalGroupAttribute(float labelWidth = 150f, float fieldWidth = 50f, bool drawInBox = false, params string[] fieldsToGroup) 
+		public HorizontalGroupAttribute(float labelWidth = 100f, float fieldWidth = 50f, bool drawInBox = false, params string[] fieldsToGroup) 
         {
             FieldsToGroup = fieldsToGroup;
 			DrawInBox = drawInBox;

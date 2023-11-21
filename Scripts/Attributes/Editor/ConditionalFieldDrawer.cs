@@ -7,18 +7,22 @@ namespace EditorAttributes.Editor
     [CustomPropertyDrawer(typeof(ConditionalFieldAttribute))]
     public class ConditionalFieldDrawer : PropertyDrawerBase
     {
+		private bool canDrawProperty;
+
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var conditionalAttribute = attribute as ConditionalFieldAttribute;
 
+			canDrawProperty = CanDrawProperty(conditionalAttribute, conditionalAttribute.BooleanNames, property, true);
+
 			switch (conditionalAttribute.ConditionResult)
 			{
 				case ConditionResult.ShowHide:
-					if (CanDrawProperty(conditionalAttribute, conditionalAttribute.BooleanNames, property, true)) DrawProperty(position, property, label);
+					if (canDrawProperty) DrawProperty(position, property, label);
 					break;
 
 				case ConditionResult.EnableDisable:
-					GUI.enabled = CanDrawProperty(conditionalAttribute, conditionalAttribute.BooleanNames, property, true);
+					GUI.enabled = canDrawProperty;
 
 					DrawProperty(position, property, label);
 
@@ -35,7 +39,7 @@ namespace EditorAttributes.Editor
 			{
 				default:
 				case ConditionResult.ShowHide:
-					if (CanDrawProperty(conditionalAttribute, conditionalAttribute.BooleanNames, property))
+					if (canDrawProperty)
 					{
 						return GetCorrectPropertyHeight(property, label);
 					}

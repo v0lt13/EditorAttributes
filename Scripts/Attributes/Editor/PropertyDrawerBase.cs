@@ -82,7 +82,7 @@ namespace EditorAttributes.Editor
 			};
 		}
 
-		public static bool GetConditionValue<T>(MemberInfo memberInfo, PropertyAttribute attribute, object targetObject, bool drawErrorBox = false) where T : PropertyAttribute, IConditionalAttribute
+		public static bool GetConditionValue<T>(MemberInfo memberInfo, PropertyAttribute attribute, object targetObject) where T : PropertyAttribute, IConditionalAttribute
 		{
 			var conditionAttribute = attribute as T;			
 			
@@ -97,7 +97,7 @@ namespace EditorAttributes.Editor
 				return (int)GetMemberInfoValue(memberInfo, targetObject) == conditionAttribute.EnumValue;
 			}			
 
-			if (drawErrorBox) EditorGUILayout.HelpBox($"The provided condition \"{conditionAttribute.ConditionName}\" is not a valid boolean or an enum", MessageType.Error);
+			EditorGUILayout.HelpBox($"The provided condition \"{conditionAttribute.ConditionName}\" is not a valid boolean or an enum", MessageType.Error);
 
 			return false;
 		}
@@ -191,73 +191,79 @@ namespace EditorAttributes.Editor
 		{
 			fieldName = char.ToUpper(fieldName[0]) + fieldName[1..]; // Uppercase the first character of the name
 
+			bool isDBNull = Convert.IsDBNull(fieldValue);
+
 			if (fieldType == typeof(string))
 			{
 				return EditorGUILayout.TextField(fieldName, fieldValue.ToString());
 			}
 			else if (fieldType == typeof(int))
 			{
-				return EditorGUILayout.IntField(fieldName, Convert.IsDBNull(fieldValue) ? 0 : Convert.ToInt32(fieldValue));
+				return EditorGUILayout.IntField(fieldName, isDBNull ? 0 : Convert.ToInt32(fieldValue));
 			}
 			else if (fieldType == typeof(float))
 			{
-				return EditorGUILayout.FloatField(fieldName, Convert.IsDBNull(fieldValue) ? 0.0f : Convert.ToSingle(fieldValue));
+				return EditorGUILayout.FloatField(fieldName, isDBNull ? 0.0f : Convert.ToSingle(fieldValue));
 			}
 			else if (fieldType == typeof(double))
 			{
-				return EditorGUILayout.DoubleField(fieldName, Convert.IsDBNull(fieldValue) ? 0.0 : (double)fieldValue);
+				return EditorGUILayout.DoubleField(fieldName, isDBNull ? 0.0 : (double)fieldValue);
 			}
 			else if (fieldType == typeof(bool))
 			{
-				return EditorGUILayout.Toggle(fieldName, !Convert.IsDBNull(fieldValue) && (bool)fieldValue);
+				return EditorGUILayout.Toggle(fieldName, !isDBNull && (bool)fieldValue);
+			}
+			else if (fieldType.IsEnum)
+			{
+				return EditorGUILayout.EnumPopup(fieldName, isDBNull ? Enum.ToObject(fieldType, 0) as Enum : Enum.ToObject(fieldType, fieldValue) as Enum);
 			}
 			else if (fieldType == typeof(GameObject))
 			{
-				return EditorGUILayout.ObjectField(fieldName, Convert.IsDBNull(fieldValue) ? null : (GameObject)fieldValue, typeof(GameObject), true);
+				return EditorGUILayout.ObjectField(fieldName, isDBNull ? null : (GameObject)fieldValue, typeof(GameObject), true);
 			}
 			else if (fieldType == typeof(Vector2))
 			{
-				return EditorGUILayout.Vector2Field(fieldName, Convert.IsDBNull(fieldValue) ? Vector2.zero : (Vector2)fieldValue);
+				return EditorGUILayout.Vector2Field(fieldName, isDBNull ? Vector2.zero : (Vector2)fieldValue);
 			}
 			else if (fieldType == typeof(Vector2Int))
 			{
-				return EditorGUILayout.Vector2IntField(fieldName, Convert.IsDBNull(fieldValue) ? Vector2Int.zero : (Vector2Int)fieldValue);
+				return EditorGUILayout.Vector2IntField(fieldName, isDBNull ? Vector2Int.zero : (Vector2Int)fieldValue);
 			}
 			else if (fieldType == typeof(Vector3))
 			{
-				return EditorGUILayout.Vector3Field(fieldName, Convert.IsDBNull(fieldValue) ? Vector3.zero : (Vector3)fieldValue);
+				return EditorGUILayout.Vector3Field(fieldName, isDBNull ? Vector3.zero : (Vector3)fieldValue);
 			}
 			else if (fieldType == typeof(Vector3Int))
 			{
-				return EditorGUILayout.Vector3IntField(fieldName, Convert.IsDBNull(fieldValue) ? Vector3Int.zero : (Vector3Int)fieldValue);
+				return EditorGUILayout.Vector3IntField(fieldName, isDBNull ? Vector3Int.zero : (Vector3Int)fieldValue);
 			}
 			else if (fieldType == typeof(Vector4))
 			{
-				return EditorGUILayout.Vector4Field(fieldName, Convert.IsDBNull(fieldValue) ? Vector4.zero : (Vector4)fieldValue);
+				return EditorGUILayout.Vector4Field(fieldName, isDBNull ? Vector4.zero : (Vector4)fieldValue);
 			}
 			else if (fieldType == typeof(Color))
 			{
-				return EditorGUILayout.ColorField(fieldName, Convert.IsDBNull(fieldValue) ? Color.white : (Color)fieldValue);
+				return EditorGUILayout.ColorField(fieldName, isDBNull ? Color.white : (Color)fieldValue);
 			}
 			else if (fieldType == typeof(Gradient))
 			{
-				return EditorGUILayout.GradientField(fieldName, Convert.IsDBNull(fieldValue) ? new Gradient() : (Gradient)fieldValue);
+				return EditorGUILayout.GradientField(fieldName, isDBNull ? new Gradient() : (Gradient)fieldValue);
 			}
 			else if (fieldType == typeof(AnimationCurve))
 			{
-				return EditorGUILayout.CurveField(fieldName, Convert.IsDBNull(fieldValue) ? AnimationCurve.Linear(0f, 0f, 1f, 1f) : (AnimationCurve)fieldValue);
+				return EditorGUILayout.CurveField(fieldName, isDBNull ? AnimationCurve.Linear(0f, 0f, 1f, 1f) : (AnimationCurve)fieldValue);
 			}
 			else if (fieldType == typeof(LayerMask))
 			{
-				return EditorGUILayout.LayerField(fieldName, Convert.IsDBNull(fieldValue) ? 0 : Convert.ToInt32(fieldValue));
+				return EditorGUILayout.LayerField(fieldName, isDBNull ? 0 : Convert.ToInt32(fieldValue));
 			}
 			else if (fieldType == typeof(Rect))
 			{
-				return EditorGUILayout.RectField(fieldName, Convert.IsDBNull(fieldValue) ? new Rect(0f, 0f, 0f, 0f) : (Rect)fieldValue);
+				return EditorGUILayout.RectField(fieldName, isDBNull ? new Rect(0f, 0f, 0f, 0f) : (Rect)fieldValue);
 			}
 			else if (fieldType == typeof(RectInt))
 			{
-				return EditorGUILayout.RectIntField(fieldName, Convert.IsDBNull(fieldValue) ? new RectInt(0, 0, 0, 0) : (RectInt)fieldValue);
+				return EditorGUILayout.RectIntField(fieldName, isDBNull ? new RectInt(0, 0, 0, 0) : (RectInt)fieldValue);
 			}
 			else
 			{
@@ -268,9 +274,10 @@ namespace EditorAttributes.Editor
 
 		public static Color GUIColorToColor(IColorAttribute colorAttribute)
 		{
+			if (colorAttribute.UseRGB) return new(colorAttribute.R / 255f, colorAttribute.G / 255f, colorAttribute.B / 255f);
+
 			return colorAttribute.GUIColor switch
 			{
-				GUIColor.White => Color.white,
 				GUIColor.Black => Color.black,
 				GUIColor.Gray => Color.gray,
 				GUIColor.Red => Color.red,
@@ -279,34 +286,35 @@ namespace EditorAttributes.Editor
 				GUIColor.Cyan => Color.cyan,
 				GUIColor.Magenta => Color.magenta,
 				GUIColor.Yellow => Color.yellow,
-				GUIColor.Orange => new Color(1f, 149f / 255f, 0f),
-				GUIColor.Brown => new Color(161f / 255f, 62f / 255f, 0f),
-				GUIColor.Purple => new Color(158f / 255f, 5f / 255f, 247f / 255f),
-				GUIColor.Pink => new Color(247f / 255f, 5f / 255f, 171f / 255f),
-				GUIColor.Lime => new Color(145f / 255f, 1f, 0f),
-				_ => new Color(colorAttribute.R / 255f, colorAttribute.G / 255f, colorAttribute.B / 255f)
+				GUIColor.Orange => new(1f, 149f / 255f, 0f),
+				GUIColor.Brown => new(161f / 255f, 62f / 255f, 0f),
+				GUIColor.Purple => new(158f / 255f, 5f / 255f, 247f / 255f),
+				GUIColor.Pink => new(247f / 255f, 5f / 255f, 171f / 255f),
+				GUIColor.Lime => new(145f / 255f, 1f, 0f),
+				_ => Color.white
 			};
 		}
 
 		public static Color GUIColorToColor(IColorAttribute colorAttribute, float alpha)
 		{
+			if (colorAttribute.UseRGB) return new(colorAttribute.R / 255f, colorAttribute.G / 255f, colorAttribute.B / 255f, alpha);
+
 			return colorAttribute.GUIColor switch
 			{
-				GUIColor.White => new Color(Color.white.r, Color.white.g, Color.white.b, alpha),
-				GUIColor.Black => new Color(Color.black.r, Color.black.g, Color.black.b, alpha),
-				GUIColor.Gray => new Color(Color.gray.r, Color.gray.g, Color.gray.b, alpha),
-				GUIColor.Red => new Color(Color.red.r, Color.red.g, Color.red.b, alpha),
-				GUIColor.Green => new Color(Color.green.r, Color.green.g, Color.green.b, alpha),
-				GUIColor.Blue => new Color(Color.blue.r, Color.blue.g, Color.blue.b, alpha),
-				GUIColor.Cyan => new Color(Color.cyan.r, Color.cyan.g, Color.cyan.b, alpha),
-				GUIColor.Magenta => new Color(Color.magenta.r, Color.magenta.g, Color.magenta.b, alpha),
-				GUIColor.Yellow => new Color(Color.yellow.r, Color.yellow.g, Color.yellow.b, alpha),
-				GUIColor.Orange => new Color(1f, 149f / 255f, 0f, alpha),
-				GUIColor.Brown => new Color(161f / 255f, 62f / 255f, 0f, alpha),
-				GUIColor.Purple => new Color(158f / 255f, 5f / 255f, 247f / 255f, alpha),
-				GUIColor.Pink => new Color(247f / 255f, 5f / 255f, 171f / 255f, alpha),
-				GUIColor.Lime => new Color(145f / 255f, 1f, 0f, alpha),
-				_ => new Color(colorAttribute.R / 255f, colorAttribute.G / 255f, colorAttribute.B / 255f, alpha)
+				GUIColor.Black => new(Color.black.r, Color.black.g, Color.black.b, alpha),
+				GUIColor.Gray => new(Color.gray.r, Color.gray.g, Color.gray.b, alpha),
+				GUIColor.Red => new(Color.red.r, Color.red.g, Color.red.b, alpha),
+				GUIColor.Green => new(Color.green.r, Color.green.g, Color.green.b, alpha),
+				GUIColor.Blue => new(Color.blue.r, Color.blue.g, Color.blue.b, alpha),
+				GUIColor.Cyan => new(Color.cyan.r, Color.cyan.g, Color.cyan.b, alpha),
+				GUIColor.Magenta => new(Color.magenta.r, Color.magenta.g, Color.magenta.b, alpha),
+				GUIColor.Yellow => new(Color.yellow.r, Color.yellow.g, Color.yellow.b, alpha),
+				GUIColor.Orange => new(1f, 149f / 255f, 0f, alpha),
+				GUIColor.Brown => new(161f / 255f, 62f / 255f, 0f, alpha),
+				GUIColor.Purple => new(158f / 255f, 5f / 255f, 247f / 255f, alpha),
+				GUIColor.Pink => new(247f / 255f, 5f / 255f, 171f / 255f, alpha),
+				GUIColor.Lime => new(145f / 255f, 1f, 0f, alpha),
+				_ => new(Color.white.r, Color.white.g, Color.white.b, alpha)
 			};
 		}
 	}

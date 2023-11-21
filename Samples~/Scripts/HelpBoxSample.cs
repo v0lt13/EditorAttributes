@@ -18,8 +18,5 @@ namespace EditorAttributeSamples
 
 		[HelpBox("This is an error box", MessageMode.Error)]
 		[SerializeField] private int errorBox;
-
-		[HelpBox("This is a help box with the attached field hidden", false)]
-		[SerializeField] private Void field;
 	}
 }

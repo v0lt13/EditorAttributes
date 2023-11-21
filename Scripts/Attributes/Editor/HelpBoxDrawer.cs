@@ -4,29 +4,19 @@ using UnityEngine;
 namespace EditorAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(HelpBoxAttribute))]
-    public class HelpBoxDrawer : PropertyDrawerBase
+    public class HelpBoxDrawer : DecoratorDrawer
     {
-		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+		private float boxHeight;
+
+		public override void OnGUI(Rect position)
 		{
 			var messageBox = attribute as HelpBoxAttribute;
 
-			EditorGUILayout.HelpBox(messageBox.Message, (MessageType)messageBox.MessageType);
+			boxHeight = messageBox.MessageType == MessageMode.None ? EditorGUIUtility.singleLineHeight : 40f;
 
-			if (messageBox.DrawProperty) DrawProperty(position, property, label);
+			EditorGUI.HelpBox(new Rect(position.x, position.y, position.width, boxHeight), messageBox.Message, (MessageType)messageBox.MessageType);
 		}
 
-		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-		{
-			var messageBox = attribute as HelpBoxAttribute;
-
-			if (messageBox.DrawProperty)
-			{
-				return GetCorrectPropertyHeight(property, label);
-			}
-			else
-			{
-				return -EditorGUIUtility.standardVerticalSpacing; // Remove the space for the hidden field
-			}
-		}
+		public override float GetHeight() => boxHeight + 2f;
 	}
 }

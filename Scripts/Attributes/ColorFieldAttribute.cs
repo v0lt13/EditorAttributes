@@ -18,8 +18,7 @@ namespace EditorAttributes
 		Brown,
 		Magenta,
 		Purple,
-		Pink,
-		UseRGB
+		Pink
 	}
 
 	public class ColorFieldAttribute : PropertyAttribute, IColorAttribute
@@ -27,6 +26,8 @@ namespace EditorAttributes
 		public float R { get; private set; }
 		public float G { get; private set; }
 		public float B { get; private set; }
+
+		public bool UseRGB { get; private set; }
 		public string HexColor { get; private set; }
 
 		public GUIColor GUIColor { get; private set; }
@@ -45,7 +46,7 @@ namespace EditorAttributes
 		/// <param name="b">Blue amount</param>
 		public ColorFieldAttribute(float r, float g, float b)
 		{
-			GUIColor = GUIColor.UseRGB;
+			UseRGB = true;
 			R = r;
 			G = g;
 			B = b;

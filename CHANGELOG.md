@@ -1,3 +1,8 @@
+EditorAttributes v1.6.1 Changelog:
+- Made the Helpbox a decorator attribute
+- Removed the UseRGB option from the GUIColor enum
+- Added enum support to Button parameters
+
 EditorAttributes v1.6.0 Changelog:
 - Added ColorField attribute
 - Added GUIColor attribute

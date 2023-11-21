@@ -1,26 +1,26 @@
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
 
 namespace EditorAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(ShowFieldAttribute))]
     public class ShowFieldDrawer : PropertyDrawerBase
     {
-		private MemberInfo conditionalProperty;
+		private bool showField;
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var showAttribute = attribute as ShowFieldAttribute;
+			var conditionalProperty = GetValidMemberInfo(showAttribute.ConditionName, property);
 
-			conditionalProperty = GetValidMemberInfo(showAttribute.ConditionName, property);
+			showField = GetConditionValue<ShowFieldAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject);
 
-			if (GetConditionValue<ShowFieldAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject, true)) DrawProperty(position, property, label);
+			if (showField) DrawProperty(position, property, label);
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
-			if (conditionalProperty != null && GetConditionValue<ShowFieldAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject))
+			if (showField)
 			{
 				return GetCorrectPropertyHeight(property, label);
 			}

@@ -10,6 +10,7 @@ namespace EditorAttributes
         public float A { get; private set; }
 
         public string HexColor { get; private set; }
+		public bool UseRGB { get; private set; }
 
         public GUIColor GUIColor { get; private set; }
 
@@ -33,7 +34,7 @@ namespace EditorAttributes
 		/// <param name="alpha">Alpha amount</param>
 		public LineAttribute(float red, float green, float blue, float alpha = 1f)
         {
-            GUIColor = GUIColor.UseRGB;
+			UseRGB = true;
             R = red;
             G = green;
             B = blue; 
