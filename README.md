@@ -4,4 +4,4 @@ EditorAttributes is a unity package that adds some extra editor attributes to yo
 # Links
 Documentation: https://editorattributesdocs.readthedocs.io
 
-Discord: https://discord.gg/jKXvXyTzYn
+Discord Server: https://discord.gg/jKXvXyTzYn
