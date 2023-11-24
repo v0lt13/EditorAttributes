@@ -11,9 +11,9 @@ namespace EditorAttributes.Editor
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var showAttribute = attribute as ShowFieldAttribute;
-			var conditionalProperty = GetValidMemberInfo(showAttribute.ConditionName, property);
+			var conditionalProperty = ReflectionUtility.GetValidMemberInfo(showAttribute.ConditionName, property);
 
-			showField = GetConditionValue<ShowFieldAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject);
+			showField = GetConditionValue(conditionalProperty, showAttribute, property);
 
 			if (showField) DrawProperty(position, property, label);
 		}

@@ -15,8 +15,8 @@ namespace EditorAttributes.Editor
 		{
 			var dropdownAttribute = attribute as DropdownAttribute;
 
-			var memberInfo = GetValidMemberInfo(dropdownAttribute.ArrayName, property);
-			var stringArray = GetArrayValues(property.serializedObject, memberInfo);
+			var memberInfo = ReflectionUtility.GetValidMemberInfo(dropdownAttribute.ArrayName, property);
+			var stringArray = GetArrayValues(property, memberInfo);
 
 			int selectedIndex = 0;
 
@@ -30,15 +30,15 @@ namespace EditorAttributes.Editor
 			if (selectedIndex >= 0 && selectedIndex < stringArray.Length) SetProperyValueAsString(stringArray[selectedIndex], ref property);
 		}
 
-		public string[] GetArrayValues(SerializedObject serializedObject, MemberInfo memberInfo)
+		public string[] GetArrayValues(SerializedProperty serializedProperty, MemberInfo memberInfo)
 		{
 			var stringList = new List<string>();
 
-			var memberInfoType = GetMemberInfoType(memberInfo);
+			var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
 
 			if (memberInfoType.IsArray || memberInfoType.GetInterfaces().Contains(typeof(IList)))
 			{
-				var memberInfoValue = GetMemberInfoValue(memberInfo, serializedObject.targetObject);
+				var memberInfoValue = ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
 
 				if (memberInfoValue is Array array)
 				{

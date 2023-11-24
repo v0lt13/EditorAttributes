@@ -1,3 +1,12 @@
+EditorAttributes v1.7.0 Changelog:
+- You can now find values inside structs
+- Fixed min or max value of a MinMaxSlider going over or under eachother when values are set by fields
+- Added HideLabel Attribute
+- Added Wrap Attribute
+- Added Required Attribute
+- Added TypeFilter Attribute
+- Added SortingLayerDropdown Attribute
+
 EditorAttributes v1.6.1 Changelog:
 - Made the Helpbox a decorator attribute
 - Removed the UseRGB option from the GUIColor enum

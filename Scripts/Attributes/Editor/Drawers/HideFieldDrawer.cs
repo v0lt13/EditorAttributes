@@ -11,9 +11,9 @@ namespace EditorAttributes.Editor
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var hideAttribute = attribute as HideFieldAttribute;
-			var conditionalProperty = GetValidMemberInfo(hideAttribute.ConditionName, property);
+			var conditionalProperty = ReflectionUtility.GetValidMemberInfo(hideAttribute.ConditionName, property);
 
-			hideField = !GetConditionValue<HideFieldAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject);
+			hideField = !GetConditionValue(conditionalProperty, hideAttribute, property);
 
 			if (hideField) DrawProperty(position, property, label);
 		}

@@ -9,9 +9,9 @@ namespace EditorAttributes.Editor
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var messageBox = attribute as MessageBoxAttribute;
-			var conditionalProperty = GetValidMemberInfo(messageBox.ConditionName, property);
+			var conditionalProperty = ReflectionUtility.GetValidMemberInfo(messageBox.ConditionName, property);
 
-			if (GetConditionValue<MessageBoxAttribute>(conditionalProperty, attribute, property.serializedObject.targetObject)) EditorGUILayout.HelpBox(messageBox.Message, (MessageType)messageBox.MessageType);
+			if (GetConditionValue(conditionalProperty, messageBox, property)) EditorGUILayout.HelpBox(messageBox.Message, (MessageType)messageBox.MessageType);
 
 			if (messageBox.DrawProperty) DrawProperty(position, property, label);
 		}

@@ -17,6 +17,9 @@ namespace EditorAttributes.Editor
 				float minValue = isIntVector ? property.vector2IntValue.x : property.vector2Value.x;
 				float maxValue = isIntVector ? property.vector2IntValue.y : property.vector2Value.y;
 
+				float oldMinValue = minValue;
+				float oldMaxValue = maxValue;
+
 				EditorGUI.BeginChangeCheck();
 
 				if (minMaxAttribute.ShowValues)
@@ -40,6 +43,9 @@ namespace EditorAttributes.Editor
 
 				if (EditorGUI.EndChangeCheck())
 				{
+					minValue = Mathf.Clamp(minValue, minMaxAttribute.MinRange, oldMaxValue);
+					maxValue = Mathf.Clamp(maxValue, oldMinValue, minMaxAttribute.MaxRange);
+
 					if (isIntVector)
 					{
 						property.vector2IntValue = new Vector2Int((int)minValue, (int)maxValue);
@@ -52,7 +58,7 @@ namespace EditorAttributes.Editor
 			}
 			else
 			{
-				EditorGUILayout.HelpBox("MinMaxSlider Attribute can only be used on a Vector2 and Vector2Int", MessageType.Warning);
+				EditorGUILayout.HelpBox("MinMaxSlider Attribute can only be attached to a Vector2 and Vector2Int", MessageType.Warning);
 			}
 		}
 

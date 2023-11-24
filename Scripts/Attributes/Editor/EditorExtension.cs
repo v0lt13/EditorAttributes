@@ -18,7 +18,7 @@ namespace EditorAttributes.Editor
 
 		void OnEnable()
 		{
-			functions = target.GetType().GetMethods(PropertyDrawerBase.BINDING_FLAGS);
+			functions = target.GetType().GetMethods(ReflectionUtility.BINDING_FLAGS);
 
 			ButtonDrawer.LoadParamsData(functions, target, ref foldouts, ref parameterValues);
 
@@ -53,11 +53,11 @@ namespace EditorAttributes.Editor
 
 				if (buttonAttribute == null) continue;
 
-				var conditionalProperty = PropertyDrawerBase.GetValidMemberInfo(buttonAttribute.ConditionName, target);
+				var conditionalProperty = ReflectionUtility.GetValidMemberInfo(buttonAttribute.ConditionName, target);
 
 				if (conditionalProperty != null)
 				{
-					var conditionValue = PropertyDrawerBase.GetConditionValue<ButtonAttribute>(conditionalProperty, buttonAttribute, target);
+					var conditionValue = PropertyDrawerBase.GetConditionValue(conditionalProperty, buttonAttribute, target);
 
 					if (buttonAttribute.Negate) conditionValue = !conditionValue;
 

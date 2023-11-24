@@ -59,12 +59,12 @@ namespace EditorAttributes.Editor
 
 			foreach (var conditionName in conditionNames)
 			{
-				var memberInfo = GetValidMemberInfo(conditionName, property);
+				var memberInfo = ReflectionUtility.GetValidMemberInfo(conditionName, property);
 				var serializedProperty = property.serializedObject.FindProperty(conditionName);
 
-				if (memberInfo != null && GetMemberInfoType(memberInfo) == typeof(bool))
+				if (memberInfo != null && ReflectionUtility.GetMemberInfoType(memberInfo) == typeof(bool))
 				{
-					var propertyValue = (bool)GetMemberInfoValue(memberInfo, property.serializedObject.targetObject);
+					var propertyValue = (bool)ReflectionUtility.GetMemberInfoValue(memberInfo, property);
 
 					booleanList.Add(propertyValue);
 				}

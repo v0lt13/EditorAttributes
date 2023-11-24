@@ -10,8 +10,6 @@ namespace EditorAttributes.Editor
     {
 		protected UnityEventDrawer eventDrawer;
 
-		public const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => GetCorrectPropertyHeight(property, label);
 
 		protected virtual void DrawProperty(Rect position, SerializedProperty property, GUIContent label)
@@ -82,109 +80,40 @@ namespace EditorAttributes.Editor
 			};
 		}
 
-		public static bool GetConditionValue<T>(MemberInfo memberInfo, PropertyAttribute attribute, object targetObject) where T : PropertyAttribute, IConditionalAttribute
+		public static bool GetConditionValue(MemberInfo memberInfo, IConditionalAttribute conditionalAttribute, SerializedProperty serializedProperty)
 		{
-			var conditionAttribute = attribute as T;			
-			
-			var memberInfoType = GetMemberInfoType(memberInfo);
+			var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
 
 			if (memberInfoType == typeof(bool))
 			{
-				return (bool)GetMemberInfoValue(memberInfo, targetObject);
+				return (bool)ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
 			}
 			else if (memberInfoType.IsEnum)
 			{
-				return (int)GetMemberInfoValue(memberInfo, targetObject) == conditionAttribute.EnumValue;
-			}			
+				return (int)ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty) == conditionalAttribute.EnumValue;
+			}
 
-			EditorGUILayout.HelpBox($"The provided condition \"{conditionAttribute.ConditionName}\" is not a valid boolean or an enum", MessageType.Error);
+			EditorGUILayout.HelpBox($"The provided condition \"{conditionalAttribute.ConditionName}\" is not a valid boolean or an enum", MessageType.Error);
 
 			return false;
 		}
 
-		protected static FieldInfo FindField(string fieldName, SerializedProperty property) => property.serializedObject.targetObject.GetType().GetField(fieldName, BINDING_FLAGS);
+		public static bool GetConditionValue(MemberInfo memberInfo, IConditionalAttribute conditionalAttribute, object targetObject)
+		{			
+			var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
 
-		protected static PropertyInfo FindProperty(string propertyName, SerializedProperty property) => property.serializedObject.targetObject.GetType().GetProperty(propertyName, BINDING_FLAGS);
-
-		protected static MethodInfo FindFunction(string functionName, SerializedProperty property) => FindFunction(functionName, property.serializedObject.targetObject);
-
-		protected static MethodInfo FindFunction(string functionName, object targetObject)
-		{
-			try
+			if (memberInfoType == typeof(bool))
 			{
-				return targetObject.GetType().GetMethod(functionName, BINDING_FLAGS);
+				return (bool)ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject);
 			}
-			catch (AmbiguousMatchException)
+			else if (memberInfoType.IsEnum)
 			{
-				var functions = targetObject.GetType().GetMethods();
+				return (int)ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject) == conditionalAttribute.EnumValue;
+			}			
 
-				foreach (var function in functions)
-				{
-					if (function.Name == functionName) return function;
-				}
+			EditorGUILayout.HelpBox($"The provided condition \"{conditionalAttribute.ConditionName}\" is not a valid boolean or an enum", MessageType.Error);
 
-				return null;
-			}
-		}
-
-		public static MemberInfo GetValidMemberInfo(string parameterName, object targetObject)
-		{
-			MemberInfo memberInfo;
-
-			memberInfo = targetObject.GetType().GetField(parameterName, BINDING_FLAGS);
-
-			memberInfo ??= targetObject.GetType().GetProperty(parameterName, BINDING_FLAGS);
-			memberInfo ??= FindFunction(parameterName, targetObject);
-
-			return memberInfo;
-		}
-
-		protected static MemberInfo GetValidMemberInfo(string parameterName, SerializedProperty serializedProperty)
-		{
-			MemberInfo memberInfo;
-
-			memberInfo = FindField(parameterName, serializedProperty);
-
-			memberInfo ??= FindProperty(parameterName, serializedProperty);
-			memberInfo ??= FindFunction(parameterName, serializedProperty);
-
-			return memberInfo;
-		}
-
-		protected static Type GetMemberInfoType(MemberInfo memberInfo)
-		{
-			if (memberInfo is FieldInfo fieldInfo)
-			{
-				return fieldInfo.FieldType;
-			}
-			else if (memberInfo is PropertyInfo propertyInfo)
-			{
-				return propertyInfo.PropertyType;
-			}
-			else if (memberInfo is MethodInfo methodInfo)
-			{
-				return methodInfo.ReturnType;
-			}
-
-			return null;
-		}
-
-		protected static object GetMemberInfoValue(MemberInfo memberInfo, object targetObject)
-		{
-			if (memberInfo is FieldInfo fieldInfo)
-			{
-				return fieldInfo.GetValue(targetObject);
-			}
-			else if (memberInfo is PropertyInfo propertyInfo)
-			{
-				return propertyInfo.GetValue(targetObject);
-			}
-			else if (memberInfo is MethodInfo methodInfo)
-			{
-				return methodInfo.Invoke(targetObject, null);
-			}
-
-			return null;
+			return false;
 		}
 
 		public static object DrawField(Type fieldType, string fieldName, object fieldValue)
@@ -271,6 +200,8 @@ namespace EditorAttributes.Editor
 				return null;
 			}
 		}
+
+		public static Vector2Int Vector3IntToVector2Int(Vector3Int vector3Int) => new(vector3Int.x, vector3Int.y);
 
 		public static Color GUIColorToColor(IColorAttribute colorAttribute)
 		{

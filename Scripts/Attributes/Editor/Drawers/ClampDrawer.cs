@@ -108,7 +108,5 @@ namespace EditorAttributes.Editor
 
             vector = new Vector4(x, y, z, w);
         }
-
-        private Vector2Int Vector3IntToVector2Int(Vector3Int vector3Int) => new(vector3Int.x, vector3Int.y);
 	}
 }
