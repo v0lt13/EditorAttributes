@@ -19,7 +19,7 @@ namespace EditorAttributes.Editor
 			{
 				var serializedObjectType = GetSerializedObjectFieldType(property, out _);
 
-				fieldInfo = serializedObjectType.GetField(fieldName, BINDING_FLAGS);
+				if (serializedObjectType != null) fieldInfo = serializedObjectType.GetField(fieldName, BINDING_FLAGS);
 			}
 
 			return fieldInfo;
@@ -36,7 +36,7 @@ namespace EditorAttributes.Editor
 			{
 				var serializedObjectType = GetSerializedObjectFieldType(property, out _);
 
-				propertyInfo = serializedObjectType.GetProperty(propertyName, BINDING_FLAGS);
+				if (serializedObjectType != null) propertyInfo = serializedObjectType.GetProperty(propertyName, BINDING_FLAGS);
 			}
 
 			return propertyInfo;
