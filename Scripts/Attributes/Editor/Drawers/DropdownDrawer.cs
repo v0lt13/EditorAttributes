@@ -34,9 +34,7 @@ namespace EditorAttributes.Editor
 		{
 			var stringList = new List<string>();
 
-			var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
-
-			if (memberInfoType.IsArray || memberInfoType.GetInterfaces().Contains(typeof(IList)))
+			if (ReflectionUtility.IsPropertyCollection(serializedProperty))
 			{
 				var memberInfoValue = ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
 

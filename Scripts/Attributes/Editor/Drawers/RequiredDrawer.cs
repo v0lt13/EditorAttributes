@@ -12,7 +12,7 @@ namespace EditorAttributes.Editor
             {
 				EditorGUI.ObjectField(position, property, label);
 
-                if (property.objectReferenceValue == null) EditorGUILayout.HelpBox($"The field {property.name} must be assigned", MessageType.Error);
+                if (property.objectReferenceValue == null) EditorGUILayout.HelpBox($"The field \"{property.displayName}\" must be assigned", MessageType.Error);
             }
             else
             {

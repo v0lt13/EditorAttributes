@@ -1,0 +1,21 @@
+using UnityEngine;
+using EditorAttributes;
+
+namespace EditorAttributeSamples
+{
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/progressbar.html")]
+	public class ProgressBarSample : MonoBehaviour
+	{
+		[Header("ProgressBar Attribute:")]
+		[SerializeField, Range(0f, 100f)] private float value;
+
+		[SerializeField, ProgressBar(GUIColor.Red)] private int intBar;
+		[SerializeField, ProgressBar("#327ba8", 100f, 50f)] private float floatBar;
+
+		void OnValidate()
+		{
+			intBar = (int)value;
+			floatBar = value;
+		}
+	}
+}

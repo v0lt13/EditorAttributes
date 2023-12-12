@@ -10,13 +10,13 @@ namespace EditorAttributes
 		public bool UseRGB { get; private set; }
 		public string HexColor { get; private set; }
 
-		public GUIColor GUIColor { get; private set; }
+		public GUIColor Color { get; private set; }
 
 		/// <summary>
 		/// Attribute to color the GUI
 		/// </summary>
 		/// <param name="fieldColor">The color of the GUI</param>
-		public GUIColorAttribute(GUIColor fieldColor) => GUIColor = fieldColor;
+		public GUIColorAttribute(GUIColor fieldColor) => Color = fieldColor;
 
 		/// <summary>
 		/// Attribute to color the GUI

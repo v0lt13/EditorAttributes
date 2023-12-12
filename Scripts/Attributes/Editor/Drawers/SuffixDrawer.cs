@@ -10,7 +10,7 @@ namespace EditorAttributes.Editor
     	{
             var suffixAttribute = attribute as SuffixAttribute;
 
-			var textSize = GUI.skin.GetStyle("miniLabel").CalcSize(new GUIContent(suffixAttribute.Suffix));
+			var textSize = EditorStyles.miniLabel.CalcSize(new GUIContent(suffixAttribute.Suffix));
 
 			EditorGUIUtility.fieldWidth -= position.xMax - textSize.x;
 

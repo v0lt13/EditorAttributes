@@ -1,6 +1,8 @@
 using System;
 using UnityEditor;
+using System.Linq;
 using System.Reflection;
+using System.Collections;
 
 namespace EditorAttributes.Editor
 {
@@ -10,11 +12,9 @@ namespace EditorAttributes.Editor
 
 		public static FieldInfo FindField(string fieldName, SerializedProperty property)
 		{
-			FieldInfo fieldInfo;
+			var fieldInfo = FindField(fieldName, property.serializedObject.targetObject);
 
-			fieldInfo = property.serializedObject.targetObject.GetType().GetField(fieldName, BINDING_FLAGS);
-
-			// If we cannot find the field in the target object we try to see if its inside a serialized object
+			// If the field null we try to see if its inside a serialized object
 			if (fieldInfo == null)
 			{
 				var serializedObjectType = GetSerializedObjectFieldType(property, out _);
@@ -25,13 +25,13 @@ namespace EditorAttributes.Editor
 			return fieldInfo;
 		}
 
+		internal static FieldInfo FindField(string fieldName, object targetObject) => FindMember(fieldName, targetObject.GetType(), BINDING_FLAGS, MemberTypes.Field, 5) as FieldInfo;
+
 		public static PropertyInfo FindProperty(string propertyName, SerializedProperty property)
 		{
-			PropertyInfo propertyInfo;
+			var propertyInfo = FindProperty(propertyName, property.serializedObject.targetObject);
 
-			propertyInfo = property.serializedObject.targetObject.GetType().GetProperty(propertyName, BINDING_FLAGS);
-
-			// If we cannot find the field in the target object we try to see if its inside a serialized object
+			// If the property null we try to see if its inside a serialized object
 			if (propertyInfo == null)
 			{
 				var serializedObjectType = GetSerializedObjectFieldType(property, out _);
@@ -42,13 +42,15 @@ namespace EditorAttributes.Editor
 			return propertyInfo;
 		}
 
+		internal static PropertyInfo FindProperty(string propertyName, object targetObject) => FindMember(propertyName, targetObject.GetType(), BINDING_FLAGS, MemberTypes.Property, 5) as PropertyInfo;
+
 		public static MethodInfo FindFunction(string functionName, SerializedProperty property)
 		{
 			MethodInfo methodInfo;
 
 			methodInfo = FindFunction(functionName, property.serializedObject.targetObject);
 
-			// If we cannot find the field in the target object we try to see if its inside a serialized object
+			// If the method is null we try to see if its inside a serialized object
 			if (methodInfo == null)
 			{
 				var serializedObjectType = GetSerializedObjectFieldType(property, out _);
@@ -75,7 +77,7 @@ namespace EditorAttributes.Editor
 		{
 			try
 			{
-				return targetObject.GetType().GetMethod(functionName, BINDING_FLAGS);
+				return FindMember(functionName, targetObject.GetType(), BINDING_FLAGS, MemberTypes.Method, 5) as MethodInfo;
 			}
 			catch (AmbiguousMatchException)
 			{
@@ -90,16 +92,65 @@ namespace EditorAttributes.Editor
 			}
 		}
 
-		internal static MemberInfo GetValidMemberInfo(string parameterName, object targetObject)
+		public static MemberInfo FindMember(string memberName, Type targetType, BindingFlags bindingFlags, MemberTypes memberType, int maxIterations)
 		{
-			MemberInfo memberInfo;
+			switch (memberType)
+			{
+				case MemberTypes.Field:
 
-			memberInfo = targetObject.GetType().GetField(parameterName, BINDING_FLAGS);
+					FieldInfo fieldInfo = null;
 
-			memberInfo ??= targetObject.GetType().GetProperty(parameterName, BINDING_FLAGS);
-			memberInfo ??= FindFunction(parameterName, targetObject);
+					for (int i = maxIterations; i > 0 && !TryGetField(memberName, targetType, bindingFlags, out fieldInfo); i--) targetType = targetType.BaseType;
 
-			return memberInfo;
+					return fieldInfo;
+
+				case MemberTypes.Property:
+
+					PropertyInfo propertyInfo = null;
+
+					for (int i = maxIterations; i > 0 && !TryGetProperty(memberName, targetType, bindingFlags, out propertyInfo); i--) targetType = targetType.BaseType;
+
+					return propertyInfo;
+
+				case MemberTypes.Method:
+
+					MethodInfo methodInfo = null;
+
+					for (int i = maxIterations; i > 0 && !TryGetMethod(memberName, targetType, bindingFlags, out methodInfo); i--) targetType = targetType.BaseType;
+
+					return methodInfo;
+			}
+
+			return null;
+		}
+
+		public static bool TryGetField(string name, Type type, BindingFlags bindingFlags, out FieldInfo fieldInfo)
+		{
+			fieldInfo = type.GetField(name, bindingFlags);
+
+			return fieldInfo != null;
+		}
+
+		public static bool TryGetProperty(string name, Type type, BindingFlags bindingFlags, out PropertyInfo propertyInfo)
+		{
+			propertyInfo = type.GetProperty(name, bindingFlags);
+
+			return propertyInfo != null;
+		}
+
+		public static bool TryGetMethod(string name, Type type, BindingFlags bindingFlags, out MethodInfo methodInfo)
+		{
+			methodInfo = type.GetMethod(name, bindingFlags);
+
+			return methodInfo != null;
+		}
+
+		public static bool IsPropertyCollection(SerializedProperty property)
+		{
+			var arrayField = FindField(property.propertyPath.Split(".")[0], property);
+			var memberInfoType = GetMemberInfoType(arrayField);
+
+			return memberInfoType.IsArray || memberInfoType.GetInterfaces().Contains(typeof(IList));
 		}
 
 		public static MemberInfo GetValidMemberInfo(string parameterName, SerializedProperty serializedProperty)
@@ -114,15 +165,29 @@ namespace EditorAttributes.Editor
 			return memberInfo;
 		}
 
+		internal static MemberInfo GetValidMemberInfo(string parameterName, object targetObject) // Internal function used for the button drawer
+		{
+			MemberInfo memberInfo;
+
+			memberInfo = FindField(parameterName, targetObject);
+
+			memberInfo ??= FindProperty(parameterName, targetObject);
+			memberInfo ??= FindFunction(parameterName, targetObject);
+
+			return memberInfo;
+		}
+
 		public static Type GetSerializedObjectFieldType(SerializedProperty property, out object serializedObject)
 		{
 			var targetObject = property.serializedObject.targetObject;
 			var pathComponents = property.propertyPath.Split('.'); // Split the property path to get individual components
-			var serializedObjectField = targetObject.GetType().GetField(pathComponents[0], BINDING_FLAGS);
+			var targetObjectType = targetObject.GetType();
+
+			var serializedObjectField = FindMember(pathComponents[0], targetObjectType, BINDING_FLAGS, MemberTypes.Field, 5) as FieldInfo;
 
 			serializedObject = serializedObjectField.GetValue(targetObject);
 
-			return serializedObject.GetType();
+			return serializedObject?.GetType();
 		}
 
 		public static Type GetMemberInfoType(MemberInfo memberInfo)
@@ -183,7 +248,7 @@ namespace EditorAttributes.Editor
 			return null;
 		}
 
-		internal static object GetMemberInfoValue(MemberInfo memberInfo, object targetObject)
+		internal static object GetMemberInfoValue(MemberInfo memberInfo, object targetObject) // Internal function used for the button drawer
 		{
 			if (memberInfo is FieldInfo fieldInfo)
 			{

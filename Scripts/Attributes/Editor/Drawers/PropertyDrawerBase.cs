@@ -84,6 +84,12 @@ namespace EditorAttributes.Editor
 		{
 			var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
 
+			if (memberInfoType == null)
+			{
+				EditorGUILayout.HelpBox($"The provided condition \"{conditionalAttribute.ConditionName}\" could not be found", MessageType.Error);
+				return false;
+			}
+
 			if (memberInfoType == typeof(bool))
 			{
 				return (bool)ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
@@ -109,7 +115,7 @@ namespace EditorAttributes.Editor
 			else if (memberInfoType.IsEnum)
 			{
 				return (int)ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject) == conditionalAttribute.EnumValue;
-			}			
+			}	
 
 			EditorGUILayout.HelpBox($"The provided condition \"{conditionalAttribute.ConditionName}\" is not a valid boolean or an enum", MessageType.Error);
 
@@ -207,7 +213,7 @@ namespace EditorAttributes.Editor
 		{
 			if (colorAttribute.UseRGB) return new(colorAttribute.R / 255f, colorAttribute.G / 255f, colorAttribute.B / 255f);
 
-			return colorAttribute.GUIColor switch
+			return colorAttribute.Color switch
 			{
 				GUIColor.Black => Color.black,
 				GUIColor.Gray => Color.gray,
@@ -230,7 +236,7 @@ namespace EditorAttributes.Editor
 		{
 			if (colorAttribute.UseRGB) return new(colorAttribute.R / 255f, colorAttribute.G / 255f, colorAttribute.B / 255f, alpha);
 
-			return colorAttribute.GUIColor switch
+			return colorAttribute.Color switch
 			{
 				GUIColor.Black => new(Color.black.r, Color.black.g, Color.black.b, alpha),
 				GUIColor.Gray => new(Color.gray.r, Color.gray.g, Color.gray.b, alpha),

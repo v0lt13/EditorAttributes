@@ -4,7 +4,7 @@ using EditorAttributes;
 namespace EditorAttributeSamples
 {
 	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/tagdropdown.html")]
-	public class TagDopdownSample : MonoBehaviour
+	public class TagDropdownSample : MonoBehaviour
 	{
 		[Header("TagDropdown Attribute:")]
 		[SerializeField, TagDropdown] private string field;

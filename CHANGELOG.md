@@ -1,3 +1,11 @@
+EditorAttributes v1.8.0 Changelog:
+- Added DataTable Attribute
+- Added ProgressBar Attribute
+- Renamed the Assembly Definitions
+- The name of a field using the Required Attribute inside the help box now looks nicer
+- Fixed members couldn't be found by attributes if those attributes are used inside a base class
+- When a member could not be found it will now display a helpbox instead of spamming errors in the console
+
 EditorAttributes v1.7.0 Changelog:
 - You can now find values inside structs
 - Fixed min or max value of a MinMaxSlider going over or under eachother when values are set by fields

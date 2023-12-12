@@ -10,7 +10,7 @@ namespace EditorAttributes.Editor
     	{
             var prefixAttribute = attribute as PrefixAttribute;
 
-			var textSize = GUI.skin.GetStyle("miniLabel").CalcSize(new GUIContent(prefixAttribute.Prefix));
+			var textSize = EditorStyles.miniLabel.CalcSize(new GUIContent(prefixAttribute.Prefix));
 
 			EditorGUI.PrefixLabel(new Rect(EditorGUIUtility.labelWidth - textSize.x + prefixAttribute.Offset, position.y, position.width, position.height), new GUIContent(prefixAttribute.Prefix), EditorStyles.miniLabel);
 		    DrawProperty(position, property, label);

@@ -8,6 +8,6 @@ namespace EditorAttributes
 		public bool UseRGB { get; }
 		public string HexColor { get; }
 
-		public GUIColor GUIColor { get; }
+		public GUIColor Color { get; }
 	}
 }

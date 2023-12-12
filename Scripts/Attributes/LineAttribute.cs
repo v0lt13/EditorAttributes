@@ -12,16 +12,16 @@ namespace EditorAttributes
         public string HexColor { get; private set; }
 		public bool UseRGB { get; private set; }
 
-        public GUIColor GUIColor { get; private set; }
+        public GUIColor Color { get; private set; }
 
 		/// <summary>
 		/// Attribute to draw a line in the inspector
 		/// </summary>
 		/// <param name="color">The color of the line</param>
 		/// <param name="alpha">Alpha amount</param>
-		public LineAttribute(GUIColor color = GUIColor.White, float alpha = 1f)
+		public LineAttribute(GUIColor color = default, float alpha = 1f)
 		{
-            GUIColor = color;
+            Color = color;
 			A = alpha;
 		}
 

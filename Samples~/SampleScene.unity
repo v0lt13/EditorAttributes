@@ -657,6 +657,68 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stringField: StringField
+--- !u!1 &870087138
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 870087139}
+  - component: {fileID: 870087140}
+  m_Layer: 0
+  m_Name: DataTableAttribute
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &870087139
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 870087138}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1815105669}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &870087140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 870087138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f67af8a1c485704385da5055134d8d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  structField:
+    intField: 0
+    floatField: 0
+    stringField: 
+    boolField: 0
+  structArray:
+  - intField: 0
+    floatField: 0
+    stringField: 
+    boolField: 0
+  - intField: 0
+    floatField: 0
+    stringField: 
+    boolField: 0
+  - intField: 0
+    floatField: 0
+    stringField: 
+    boolField: 0
 --- !u!1 &1026801761
 GameObject:
   m_ObjectHideFlags: 0
@@ -1283,6 +1345,53 @@ MonoBehaviour:
   intField: 0
   stringField: 
   boolField: 0
+--- !u!1 &1613795626
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1613795627}
+  - component: {fileID: 1613795628}
+  m_Layer: 0
+  m_Name: ProgressBarAttribute
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1613795627
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1613795626}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1815105669}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1613795628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1613795626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8520ad9903a9b9d44a9c1b6cb3a79322, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  value: 100
+  intBar: 100
+  floatBar: 100
 --- !u!1 &1630434748
 GameObject:
   m_ObjectHideFlags: 0
@@ -1687,6 +1796,8 @@ Transform:
   - {fileID: 49585173}
   - {fileID: 1697542416}
   - {fileID: 532377689}
+  - {fileID: 870087139}
+  - {fileID: 1613795627}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1950436726
