@@ -100,7 +100,8 @@ namespace EditorAttributes.Editor
 
 					FieldInfo fieldInfo = null;
 
-					for (int i = maxIterations; i > 0 && !TryGetField(memberName, targetType, bindingFlags, out fieldInfo); i--) targetType = targetType.BaseType;
+					for (int i = maxIterations; i > 0 && targetType != null && !TryGetField(memberName, targetType, bindingFlags, out fieldInfo); i--) 
+						targetType = targetType.BaseType;
 
 					return fieldInfo;
 
@@ -108,7 +109,8 @@ namespace EditorAttributes.Editor
 
 					PropertyInfo propertyInfo = null;
 
-					for (int i = maxIterations; i > 0 && !TryGetProperty(memberName, targetType, bindingFlags, out propertyInfo); i--) targetType = targetType.BaseType;
+					for (int i = maxIterations; i > 0 && targetType != null && !TryGetProperty(memberName, targetType, bindingFlags, out propertyInfo); i--) 
+						targetType = targetType.BaseType;
 
 					return propertyInfo;
 
@@ -116,7 +118,8 @@ namespace EditorAttributes.Editor
 
 					MethodInfo methodInfo = null;
 
-					for (int i = maxIterations; i > 0 && !TryGetMethod(memberName, targetType, bindingFlags, out methodInfo); i--) targetType = targetType.BaseType;
+					for (int i = maxIterations; i > 0 && targetType != null && !TryGetMethod(memberName, targetType, bindingFlags, out methodInfo); i--) 
+						targetType = targetType.BaseType;
 
 					return methodInfo;
 			}
