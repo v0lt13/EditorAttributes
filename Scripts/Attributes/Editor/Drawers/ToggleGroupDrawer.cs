@@ -41,7 +41,15 @@ namespace EditorAttributes.Editor
 				{
 					var variableProperty = serializedObject.FindProperty(variableName);
 
-					if (variableProperty != null) EditorGUILayout.PropertyField(variableProperty, true);
+					if (variableProperty != null)
+					{
+						EditorGUILayout.PropertyField(variableProperty, true);
+					}
+					else
+					{
+						EditorGUILayout.HelpBox($"{variableName} is not a valid field", MessageType.Error);
+						break;
+					}
 				}
 
 				EditorGUILayout.EndVertical();

@@ -22,13 +22,14 @@ namespace EditorAttributes.Editor
 			{
 				var variableProperty = serializedObject.FindProperty(variableName);
 
-				if (variableProperty.type == "Void")
-				{
-					EditorGUI.PropertyField(position, variableProperty, true);
-				}
-				else if (variableProperty != null)
+				if (variableProperty != null)
 				{
 					EditorGUILayout.PropertyField(variableProperty, true);
+				}
+				else
+				{
+					EditorGUILayout.HelpBox($"{variableName} is not a valid field", MessageType.Error);
+					break;
 				}
 			}
 

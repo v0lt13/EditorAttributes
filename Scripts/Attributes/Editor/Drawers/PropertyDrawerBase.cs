@@ -104,9 +104,15 @@ namespace EditorAttributes.Editor
 			return false;
 		}
 
-		public static bool GetConditionValue(MemberInfo memberInfo, IConditionalAttribute conditionalAttribute, object targetObject)
+		internal static bool GetConditionValue(MemberInfo memberInfo, IConditionalAttribute conditionalAttribute, object targetObject) // Internal function used for the button drawer
 		{			
 			var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
+
+			if (memberInfoType == null)
+			{
+				EditorGUILayout.HelpBox($"The provided condition \"{conditionalAttribute.ConditionName}\" could not be found", MessageType.Error);
+				return false;
+			}
 
 			if (memberInfoType == typeof(bool))
 			{

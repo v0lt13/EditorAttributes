@@ -13,7 +13,7 @@ namespace EditorAttributes.Editor
 		{
 			var conditionalAttribute = attribute as ConditionalFieldAttribute;
 
-			canDrawProperty = CanDrawProperty(conditionalAttribute, conditionalAttribute.BooleanNames, property, true);
+			canDrawProperty = CanDrawProperty(conditionalAttribute, conditionalAttribute.BooleanNames, property);
 
 			switch (conditionalAttribute.ConditionResult)
 			{
@@ -53,7 +53,7 @@ namespace EditorAttributes.Editor
 			}
 		}
 
-		private bool CanDrawProperty(ConditionalFieldAttribute attribute, string[] conditionNames, SerializedProperty property, bool drawErrorBox = false)
+		private bool CanDrawProperty(ConditionalFieldAttribute attribute, string[] conditionNames, SerializedProperty property)
 		{
 			var booleanList = new List<bool>();
 
@@ -62,7 +62,13 @@ namespace EditorAttributes.Editor
 				var memberInfo = ReflectionUtility.GetValidMemberInfo(conditionName, property);
 				var serializedProperty = property.serializedObject.FindProperty(conditionName);
 
-				if (memberInfo != null && ReflectionUtility.GetMemberInfoType(memberInfo) == typeof(bool))
+				if (memberInfo == null)
+				{
+					EditorGUILayout.HelpBox($"The provided condition \"{conditionName}\" could not be found", MessageType.Error);
+					continue;
+				}
+
+				if (ReflectionUtility.GetMemberInfoType(memberInfo) == typeof(bool))
 				{
 					var propertyValue = (bool)ReflectionUtility.GetMemberInfoValue(memberInfo, property);
 
@@ -76,7 +82,7 @@ namespace EditorAttributes.Editor
 				}
 				else
 				{
-					if (drawErrorBox) EditorGUILayout.HelpBox($"The provided condition \"{conditionName}\" is not a valid boolean", MessageType.Error);
+					EditorGUILayout.HelpBox($"The provided condition \"{conditionName}\" is not a valid boolean", MessageType.Error);
 				}
 			}
 

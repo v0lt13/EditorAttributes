@@ -15,7 +15,7 @@ namespace EditorAttributes.Editor
 		{
 			var dropdownAttribute = attribute as DropdownAttribute;
 
-			var memberInfo = ReflectionUtility.GetValidMemberInfo(dropdownAttribute.ArrayName, property);
+			var memberInfo = ReflectionUtility.GetValidMemberInfo(dropdownAttribute.CollectionName, property);
 			var stringArray = GetArrayValues(property, memberInfo);
 
 			int selectedIndex = 0;
@@ -32,27 +32,25 @@ namespace EditorAttributes.Editor
 
 		public string[] GetArrayValues(SerializedProperty serializedProperty, MemberInfo memberInfo)
 		{
+			var dropdownAttribute = attribute as DropdownAttribute;
+
 			var stringList = new List<string>();
+			var memberInfoValue = ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
 
-			if (ReflectionUtility.IsPropertyCollection(serializedProperty))
+			if (memberInfoValue is Array array)
 			{
-				var memberInfoValue = ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
-
-				if (memberInfoValue is Array array)
-				{
-					foreach (var item in array) stringList.Add(item.ToString());
-				}
-				else if (memberInfoValue is IList list)
-				{
-					foreach (var item in list) stringList.Add(item.ToString());
-				}
-
-				return stringList.ToArray();
+				foreach (var item in array) stringList.Add(item.ToString());
+			}
+			else if (memberInfoValue is IList list)
+			{
+				foreach (var item in list) stringList.Add(item.ToString());
+			}
+			else
+			{
+				EditorGUILayout.HelpBox($"Could not find the collection {dropdownAttribute.CollectionName}", MessageType.Error);
 			}
 
-			EditorGUILayout.HelpBox("Could not find the array or the attached property is not valid", MessageType.Error);
-
-			return new string[0];
+			return stringList.ToArray();
 		}
 	}
 }
