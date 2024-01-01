@@ -22,7 +22,11 @@ namespace EditorAttributes.Editor
 			{
 				var variableProperty = serializedObject.FindProperty(variableName);
 
-				if (variableProperty != null)
+				if (variableProperty.type == "Void")
+				{
+					EditorGUI.PropertyField(position, variableProperty, true);
+				}
+				else if (variableProperty != null)
 				{
 					EditorGUILayout.PropertyField(variableProperty, true);
 				}
