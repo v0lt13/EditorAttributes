@@ -4,7 +4,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/datatable.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/GroupingAttributes/datatable.html")]
 	public class DataTableSample : MonoBehaviour
 	{
 		[Serializable]

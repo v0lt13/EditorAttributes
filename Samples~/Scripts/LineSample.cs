@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/line.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/DecorativeAttributes/line.html")]
 	public class LineSample : MonoBehaviour
 	{
 		[Header("Line Attribute:")]

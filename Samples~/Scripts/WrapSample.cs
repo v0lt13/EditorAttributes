@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/wrap.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/NumericalAttributes/wrap.html")]
 	public class WrapSample : MonoBehaviour
 	{
 		[Header("Wrap Attribute:")]

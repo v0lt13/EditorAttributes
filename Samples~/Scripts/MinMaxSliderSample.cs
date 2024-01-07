@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/minmaxslider.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/NumericalAttributes/minmaxslider.html")]
 	public class MinMaxSliderSample : MonoBehaviour
 	{
 		[Header("MinMaxSlider Attribute:")]

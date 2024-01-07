@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/button.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/ButtonAttributes/button.html")]
 	public class ButtonSample : MonoBehaviour
 	{
 		[Header("Button Attribute:")]

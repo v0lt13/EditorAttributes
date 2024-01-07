@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/scenedropdown.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/DropdownAttributes/scenedropdown.html")]
 	public class SceneDropdownSample : MonoBehaviour
 	{
 		[Header("SceneDropdown Attribute:")]

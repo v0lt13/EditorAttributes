@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/disableinplaymode.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/MiscellaneousAttributes/disableinplaymode.html")]
 	public class DisableInPlayModeSample : MonoBehaviour
 	{
 		[Header("DisableInPlayMode Attribute:")]

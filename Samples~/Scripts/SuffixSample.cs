@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/suffix.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/DecorativeAttributes/suffix.html")]
 	public class SuffixSample : MonoBehaviour
 	{
 		[Header("Suffix Attribute:")]

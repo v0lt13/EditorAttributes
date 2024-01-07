@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/clamp.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/NumericalAttributes/clamp.html")]
 	public class ClampSample : MonoBehaviour
     {
 		[Header("Clamp Attribute:")]

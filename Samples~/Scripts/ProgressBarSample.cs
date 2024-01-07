@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/progressbar.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/NumericalAttributes/progressbar.html")]
 	public class ProgressBarSample : MonoBehaviour
 	{
 		[Header("ProgressBar Attribute:")]

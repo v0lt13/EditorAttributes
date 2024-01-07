@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/hideinplaymode.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/MiscellaneousAttributes/hideinplaymode.html")]
 	public class HideInPlayModeSample : MonoBehaviour
 	{
 		[Header("HideInPlayMode Attribute:")]

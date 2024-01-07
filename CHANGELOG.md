@@ -1,3 +1,13 @@
+EditorAttributes v1.9.0 Changelog:
+- Added Title Attrbiute
+- Added InlineButton Attribute
+- Added SelectionButtons Attribute
+- Changed the ProgressBar attribute label
+- The attributes GUIColor and ColorField can now be attached to button functions
+- When dragging a GameObject into a field using the TypeFilter Attribute will get the filtered component from it instead of nothing
+- Added rich text support to HelpBox and MessageBox attributes
+- Added drawInBox and showLabels parameters to the DataTable Attribute
+
 EditorAttributes v1.8.1 Changelog:
 - Added some helpboxes when group fields cannot be found
 - Fixed the dropdown attribute not finding the collection

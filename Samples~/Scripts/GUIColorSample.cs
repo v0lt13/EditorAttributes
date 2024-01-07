@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/guicolor.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/DecorativeAttributes/guicolor.html")]
 	public class GUIColorSample : MonoBehaviour
 	{
 		[Header("GUIColor Attribute:")]

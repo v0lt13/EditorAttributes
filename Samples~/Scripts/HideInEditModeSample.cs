@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/hideineditmode.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/MiscellaneousAttributes/hideineditmode.html")]
 	public class HideInEditModeSample : MonoBehaviour
 	{
 		[Header("HideInEditMode Attribute:")]

@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/assetpreview.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/DecorativeAttributes/assetpreview.html")]
 	public class AssetPreviewSample : MonoBehaviour
     {
 		[Header("AssetPreview attribute:")]

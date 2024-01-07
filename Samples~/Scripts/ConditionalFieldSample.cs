@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/conditionalfield.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/ConditionalAttributes/conditionalfield.html")]
 	public class ConditionalFieldSample : MonoBehaviour
 	{
 		[Header("ConditionalField Attribute Hide/Show:")]

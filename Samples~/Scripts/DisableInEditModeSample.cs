@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/disableineditmode.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/MiscellaneousAttributes/disableineditmode.html")]
 	public class DisableInEditModeSample : MonoBehaviour
 	{
 		[Header("DisableInEditMode Attribute:")]

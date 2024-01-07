@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/verticalgroup.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/GroupingAttributes/verticalgroup.html")]
 	public class VerticalGroupSample : MonoBehaviour
 	{
 		[Header("VerticalGroup Attribute:")]

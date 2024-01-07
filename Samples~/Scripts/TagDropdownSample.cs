@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/tagdropdown.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/DropdownAttributes/tagdropdown.html")]
 	public class TagDropdownSample : MonoBehaviour
 	{
 		[Header("TagDropdown Attribute:")]

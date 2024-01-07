@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/horizontalgroup.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/GroupingAttributes/horizontalgroup.html")]
 	public class HorizontalGroupSample : MonoBehaviour
 	{
 		[Header("HorizontalGroup Attribute:")]

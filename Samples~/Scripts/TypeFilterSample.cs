@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/typefilter.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/MiscellaneousAttributes/typefilter.html")]
 	public class TypeFilterSample : MonoBehaviour, IFilter
 	{
 		[Header("TypeFilter Attribute:")]

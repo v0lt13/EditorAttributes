@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/propertywidth.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/DecorativeAttributes/propertywidth.html")]
 	public class PropertyWidthSample : MonoBehaviour
     {
 		[Header("PropertyWidth Attribute:")]

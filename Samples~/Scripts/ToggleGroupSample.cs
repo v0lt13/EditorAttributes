@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/togglegroup.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/GroupingAttributes/togglegroup.html")]
 	public class ToggleGroupSample : MonoBehaviour
     {
 		[Header("ToggleGroup attribute:")]

@@ -3,7 +3,7 @@ using EditorAttributes;
 
 namespace EditorAttributeSamples
 {
-	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/dropdown.html")]
+	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/DropdownAttributes/dropdown.html")]
 	public class DropdownSample : MonoBehaviour
 	{
 		[Header("Dropdown Attribute:")]
