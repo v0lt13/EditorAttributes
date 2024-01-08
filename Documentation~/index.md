@@ -1,0 +1,1 @@
+This is a filler file so unity can detect the offline documentation, because it only looks for .md files which is bullshit because their page says .rtf files are supported, anyways go to the other file to read the documentation.
