@@ -1,7 +1,7 @@
 using UnityEngine;
 using EditorAttributes;
 
-namespace EditorAttributeSamples
+namespace EditorAttributesSamples
 {
 	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/DecorativeAttributes/assetpreview.html")]
 	public class AssetPreviewSample : MonoBehaviour

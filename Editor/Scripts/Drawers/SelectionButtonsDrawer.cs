@@ -166,9 +166,9 @@ namespace EditorAttributes.Editor
 			{
 				bool isSelected = i == selectedIndex;
 
-				bool newToggle = GUILayout.Toggle(isSelected, valueLabels[i], selectionButtonStyle);
+				bool toggleValue = GUILayout.Toggle(isSelected, valueLabels[i], selectionButtonStyle);
 
-				if (newToggle && !isSelected)
+				if (toggleValue && !isSelected)
 				{
 					selectedIndex = i;
 				}

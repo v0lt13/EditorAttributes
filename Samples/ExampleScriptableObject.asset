@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bff6eaa62d1d60e4abac2a2222c3a8f9, type: 3}
+  m_Name: ExampleScriptableObject
+  m_EditorClassIdentifier: 
+  currency: Gold
+  currencyIcon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  itemName: 
+  itemType: 1
+  itemIcon: {fileID: 0}
+  itemDescription: 
+  isPurchasable: 1
+  priceRange: {x: 20, y: 60}
+  itemStack: 0
+  damage: 0
+  attackSpeed: 0
+  isRanged: 0
+  consumableEffect: 0

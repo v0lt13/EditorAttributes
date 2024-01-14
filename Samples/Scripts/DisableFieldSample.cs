@@ -1,7 +1,7 @@
 using UnityEngine;
 using EditorAttributes;
 
-namespace EditorAttributeSamples
+namespace EditorAttributesSamples
 {
 	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/ConditionalAttributes/disablefield.html")]
 	public class DisableFieldSample : MonoBehaviour

@@ -1,3 +1,12 @@
+EditorAttributes v2.0.0 Changelog:
+- Added FilePath Attribute
+- Added FolderPath Attribute
+- Added ButtonField Attribute
+- Added PropertyDropdown Attribute
+- Added TabGroup Attribute
+- Fixed ProgressBar label missalignment
+- Handled SceneDropdown throwing an error when there are no scenes in the build settings
+
 EditorAttributes v1.9.0 Changelog:
 - Added Title Attribute
 - Added InlineButton Attribute

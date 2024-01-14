@@ -42,12 +42,16 @@ namespace EditorAttributes.Editor
 
 				if (!foldouts.ContainsKey(function)) foldouts[function] = true;
 
-				EditorGUILayout.BeginVertical(new GUIStyle(EditorStyles.helpBox));
+				EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
 				if (GUILayout.Button(string.IsNullOrWhiteSpace(buttonAttribute.ButtonLabel) ? function.Name : buttonAttribute.ButtonLabel, GUILayout.Height(buttonAttribute.ButtonHeight)))
 					function.Invoke(target, parameterValues[function]);
 
-				var foldoutStyle = new GUIStyle(EditorStyles.foldout) { margin = new RectOffset(17, 0, 0, 0) };
+				var foldoutStyle = new GUIStyle(EditorStyles.foldout)
+				{
+					margin = new RectOffset(17, 0, 0, 0),
+					fontStyle = FontStyle.Bold
+				};
 
 				foldouts[function] = EditorGUILayout.BeginFoldoutHeaderGroup(foldouts[function], "Parameters", foldoutStyle);
 

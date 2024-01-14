@@ -54,7 +54,7 @@ namespace EditorAttributes.Editor
 			var labelHeight = EditorStyles.label.CalcHeight(new GUIContent(progressBarLabel), position.width);
 
 			GUI.skin.label.alignment = TextAnchor.UpperCenter;
-			EditorGUI.DropShadowLabel(new Rect(position.x, position.y - 2f - (position.height - labelHeight) / 2f, position.width, position.height), progressBarLabel);
+			EditorGUI.DropShadowLabel(new Rect(position.x, position.y - 6f + (position.height - labelHeight) / 2f, position.width, position.height), progressBarLabel);
 			GUI.skin.label.alignment = default;
 		}
 

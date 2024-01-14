@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using EditorAttributes;
 
-namespace EditorAttributeSamples
+namespace EditorAttributesSamples
 {
 	[HelpURL("https://editorattributesdocs.readthedocs.io/en/latest/Attributes/ButtonAttributes/selectionbuttons.html")]
 	public class SelectionButtonsSample : MonoBehaviour

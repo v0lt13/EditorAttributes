@@ -156,26 +156,26 @@ namespace EditorAttributes.Editor
 			return memberInfoType.IsArray || memberInfoType.GetInterfaces().Contains(typeof(IList));
 		}
 
-		public static MemberInfo GetValidMemberInfo(string parameterName, SerializedProperty serializedProperty)
+		public static MemberInfo GetValidMemberInfo(string memberName, SerializedProperty serializedProperty)
 		{
 			MemberInfo memberInfo;
 
-			memberInfo = FindField(parameterName, serializedProperty);
+			memberInfo = FindField(memberName, serializedProperty);
 
-			memberInfo ??= FindProperty(parameterName, serializedProperty);
-			memberInfo ??= FindFunction(parameterName, serializedProperty);
+			memberInfo ??= FindProperty(memberName, serializedProperty);
+			memberInfo ??= FindFunction(memberName, serializedProperty);
 
 			return memberInfo;
 		}
 
-		internal static MemberInfo GetValidMemberInfo(string parameterName, object targetObject) // Internal function used for the button drawer
+		internal static MemberInfo GetValidMemberInfo(string memberName, object targetObject) // Internal function used for the button drawer
 		{
 			MemberInfo memberInfo;
 
-			memberInfo = FindField(parameterName, targetObject);
+			memberInfo = FindField(memberName, targetObject);
 
-			memberInfo ??= FindProperty(parameterName, targetObject);
-			memberInfo ??= FindFunction(parameterName, targetObject);
+			memberInfo ??= FindProperty(memberName, targetObject);
+			memberInfo ??= FindFunction(memberName, targetObject);
 
 			return memberInfo;
 		}

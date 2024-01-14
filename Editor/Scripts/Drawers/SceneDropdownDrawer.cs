@@ -19,6 +19,8 @@ namespace EditorAttributes.Editor
 					int selectedIndex = 0;
                     var sceneArray = GetSceneNames();
 
+                    if (sceneArray == null || sceneArray.Length == 0) break;
+
 					for (int i = 0; i < sceneArray.Length; i++)
 					{
 						if (sceneArray[i] == GetPropertyValueAsString(property)) selectedIndex = i;
@@ -38,12 +40,19 @@ namespace EditorAttributes.Editor
         private string[] GetSceneNames()
         {
 			var sceneList = new List<string>();
+            var activeSceneList = EditorBuildSettingsScene.GetActiveSceneList(EditorBuildSettings.scenes);
 
-			foreach (var scene in EditorBuildSettingsScene.GetActiveSceneList(EditorBuildSettings.scenes))
+            if (activeSceneList == null || activeSceneList.Length == 0)
+            {
+                EditorGUILayout.HelpBox("There are no scenes in the build settings", MessageType.Error);
+                return sceneList.ToArray();
+            }
+
+			foreach (var scene in activeSceneList)
 			{
-				var sceneName = scene.Split('/')[^1].Split('.')[0]; // Remove the asset paths and file extension from the name
+			    var sceneName = scene.Split('/')[^1].Split('.')[0]; // Remove the asset paths and file extension from the name
 
-				sceneList.Add(sceneName);
+			    sceneList.Add(sceneName);
 			}
 
 			return sceneList.ToArray();
