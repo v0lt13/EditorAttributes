@@ -1,3 +1,18 @@
+EditorAttributes v2.1.0 Changelog:
+- Added IndentProperty Attribute
+- Added HideInChildren Attribute
+- Fixed members inside serialized objects nested in arrays or other serialized objects not being found
+- Fixed an issue where serialized properties could not be found by grouping attributes
+- Updated the ProgresBar Attribute with the built in look and removed color parameters
+- Grouping attributes now work inside serialized objects
+- The ToggleGroup Attribute will return the toggle value when placed on a bool
+- The Prefix Attribute offset parameter will now increase the space between it and the field instead of decreasing it
+- SelectionButtons, MinMaxSlider, FilePath and FolderPath attributes now display properly inside collections
+- The File/FolderPath Attribute relative path will now include the Assets folder
+- You can now dynamically change the string inputs on the Title, Image, Rename, Suffix and Prefix attributes
+- Collections can now be affected by certain attributes (only available in unity 2023.3 and above)
+- Updated samples
+
 EditorAttributes v2.0.0 Changelog:
 - Added FilePath Attribute
 - Added FolderPath Attribute

@@ -19,29 +19,32 @@ namespace EditorAttributes.Editor
                 return;
             }
 
-            folderPath = EditorPrefs.GetString($"{property.serializedObject.targetObject}_{property.name}_FolderPath");
+            folderPath = EditorPrefs.GetString($"{property.serializedObject.targetObject}_{property.propertyPath}_FolderPath");
 
-            EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
 
-			property.stringValue = EditorGUILayout.TextField(label, folderPath);
+            float buttonWidth = 30f;
+            var fieldRect = new Rect(position.x, position.y, position.width - buttonWidth, position.height);
+
+			property.stringValue = EditorGUI.TextField(fieldRect, label, folderPath);
 
 			var buttonIcon = EditorGUIUtility.IconContent("d_Folder Icon");
+            var buttonRect = new Rect(fieldRect.xMax + 2f, position.y, buttonWidth, position.height);
 
-			if (GUILayout.Button(buttonIcon, GUILayout.Width(30f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+			if (GUI.Button(buttonRect, buttonIcon))
 				folderPath = EditorUtility.OpenFolderPanel("Select folder", "Assets", "");
-
-			EditorGUILayout.EndHorizontal();
 
             if (EditorGUI.EndChangeCheck())
             {
                 if (folderPathAttribute.GetRelativePath && !string.IsNullOrEmpty(folderPath))
-					folderPath = Path.GetRelativePath("Assets", folderPath);
+                {
+					string projectRoot = Application.dataPath[..^"Assets".Length];
 
-                EditorPrefs.SetString($"{property.serializedObject.targetObject}_{property.name}_FolderPath", folderPath);
+					folderPath = Path.GetRelativePath(projectRoot, folderPath);
+                }
+
+                EditorPrefs.SetString($"{property.serializedObject.targetObject}_{property.propertyPath}_FolderPath", folderPath);
 			}
     	}
-
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => -EditorGUIUtility.standardVerticalSpacing;
 	}
 }

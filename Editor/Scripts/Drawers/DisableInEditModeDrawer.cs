@@ -8,11 +8,8 @@ namespace EditorAttributes.Editor
     {
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
-			if (!Application.isPlaying) GUI.enabled = false;
-
-			DrawProperty(position, property, label);
-
-			GUI.enabled = true;
+			using (new EditorGUI.DisabledGroupScope(!Application.isPlaying))
+				DrawProperty(position, property, label);
 		}
 	}
 }

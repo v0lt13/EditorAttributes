@@ -10,10 +10,14 @@ namespace EditorAttributes.Editor
     	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     	{
 			var renameAttribute = attribute as RenameAttribute;
-            var newName = renameAttribute.Name;
+            var newName = GetDynamicString(renameAttribute.Name, property, renameAttribute);
 
             switch (renameAttribute.CaseType)
             {
+                case CaseType.Unity:
+                    newName = ObjectNames.NicifyVariableName(newName);
+                    break;
+
                 case CaseType.Pascal:
                     var pascalName = char.ToUpper(newName[0]) + newName[1..];
 

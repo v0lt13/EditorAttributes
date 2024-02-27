@@ -13,7 +13,6 @@ namespace EditorAttributes.Editor
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var toggleGroup = attribute as ToggleGroupAttribute;
-			var serializedObject = property.serializedObject;
 
 			var isToggledSaveKey = $"{property.serializedObject.targetObject}_{property.propertyPath}_IsToggled";
 			var isExpandedSaveKey = $"{property.serializedObject.targetObject}_{property.propertyPath}_IsExpanded";
@@ -34,27 +33,34 @@ namespace EditorAttributes.Editor
 			{
 				var groupStyle = toggleGroup.DrawInBox ? EditorStyles.helpBox : EditorStyles.inspectorFullWidthMargins;
 
-				GUI.enabled = isToggled;
-				EditorGUILayout.BeginVertical(groupStyle);
-
-				foreach (string variableName in toggleGroup.FieldsToGroup)
+				using (new EditorGUI.DisabledGroupScope(!isToggled))
 				{
-					var variableProperty = serializedObject.FindProperty(variableName);
+					EditorGUILayout.BeginVertical(groupStyle);
 
-					if (variableProperty != null)
+					foreach (string variableName in toggleGroup.FieldsToGroup)
 					{
-						EditorGUILayout.PropertyField(variableProperty, true);
+						var variableProperty = FindNestedProperty(property, variableName);
+
+						// Check for serialized properties since they have a weird naming when serialized and they cannot be found by the normal name
+						variableProperty ??= FindNestedProperty(property, $"<{variableName}>k__BackingField");
+
+						if (variableProperty != null)
+						{
+							EditorGUILayout.PropertyField(variableProperty, true);
+						}
+						else
+						{
+							EditorGUILayout.HelpBox($"{variableName} is not a valid field", MessageType.Error);
+							break;
+						}
 					}
-					else
-					{
-						EditorGUILayout.HelpBox($"{variableName} is not a valid field", MessageType.Error);
-						break;
-					}
+
+					EditorGUILayout.EndVertical();
 				}
-
-				EditorGUILayout.EndVertical();
-				GUI.enabled = true;
 			}
+
+			if (property.propertyType == SerializedPropertyType.Boolean)
+				property.boolValue = isToggled;
 
 			EditorPrefs.SetBool(isToggledSaveKey, isToggled);
 			EditorPrefs.SetBool(isExpandedSaveKey, isExpanded);
@@ -80,8 +86,6 @@ namespace EditorAttributes.Editor
 			toggleRect.y += 2f;
 			toggleRect.width = 13f;
 			toggleRect.height = 13f;
-
-			backgroundRect.xMin = 0f;
 			backgroundRect.width += 4f;
 
 			EditorGUI.DrawRect(backgroundRect, new Color(0.1f, 0.1f, 0.1f, 0.2f));
@@ -89,9 +93,8 @@ namespace EditorAttributes.Editor
 			using (new EditorGUI.DisabledScope(!isToggled))
 				EditorGUI.LabelField(labelRect, title, EditorStyles.boldLabel);
 
-			isExpanded = GUI.Toggle(foldoutRect, isExpanded, GUIContent.none, EditorStyles.foldout);
-
-			isToggled = GUI.Toggle(toggleRect, isToggled, GUIContent.none, new GUIStyle("ShurikenToggle"));
+			isExpanded = EditorGUI.Toggle(foldoutRect, isExpanded, EditorStyles.foldout);
+			isToggled = EditorGUI.Toggle(toggleRect, isToggled, new GUIStyle("ShurikenToggle"));
 
 			var @event = Event.current;
 

@@ -18,13 +18,13 @@ namespace EditorAttributesSamples
 		[MessageBox("This is a message box", nameof(showMessageBoxes), MessageMode.None)]
 		[SerializeField] private int messageBox;
 
-		[MessageBox("This is a log box", nameof(showMessageBoxes), MessageMode.Log)]
+		[MessageBox("This is a <i>log</i> box", nameof(showMessageBoxes), MessageMode.Log)]
 		[SerializeField] private int logBox;
 
-		[MessageBox("This is a warning box", nameof(showMessageBoxes), MessageMode.Warning)]
+		[MessageBox("This is a <b>warning</b> box", nameof(showMessageBoxes), MessageMode.Warning)]
 		[SerializeField] private int warningBox;
 
-		[MessageBox("This is an error box", nameof(showMessageBoxes), MessageMode.Error)]
+		[MessageBox("This is an <color=#FF0000>error</color> box", nameof(showMessageBoxes), MessageMode.Error)]
 		[SerializeField] private int errorBox;
 
 		[Header("MessageBox Attribute Enum condition:")]
@@ -33,13 +33,13 @@ namespace EditorAttributesSamples
 		[MessageBox("This is a message box with the attached field hidden", nameof(states), States.State02, false, MessageMode.None)]
 		[SerializeField] private Void hiddenMessageBox;
 
-		[MessageBox("This is a log box with the attached hidden", nameof(states), States.State02, false, MessageMode.Log)]
+		[MessageBox("This is a <i>log</i> box with the attached field hidden", nameof(states), States.State02, false, MessageMode.Log)]
 		[SerializeField] private Void hiddenLogBox;
 
-		[MessageBox("This is a warning box with the attached hidden", nameof(states), States.State02, false, MessageMode.Warning)]
+		[MessageBox("This is a <b>warning</b> box with the attached field hidden", nameof(states), States.State02, false, MessageMode.Warning)]
 		[SerializeField] private Void hiddenWarningBox;
 
-		[MessageBox("This is an error box with the attached hidden", nameof(states), States.State02, false, MessageMode.Error)]
+		[MessageBox("This is an <color=#FF0000>error</color> box with the attached field hidden", nameof(states), States.State02, false, MessageMode.Error)]
 		[SerializeField] private Void hiddenErrorBox;
 	}
 }

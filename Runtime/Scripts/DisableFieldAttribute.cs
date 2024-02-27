@@ -11,7 +11,11 @@ namespace EditorAttributes
 		/// Attribute to disable a field based on a condition
 		/// </summary>
 		/// <param name="conditionName">The name of the condition to evaluate</param>
-		public DisableFieldAttribute(string conditionName) => ConditionName = conditionName;
+		public DisableFieldAttribute(string conditionName)
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
+			=> ConditionName = conditionName;
 
 		/// <summary>
 		/// Attribute to disable a field based on a condition
@@ -19,6 +23,9 @@ namespace EditorAttributes
 		/// <param name="conditionName">The name of the condition to evaluate</param>
 		/// <param name="enumValue">The value of the enum condition</param>
 		public DisableFieldAttribute(string conditionName, object enumValue)
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
 		{
 			ConditionName = conditionName;
 			EnumValue = (int)enumValue;

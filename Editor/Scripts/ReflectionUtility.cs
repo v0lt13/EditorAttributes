@@ -17,7 +17,7 @@ namespace EditorAttributes.Editor
 			// If the field null we try to see if its inside a serialized object
 			if (fieldInfo == null)
 			{
-				var serializedObjectType = GetSerializedObjectFieldType(property, out _);
+				var serializedObjectType = GetNestedFieldType(property, out _);
 
 				if (serializedObjectType != null) fieldInfo = serializedObjectType.GetField(fieldName, BINDING_FLAGS);
 			}
@@ -34,7 +34,7 @@ namespace EditorAttributes.Editor
 			// If the property null we try to see if its inside a serialized object
 			if (propertyInfo == null)
 			{
-				var serializedObjectType = GetSerializedObjectFieldType(property, out _);
+				var serializedObjectType = GetNestedFieldType(property, out _);
 
 				if (serializedObjectType != null) propertyInfo = serializedObjectType.GetProperty(propertyName, BINDING_FLAGS);
 			}
@@ -53,7 +53,10 @@ namespace EditorAttributes.Editor
 			// If the method is null we try to see if its inside a serialized object
 			if (methodInfo == null)
 			{
-				var serializedObjectType = GetSerializedObjectFieldType(property, out _);
+				var serializedObjectType = GetNestedFieldType(property, out _);
+
+				if (serializedObjectType == null)
+					return methodInfo;
 
 				try
 				{
@@ -180,17 +183,70 @@ namespace EditorAttributes.Editor
 			return memberInfo;
 		}
 
-		public static Type GetSerializedObjectFieldType(SerializedProperty property, out object serializedObject)
+		// Code "borrowed" from https://forum.unity.com/threads/casting-serializedproperty-to-the-desired-type.1169618/
+		public static Type GetNestedFieldType(SerializedProperty property, out object targetObject)
 		{
-			var targetObject = property.serializedObject.targetObject;
-			var pathComponents = property.propertyPath.Split('.'); // Split the property path to get individual components
-			var targetObjectType = targetObject.GetType();
+			targetObject = property.serializedObject.targetObject;
+			var cutPathIndex = property.propertyPath.LastIndexOf('.');
 
-			var serializedObjectField = FindMember(pathComponents[0], targetObjectType, BINDING_FLAGS, MemberTypes.Field) as FieldInfo;
+			if (cutPathIndex == -1) // If the cutPathIndex is -1 it means that the property is not nested and we return null
+				return null;
 
-			serializedObject = serializedObjectField.GetValue(targetObject);
+			var path = property.propertyPath[..cutPathIndex].Replace(".Array.data[", "[");
+			var elements = path.Split('.');
 
-			return serializedObject?.GetType();
+			foreach (var element in elements)
+			{
+				if (element.Contains("["))
+				{
+					var elementName = element[..element.IndexOf("[")];
+					var index = Convert.ToInt32(element[element.IndexOf("[")..].Replace("[", "").Replace("]", ""));
+					
+					targetObject = GetValue(targetObject, elementName, index);
+				}
+				else
+				{
+					targetObject = GetValue(targetObject, element);
+				}
+			}
+
+			return targetObject?.GetType();
+		}
+
+		private static object GetValue(object source, string name, int index)
+		{
+			if (GetValue(source, name) is not IEnumerable enumerable) 
+				return null;
+
+			var enumerator = enumerable.GetEnumerator();
+
+			for (int i = 0; i <= index; i++)
+			{
+				if (!enumerator.MoveNext()) 
+					return null;
+			}
+
+			return enumerator.Current;
+		}
+
+		private static object GetValue(object source, string name)
+		{
+			if (source == null)
+				return null;
+
+			var type = source.GetType();
+
+			while (type != null)
+			{
+				var field = FindMember(name, type, BINDING_FLAGS, MemberTypes.Field) as FieldInfo;
+
+				if (field != null)
+					return field.GetValue(source);
+
+				type = type.BaseType;
+			}
+
+			return null;
 		}
 
 		public static Type GetMemberInfoType(MemberInfo memberInfo)
@@ -232,7 +288,7 @@ namespace EditorAttributes.Editor
 			}
 			catch (ArgumentException) // If this expection is thrown it means that the member we try to get the value from is inside a different target
 			{
-				GetSerializedObjectFieldType(property, out object serializedObjectTarget);
+				GetNestedFieldType(property, out object serializedObjectTarget);
 
 				if (memberInfo is FieldInfo fieldInfo)
 				{

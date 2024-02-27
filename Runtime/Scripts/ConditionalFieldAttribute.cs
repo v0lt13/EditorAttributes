@@ -30,6 +30,9 @@ namespace EditorAttributes
 		/// <param name="conditionType">How to evaluate the the specified booleans</param>
 		/// <param name="booleanNames">The names of the booleans to evaluate</param>
 		public ConditionalFieldAttribute(ConditionType conditionType, params string[] booleanNames)
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
 		{
 			BooleanNames = booleanNames;
 			ConditionType = conditionType;
@@ -43,8 +46,11 @@ namespace EditorAttributes
 		/// <param name="conditionResult">What happens to the property when the condition evaluates to true</param>
 		/// <param name="booleanNames">The names of the booleans to evaluate</param>
 		public ConditionalFieldAttribute(ConditionType conditionType, ConditionResult conditionResult, params string[] booleanNames)
-        {
-            BooleanNames = booleanNames;
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
+		{
+			BooleanNames = booleanNames;
             ConditionType = conditionType;
             ConditionResult = conditionResult;
         }
@@ -56,6 +62,9 @@ namespace EditorAttributes
 		/// <param name="negatedValues">Specify which booleans to negate</param>
 		/// <param name="booleanNames">The names of the booleans to evaluate</param>
 		public ConditionalFieldAttribute(ConditionType conditionType, bool[] negatedValues, params string[] booleanNames)
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
 		{
 			BooleanNames = booleanNames;
 			NegatedValues = negatedValues;
@@ -71,6 +80,9 @@ namespace EditorAttributes
 		/// <param name="conditionResult">What happens to the property when the condition evaluates to true</param>
 		/// <param name="booleanNames">The names of the booleans to evaluate</param>
 		public ConditionalFieldAttribute(ConditionType conditionType, ConditionResult conditionResult, bool[] negatedValues, params string[] booleanNames)
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
 		{
 			BooleanNames = booleanNames;
             NegatedValues = negatedValues;

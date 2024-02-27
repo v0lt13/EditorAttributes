@@ -8,11 +8,8 @@ namespace EditorAttributes.Editor
     {
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
-			GUI.enabled = false;
-
-			DrawProperty(position, property, label);
-
-			GUI.enabled = true;
+			using (new EditorGUI.DisabledGroupScope(true))
+				DrawProperty(position, property, label);
 		}
 	}
 }

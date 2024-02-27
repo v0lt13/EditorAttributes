@@ -68,11 +68,9 @@ namespace EditorAttributes.Editor
 							break;
 
 						case ConditionResult.EnableDisable:
-							GUI.enabled = conditionValue;
+							using (var group = new EditorGUI.DisabledGroupScope(!conditionValue))
+								ButtonDrawer.DrawButton(function, buttonAttribute, foldouts, parameterValues, target);
 
-							ButtonDrawer.DrawButton(function, buttonAttribute, foldouts, parameterValues, target);
-
-							GUI.enabled = true;
 							break;
 					}
 				}

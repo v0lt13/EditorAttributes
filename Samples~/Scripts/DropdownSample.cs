@@ -9,10 +9,10 @@ namespace EditorAttributesSamples
 		[Header("Dropdown Attribute:")]
 		[Dropdown(nameof(intValues))]
 		[SerializeField] private int intDropdown;
-		[Space]
+
 		[Dropdown(nameof(stringValues))]
 		[SerializeField] private string stringDropdown;
-		[Space]
+
 		[Dropdown(nameof(floatValues))]
 		[SerializeField] private float floatDropdown;
 

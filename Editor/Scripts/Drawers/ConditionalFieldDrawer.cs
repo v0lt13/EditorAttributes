@@ -22,11 +22,9 @@ namespace EditorAttributes.Editor
 					break;
 
 				case ConditionResult.EnableDisable:
-					GUI.enabled = canDrawProperty;
+					using (var group = new EditorGUI.DisabledGroupScope(!canDrawProperty))
+						DrawProperty(position, property, label);
 
-					DrawProperty(position, property, label);
-
-					GUI.enabled = true;
 					break;
 			}
 		}

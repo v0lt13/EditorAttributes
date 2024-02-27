@@ -80,6 +80,23 @@ namespace EditorAttributes.Editor
 			};
 		}
 
+		protected static SerializedProperty FindNestedProperty(SerializedProperty property, string propertyName)
+		{
+			var propertyPath = property.propertyPath;
+			var cutPathIndex = propertyPath.LastIndexOf('.');
+
+			if (cutPathIndex == -1)
+			{
+				return property.serializedObject.FindProperty(propertyName);
+			}
+			else
+			{
+				propertyPath = propertyPath[..cutPathIndex];
+
+				return property.serializedObject.FindProperty(propertyPath).FindPropertyRelative(propertyName);
+			}
+		}
+
 		public static bool GetConditionValue(MemberInfo memberInfo, IConditionalAttribute conditionalAttribute, SerializedProperty serializedProperty)
 		{
 			var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
@@ -210,6 +227,37 @@ namespace EditorAttributes.Editor
 			{
 				EditorGUILayout.HelpBox($"The type {fieldType} is not supported", MessageType.Warning);
 				return null;
+			}
+		}
+
+		public static string GetDynamicString(string inputText, SerializedProperty property, IDynamicStringAttribute dynamicStringAttribute)
+		{
+			switch (dynamicStringAttribute.StringInputMode)
+			{
+				default:
+				case StringInputMode.Constant:
+					return inputText;
+
+				case StringInputMode.Dynamic:
+					var memberInfo = ReflectionUtility.GetValidMemberInfo(inputText, property);
+
+					if (memberInfo == null)
+					{
+						EditorGUILayout.HelpBox($"The member {inputText} could not be found", MessageType.Error);
+						return inputText;
+					}
+
+					var memberValue = ReflectionUtility.GetMemberInfoValue(memberInfo, property);
+					var memberType = ReflectionUtility.GetMemberInfoType(memberInfo);
+
+					if (memberValue == null)
+						return inputText;
+
+					if (memberType == typeof(string))
+						return memberValue.ToString();
+
+					EditorGUILayout.HelpBox($"The member {inputText} needs to be a string", MessageType.Error);
+					return inputText;
 			}
 		}
 

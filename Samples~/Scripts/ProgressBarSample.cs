@@ -9,8 +9,8 @@ namespace EditorAttributesSamples
 		[Header("ProgressBar Attribute:")]
 		[SerializeField, Range(0f, 100f)] private float value;
 
-		[SerializeField, ProgressBar(GUIColor.Red)] private int intBar;
-		[SerializeField, ProgressBar("#327ba8", 100f, 50f)] private float floatBar;
+		[SerializeField, ProgressBar] private int intBar;
+		[SerializeField, ProgressBar(100f, 50f)] private float floatBar;
 
 		void OnValidate()
 		{

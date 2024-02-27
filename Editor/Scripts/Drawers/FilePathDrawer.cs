@@ -19,29 +19,32 @@ namespace EditorAttributes.Editor
 				return;
 			}
 
-			filePath = EditorPrefs.GetString($"{property.serializedObject.targetObject}_{property.name}_FilePath");
+			filePath = EditorPrefs.GetString($"{property.serializedObject.targetObject}_{property.propertyPath}_FilePath");
 
-			EditorGUILayout.BeginHorizontal();
 			EditorGUI.BeginChangeCheck();
 
-			property.stringValue = EditorGUILayout.TextField(label, filePath);
+			float buttonWidth = 30f;
+			var fieldRect = new Rect(position.x, position.y, position.width - buttonWidth, position.height);
+
+			property.stringValue = EditorGUI.TextField(fieldRect, label, filePath);
 
 			var buttonIcon = EditorGUIUtility.IconContent("d_Folder Icon");
+			var buttonRect = new Rect(fieldRect.xMax + 2f, position.y, buttonWidth, position.height);
 
-			if (GUILayout.Button(buttonIcon, GUILayout.Width(30f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+			if (GUI.Button(buttonRect, buttonIcon))
 				filePath = EditorUtility.OpenFilePanel("Select file", "Assets", filePathAttribute.Filters);
-			
-			EditorGUILayout.EndHorizontal();
 
 			if (EditorGUI.EndChangeCheck())
 			{
 				if (filePathAttribute.GetRelativePath && !string.IsNullOrEmpty(filePath) && Path.IsPathFullyQualified(filePath))
-					filePath = Path.GetRelativePath("Assets", filePath);
+				{
+					string projectRoot = Application.dataPath[..^"Assets".Length];
 
-				EditorPrefs.SetString($"{property.serializedObject.targetObject}_{property.name}_FilePath", filePath);
+					filePath = Path.GetRelativePath(projectRoot, filePath);
+				}
+
+				EditorPrefs.SetString($"{property.serializedObject.targetObject}_{property.propertyPath}_FilePath", filePath);
 			}
 		}
-
-		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => -EditorGUIUtility.standardVerticalSpacing;
 	}
 }

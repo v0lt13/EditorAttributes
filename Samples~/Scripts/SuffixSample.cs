@@ -9,5 +9,6 @@ namespace EditorAttributesSamples
 		[Header("Suffix Attribute:")]
 		[SerializeField, Suffix("meters")] private float intField;
 		[SerializeField, Suffix("km", 30f)] private float floatField;
+		[SerializeField, Suffix(nameof(dynamicSuffix), stringInputMode: StringInputMode.Dynamic)] private string dynamicSuffix;
 	}
 }

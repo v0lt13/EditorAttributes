@@ -9,10 +9,11 @@ namespace EditorAttributes.Editor
     	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     	{
             var prefixAttribute = attribute as PrefixAttribute;
+            var prefixText = GetDynamicString(prefixAttribute.Prefix, property, prefixAttribute);
 
-			var textSize = EditorStyles.miniLabel.CalcSize(new GUIContent(prefixAttribute.Prefix));
+			var textSize = EditorStyles.miniLabel.CalcSize(new GUIContent(prefixText));
 
-			EditorGUI.PrefixLabel(new Rect(EditorGUIUtility.labelWidth - textSize.x + prefixAttribute.Offset, position.y, position.width, position.height), new GUIContent(prefixAttribute.Prefix), EditorStyles.miniLabel);
+			EditorGUI.PrefixLabel(new Rect(EditorGUIUtility.labelWidth - textSize.x - prefixAttribute.Offset, position.y, position.width, position.height), new GUIContent(prefixText), EditorStyles.miniLabel);
 		    DrawProperty(position, property, label);
     	}
     }

@@ -17,7 +17,7 @@ namespace EditorAttributesSamples
 		}
 
 		[Header("DataTable Attribute:")]
-		[SerializeField, DataTable] private Data structField;
-		[SerializeField, DataTable] private Data[] structArray;
+		[SerializeField, DataTable(true)] private Data structField;
+		[SerializeField, DataTable(showLabels: false)] private Data[] structArray;
 	}
 }

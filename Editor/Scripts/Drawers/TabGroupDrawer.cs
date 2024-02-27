@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 namespace EditorAttributes.Editor
 {
@@ -13,23 +14,13 @@ namespace EditorAttributes.Editor
 			var tabGroupAttribute = attribute as TabGroupAttribute;
 
 			EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-			EditorGUILayout.BeginHorizontal();
 
-			for (int i = 0; i < tabGroupAttribute.FieldsToGroup.Length; i++)
-			{
-				var currentProperty = property.serializedObject.FindProperty(tabGroupAttribute.FieldsToGroup[i]);
-				bool isSelected = i == selectedTab;
+			selectedTab = GUILayout.Toolbar(selectedTab, GetPropertyNames(property, tabGroupAttribute), EditorStyles.toolbarButton);
 
-				EditorGUI.BeginChangeCheck();
-				bool toggleValue = GUILayout.Toggle(isSelected, currentProperty.displayName, EditorStyles.toolbarButton);
+			var selectedProperty = FindNestedProperty(property, tabGroupAttribute.FieldsToGroup[selectedTab]);
 
-				if (EditorGUI.EndChangeCheck() && toggleValue)
-					selectedTab = i;
-			}
-
-			EditorGUILayout.EndHorizontal();
-
-			var selectedProperty = property.serializedObject.FindProperty(tabGroupAttribute.FieldsToGroup[selectedTab]);
+			// Check for serialized properties since they have a weird naming when serialized and they cannot be found by the normal name
+			selectedProperty ??= FindNestedProperty(property, $"<{tabGroupAttribute.FieldsToGroup[selectedTab]}>k__BackingField");
 
 			EditorGUILayout.PropertyField(selectedProperty);
 
@@ -37,5 +28,20 @@ namespace EditorAttributes.Editor
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => -EditorGUIUtility.standardVerticalSpacing;
+
+		private string[] GetPropertyNames(SerializedProperty property, TabGroupAttribute tabGroupAttribute)
+		{
+			var stringList = new List<string>();
+
+			foreach (var field in tabGroupAttribute.FieldsToGroup)
+			{
+				var fieldProperty = FindNestedProperty(property, field);
+				fieldProperty ??= FindNestedProperty(property, $"<{field}>k__BackingField");
+
+				stringList.Add(fieldProperty.displayName);
+			}
+
+			return stringList.ToArray();
+		}
 	}
 }

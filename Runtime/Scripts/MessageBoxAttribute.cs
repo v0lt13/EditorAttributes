@@ -27,6 +27,9 @@ namespace EditorAttributes
 		/// <param name="conditionName">The condition to evaluate</param>
 		/// <param name="messageType">The type of the message</param>
 		public MessageBoxAttribute(string message, string conditionName, MessageMode messageType = MessageMode.Log)
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
 		{
 			Message = message;
 			ConditionName = conditionName;
@@ -42,6 +45,9 @@ namespace EditorAttributes
 		/// <param name="enumValue">The value of the enum</param>
 		/// <param name="messageType">The type of the message</param>
 		public MessageBoxAttribute(string message, string conditionName, object enumValue, MessageMode messageType = MessageMode.Log)
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
 		{
 			Message = message;
 			EnumValue = (int)enumValue;
@@ -58,6 +64,9 @@ namespace EditorAttributes
 		/// <param name="drawProperty">Draw the property this attribute is attached to</param>
 		/// <param name="messageType">The type of the message</param>
 		public MessageBoxAttribute(string message, string conditionName, bool drawProperty, MessageMode messageType = MessageMode.Log)
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
 		{
 			Message = message;
 			ConditionName = conditionName;
@@ -74,6 +83,9 @@ namespace EditorAttributes
 		/// <param name="drawProperty">Draw the property this attribute is attached to</param>
 		/// <param name="messageType">The type of the message</param>
 		public MessageBoxAttribute(string message, string conditionName, object enumValue, bool drawProperty, MessageMode messageType = MessageMode.Log)
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
 		{
 			Message = message;
 			EnumValue = (int)enumValue;

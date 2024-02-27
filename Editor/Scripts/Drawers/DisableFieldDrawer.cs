@@ -11,11 +11,8 @@ namespace EditorAttributes.Editor
 			var disableAttribute = attribute as DisableFieldAttribute;
 			var conditionalProperty = ReflectionUtility.GetValidMemberInfo(disableAttribute.ConditionName, property);
 
-			GUI.enabled = !GetConditionValue(conditionalProperty, disableAttribute, property);
-
-			DrawProperty(position, property, label);
-
-			GUI.enabled = true;
+			using (new EditorGUI.DisabledGroupScope(GetConditionValue(conditionalProperty, disableAttribute, property)))
+				DrawProperty(position, property, label);
 		}
 	}
 }

@@ -12,8 +12,6 @@ namespace EditorAttributes.Editor
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var foldoutGroup = attribute as FoldoutGroupAttribute;
-			var serializedObject = property.serializedObject;
-
 			var isToggledSaveKey = $"{property.serializedObject.targetObject}_{property.propertyPath}_IsToggled";
 
 			if (!hasLoaded)
@@ -22,7 +20,7 @@ namespace EditorAttributes.Editor
 				hasLoaded = true;
 			}
 
-			isExpanded = DrawToggleFoldout(foldoutGroup.GroupName, isExpanded);
+			isExpanded = DrawFoldout(foldoutGroup.GroupName, isExpanded);
 
 			EditorGUIUtility.labelWidth = foldoutGroup.LabelWidth;
 			EditorGUIUtility.fieldWidth = foldoutGroup.FieldWidth;
@@ -35,7 +33,10 @@ namespace EditorAttributes.Editor
 
 				foreach (string variableName in foldoutGroup.FieldsToGroup)
 				{
-					var variableProperty = serializedObject.FindProperty(variableName);
+					var variableProperty = FindNestedProperty(property, variableName);
+
+					// Check for serialized properties since they have a weird naming when serialized and they cannot be found by the normal name
+					variableProperty ??= FindNestedProperty(property, $"<{variableName}>k__BackingField");
 
 					if (variableProperty != null) 
 					{
@@ -56,7 +57,7 @@ namespace EditorAttributes.Editor
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => -EditorGUIUtility.standardVerticalSpacing; // Remove the space for the holder field
 
-		private bool DrawToggleFoldout(string title, bool isExpanded)
+		private bool DrawFoldout(string title, bool isExpanded)
 		{
 			var backgroundRect = GUILayoutUtility.GetRect(1f, 17f);
 
@@ -74,14 +75,12 @@ namespace EditorAttributes.Editor
 			toggleRect.y += 2f;
 			toggleRect.width = 13f;
 			toggleRect.height = 13f;
-
-			backgroundRect.xMin = 0f;
 			backgroundRect.width += 4f;
 
 			EditorGUI.DrawRect(backgroundRect, new Color(0.1f, 0.1f, 0.1f, 0.2f));
 
 			EditorGUI.LabelField(labelRect, title, EditorStyles.boldLabel);
-			isExpanded = GUI.Toggle(foldoutRect, isExpanded, GUIContent.none, EditorStyles.foldout);
+			isExpanded = EditorGUI.Toggle(foldoutRect, isExpanded, EditorStyles.foldout);
 
 			var @event = Event.current;
 

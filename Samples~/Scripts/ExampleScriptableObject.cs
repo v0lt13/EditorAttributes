@@ -1,47 +1,93 @@
+using System;
 using UnityEngine;
 using EditorAttributes;
+using Void = EditorAttributes.Void;
 
 namespace EditorAttributesSamples
 {
 	[CreateAssetMenu(fileName = "ExampleScriptableObject", menuName = "ScriptableObjects/ExampleScriptableObject")]
 	public class ExampleScriptableObject : ScriptableObject
 	{
-		[GUIColor(GUIColor.Yellow)]
-		[Title("Currency Settings")]
-		[Dropdown(nameof(currencies))] public string currency;
-		[AssetPreview] public Sprite currencyIcon;
-
-		[GUIColor(GUIColor.Lime)]
-		[Title("Item Data")]
-		public string itemName;
-		[SelectionButtons] public ItemType itemType;
-		[Required] public Sprite itemIcon;
-		[TextArea] public string itemDescription;
-		public bool isPurchasable;
-		[ShowField(nameof(isPurchasable)), MinMaxSlider(0, 100)] public Vector2Int priceRange;
-
-		[GUIColor(GUIColor.Magenta)]
-		[Title("Specific Item Properties", 15, true, TextAnchor.MiddleCenter)]
-		[Clamp(0, 64)] public int itemStack;
-		[ShowField(nameof(itemType), ItemType.Weapon), Min(0)] public int damage;
-		[ShowField(nameof(itemType), ItemType.Weapon), Min(0)] public float attackSpeed;
-		[ShowField(nameof(itemType), ItemType.Weapon)] public bool isRanged;
-		[ShowField(nameof(itemType), ItemType.Consumable), SelectionButtons] public EffectType consumableEffect;
-
-		public enum ItemType
+		public enum AmmoType
 		{
-			General,
-			Weapon,
-			Consumable
+			Bullets,
+			Arrows,
+			EnergyCells
 		}
 
-		public enum EffectType
+		[Serializable]
+		public class ItemData
 		{
-			Health,
-			Stamina
+			public string itemName;
+			[SelectionButtons] public ItemType itemType;
+			[AssetPreview(64f, 64f)] public Sprite itemIcon;
+
+			[Line(GUIColor.Blue, 0.5f)]
+			[Clamp(0, 100), Prefix("Coins:", -100f)] public int itemPrice;
+			[TextArea(3, 5)] public string itemDescription;
+
+			[Line(GUIColor.Cyan, 0.5f)]
+			public bool isPurchasable;
+
+			[ShowField(nameof(isPurchasable)), IndentProperty, MinMaxSlider(0, 100)] 
+			public Vector2Int priceRange;
+
+			[Line(GUIColor.Magenta)]
+			[ShowField(nameof(itemType), ItemType.Weapon), ColorField("#e3a6ff"), DataTable(true)] 
+			public WeaponData weaponData;
+
+			[ShowField(nameof(itemType), ItemType.Consumable), ColorField("#ffa6f0"), DataTable(true)] 
+			public ConsumableData consumableData;
+
+			public enum ItemType
+			{
+				Weapon,
+				Consumable
+			}
 		}
 
+		[Serializable]
+		public class ItemCategory
+		{
+			public string categoryName;
+			[ColorField("#a6ffe1")] public ItemData[] items;
+		}
 
-		private string[] currencies = new string[] { "Gold", "Gems", "Pebbles" };
+		[Serializable]
+		public class WeaponData
+		{
+			public int damage;
+			public float attackSpeed;
+			public bool isRanged;
+			public AmmoType ammoType;
+		}
+
+		[Serializable]
+		public class ConsumableData
+		{
+			public EffectType effectType;
+			[Wrap(0, 100)] public int effectValue;
+
+			public enum EffectType
+			{
+				Health,
+				Stamina
+			}
+		}
+
+		[GUIColor("#fffea6"), Title("Item Config", 30, alignment: TextAnchor.MiddleCenter)]
+		[FoldoutGroup("Currency Settings", true, nameof(currency), nameof(currencyIcon))]
+		[SerializeField] private Void currencyFoldout;
+
+		[Dropdown(nameof(currencyTypes))] 
+		[HideInInspector] public string currency;
+
+		[AssetPreview(64f, 64f)] 
+		[HideInInspector] public Sprite currencyIcon;
+
+		[GUIColor("#a6c8ff")] 
+		public ItemCategory[] itemCategories;
+
+		private string[] currencyTypes = new string[] { "Gold", "Silver", "Bronze" };
 	}
 }

@@ -11,12 +11,13 @@ namespace EditorAttributesSamples
 		[SerializeField] private Void groupHolder;
 
 		[ToggleGroup("BoxedToggleGroup", drawInBox: true, nameof(intField02), nameof(stringField02), nameof(boolField02))]
-		[SerializeField] private Void boxedGroupHolder;
+		[SerializeField] private bool boxedGroupHolder;
 
 		[SerializeField, HideInInspector] private int intField01;
 		[SerializeField, HideInInspector] private string stringField01;
 		[SerializeField, HideInInspector] private bool boolField01;
 
+		[MessageBox("The toggle group has been enabled", nameof(boxedGroupHolder))]
 		[SerializeField, HideInInspector] private int intField02;
 		[SerializeField, HideInInspector] private string stringField02;
 		[SerializeField, HideInInspector] private bool boolField02;

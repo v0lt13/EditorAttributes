@@ -38,7 +38,11 @@ namespace EditorAttributes
 		/// Attribute to color a field in the inspector
 		/// </summary>
 		/// <param name="fieldColor">The color of the field</param>
-		public ColorFieldAttribute(GUIColor fieldColor) => Color = fieldColor;
+		public ColorFieldAttribute(GUIColor fieldColor)
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
+			=> Color = fieldColor;
 
 		/// <summary>
 		/// Attribute to color a field in the inspector
@@ -47,6 +51,9 @@ namespace EditorAttributes
 		/// <param name="g">Green amount</param>
 		/// <param name="b">Blue amount</param>
 		public ColorFieldAttribute(float r, float g, float b)
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
 		{
 			UseRGB = true;
 			R = r;
@@ -58,6 +65,10 @@ namespace EditorAttributes
 		/// Attribute to color a field in the inspector
 		/// </summary>
 		/// <param name="hexColor">The color in hexadecimal</param>
-		public ColorFieldAttribute(string hexColor) => HexColor = hexColor;
+		public ColorFieldAttribute(string hexColor)
+#if UNITY_2023_3_OR_NEWER
+        : base(true) 
+#endif
+			=> HexColor = hexColor;
 	}
 }

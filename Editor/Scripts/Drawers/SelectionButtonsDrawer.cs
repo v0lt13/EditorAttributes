@@ -4,6 +4,7 @@ using UnityEditor;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
@@ -22,28 +23,28 @@ namespace EditorAttributes.Editor
 
 				if (isFlagsEnum)
 				{
-					property.enumValueFlag = DrawEnumButtons(property.enumDisplayNames, label, property.enumValueFlag, true);
+					property.enumValueFlag = DrawEnumFlagButtons(position, property.enumDisplayNames, label, property.enumValueFlag);
 				}
 				else
 				{
-					property.enumValueIndex = DrawEnumButtons(property.enumDisplayNames, label, property.enumValueIndex, false);
+					property.enumValueIndex = DrawButtons(position, label, property.enumValueIndex, property.enumDisplayNames, selectionButtonsAttribute);
 				}
 			}
 			else if (property.propertyType != SerializedPropertyType.Enum && !string.IsNullOrEmpty(selectionButtonsAttribute.CollectionName))
 			{
 				var memberInfo = ReflectionUtility.GetValidMemberInfo(selectionButtonsAttribute.CollectionName, property);
 
-				var stringArray = GetArrayValues(property, memberInfo);
+				var displayNames = GetArrayValues(property, memberInfo);
 				int selectedIndex = 0;
 
-				for (int i = 0; i < stringArray.Length; i++)
+				for (int i = 0; i < displayNames.Length; i++)
 				{
-					if (stringArray[i] == GetPropertyValueAsString(property)) selectedIndex = i;
+					if (displayNames[i] == GetPropertyValueAsString(property)) selectedIndex = i;
 				}
 
-				selectedIndex = DrawSelectionButtons(stringArray, selectedIndex, label);
+				selectedIndex = DrawButtons(position, label, selectedIndex, displayNames, selectionButtonsAttribute);
 
-				if (selectedIndex >= 0 && selectedIndex < stringArray.Length) SetProperyValueFromString(stringArray[selectedIndex], ref property);
+				if (selectedIndex >= 0 && selectedIndex < displayNames.Length) SetProperyValueFromString(displayNames[selectedIndex], ref property);
 			}
 			else
 			{
@@ -51,7 +52,12 @@ namespace EditorAttributes.Editor
 			}
 		}
 
-		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => -EditorGUIUtility.standardVerticalSpacing;
+		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+		{
+			var selectionButtonsAttribute = attribute as SelectionButtonsAttribute;
+
+			return selectionButtonsAttribute.ButtonsHeight;
+		}
 
 		private string[] GetArrayValues(SerializedProperty serializedProperty, MemberInfo memberInfo)
 		{
@@ -76,107 +82,82 @@ namespace EditorAttributes.Editor
 			return stringList.ToArray();
 		}
 
-		private T DrawEnumButtons<T>(string[] valueLabels, GUIContent label, T fieldValue, bool allowMultiselection)
+		private int DrawButtons(Rect position, GUIContent label, int selectedButton, string[] valueLabels, SelectionButtonsAttribute selectionButtonsAttribute)
+		{
+			if (selectionButtonsAttribute.ShowLabel)
+			{
+				EditorGUI.LabelField(position, label);
+
+				return GUI.Toolbar(new Rect(position.x + EditorGUIUtility.labelWidth, position.y, position.width - EditorGUIUtility.labelWidth, position.height), selectedButton, valueLabels);
+			}
+			else
+			{
+				return GUI.Toolbar(position, selectedButton, valueLabels);
+			}
+		}
+
+		private int DrawEnumFlagButtons(Rect position, string[] valueLabels, GUIContent label, int fieldValue)
 		{
 			if (valueLabels == null || valueLabels.Length == 0)
 			{
-				EditorGUILayout.HelpBox("No values provided for selection buttons", MessageType.Error);
+				EditorGUI.HelpBox(position, "No values provided for selection buttons", MessageType.Error);
 				return fieldValue;
 			}
-
 			var selectionButtonsAttribute = attribute as SelectionButtonsAttribute;
+			var labelPosition = position;
 
-			var selectionButtonStyle = new GUIStyle(EditorStyles.miniButtonMid)
+			if (selectionButtonsAttribute.ShowLabel)
 			{
-				fixedHeight = selectionButtonsAttribute.ButtonsHeight
-			};
+				EditorGUI.LabelField(labelPosition, label);
 
-			EditorGUILayout.BeginHorizontal();
+				labelPosition.x += EditorGUIUtility.labelWidth;
+				labelPosition.width -= EditorGUIUtility.labelWidth;
+			}
 
-			if (selectionButtonsAttribute.ShowLabel) EditorGUILayout.LabelField(label);
+			var buttonsPosition = position;
+
+			buttonsPosition.x += EditorGUIUtility.labelWidth;
+			buttonsPosition.width -= EditorGUIUtility.labelWidth;
 
 			for (int i = 0; i < valueLabels.Length; i++)
 			{
-				bool isSelected;
+				int enumValue = 1 << i;
+				bool isSelected = (fieldValue & enumValue) != 0;
 
-				if (allowMultiselection)
+				var buttonRect = new Rect(buttonsPosition.x + (i * (buttonsPosition.width / valueLabels.Length)), buttonsPosition.y, buttonsPosition.width / valueLabels.Length, buttonsPosition.height);
+
+				GUIStyle buttonStyle;
+
+				if (i == 0)
 				{
-					int intValue = Convert.ToInt32(fieldValue);
-					int enumValue = 1 << i;
-
-					isSelected = (intValue & enumValue) != 0;
+					buttonStyle = EditorStyles.miniButtonLeft;
+				}
+				else if (i == valueLabels.Length - 1)
+				{
+					buttonStyle = EditorStyles.miniButtonRight;
 				}
 				else
 				{
-					isSelected = EqualityComparer<T>.Default.Equals(fieldValue, (T)Convert.ChangeType(i, typeof(T)));
+					buttonStyle = EditorStyles.miniButtonMid;
 				}
 
-				bool toggleValue = GUILayout.Toggle(isSelected, valueLabels[i], selectionButtonStyle);
+				bool toggleValue = GUI.Toggle(buttonRect, isSelected, valueLabels[i], buttonStyle);
 
 				if (toggleValue != isSelected)
 				{
-					if (allowMultiselection)
+					if (toggleValue)
 					{
-						int intValue = Convert.ToInt32(fieldValue);
-						int enumValue = 1 << i;
-
-						if (toggleValue)
-						{
-							intValue |= enumValue;
-						}
-						else
-						{
-							intValue &= ~enumValue;
-						}
-
-						fieldValue = (T)Convert.ChangeType(intValue, typeof(T));
+						fieldValue |= enumValue;
 					}
 					else
 					{
-						fieldValue = (T)Convert.ChangeType(i, typeof(T));
+						fieldValue &= ~enumValue;
 					}
 				}
 			}
-
-			EditorGUILayout.EndHorizontal();
 
 			return fieldValue;
 		}
 
-		private int DrawSelectionButtons(string[] valueLabels, int selectedIndex, GUIContent label)
-		{
-			if (valueLabels == null || valueLabels.Length == 0)
-			{
-				EditorGUILayout.HelpBox("No values provided for selection buttons", MessageType.Error);
-				return -1;
-			}
-
-			var selectionButtonsAttribute = attribute as SelectionButtonsAttribute;
-
-			var selectionButtonStyle = new GUIStyle(EditorStyles.miniButtonMid)
-			{
-				fixedHeight = selectionButtonsAttribute.ButtonsHeight
-			};
-
-			EditorGUILayout.BeginHorizontal();
-
-			if (selectionButtonsAttribute.ShowLabel) EditorGUILayout.LabelField(label);
-
-			for (int i = 0; i < valueLabels.Length; i++)
-			{
-				bool isSelected = i == selectedIndex;
-
-				bool toggleValue = GUILayout.Toggle(isSelected, valueLabels[i], selectionButtonStyle);
-
-				if (toggleValue && !isSelected)
-				{
-					selectedIndex = i;
-				}
-			}
-
-			EditorGUILayout.EndHorizontal();
-
-			return selectedIndex;
-		}
 	}
 }

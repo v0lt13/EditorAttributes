@@ -7,7 +7,7 @@ namespace EditorAttributesSamples
 	public class TypeFilterSample : MonoBehaviour, IFilter
 	{
 		[Header("TypeFilter Attribute:")]
-		[SerializeField, TypeFilter(typeof(Transform))] private Component transformFilter;
+		[SerializeField, TypeFilter(typeof(BoxCollider), typeof(SphereCollider))] private Component colliderFilter;
 		[SerializeField, TypeFilter(typeof(IFilter))] private Component interfaceFilter;
 	}
 

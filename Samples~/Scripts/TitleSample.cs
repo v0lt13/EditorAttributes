@@ -21,5 +21,10 @@ namespace EditorAttributesSamples
 		[SerializeField] private int intField03;
 		[SerializeField] private string stringField03;
 		[SerializeField] private float floatField03;
+
+		[Title(nameof(DynamicTitle), 20, true, stringInputMode: StringInputMode.Dynamic)]
+		[SerializeField] private string stringField04;
+
+		private string DynamicTitle() => $"This is a dynamic title: {stringField04}";
 	}
 }

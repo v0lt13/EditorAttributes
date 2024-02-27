@@ -10,13 +10,13 @@ namespace EditorAttributesSamples
 		[HelpBox("This is a help box", MessageMode.None)]
 		[SerializeField] private int helpBox;
 
-		[HelpBox("This is a log box", MessageMode.Log)]
+		[HelpBox("This is a <i>log</i> box", MessageMode.Log)]
 		[SerializeField] private int logBox;
 
-		[HelpBox("This is a warning box", MessageMode.Warning)]
+		[HelpBox("This is a <b>warning</b> box", MessageMode.Warning)]
 		[SerializeField] private int warningBox;
 
-		[HelpBox("This is an error box", MessageMode.Error)]
+		[HelpBox("This is an <color=#FF0000>error</color> box", MessageMode.Error)]
 		[SerializeField] private int errorBox;
 	}
 }

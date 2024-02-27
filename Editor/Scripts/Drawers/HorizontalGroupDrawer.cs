@@ -9,8 +9,6 @@ namespace EditorAttributes.Editor
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			var horizontalGroup = attribute as HorizontalGroupAttribute;
-			var serializedObject = property.serializedObject;
-
 			var horizontalGroupStyle = horizontalGroup.DrawInBox ? EditorStyles.helpBox : EditorStyles.inspectorFullWidthMargins;
 
 			EditorGUILayout.BeginHorizontal(horizontalGroupStyle);
@@ -20,7 +18,10 @@ namespace EditorAttributes.Editor
 		
 			foreach (string variableName in horizontalGroup.FieldsToGroup)
 			{
-				var variableProperty = serializedObject.FindProperty(variableName);
+				var variableProperty = FindNestedProperty(property, variableName);
+
+				// Check for serialized properties since they have a weird naming when serialized and they cannot be found by the normal name
+				variableProperty ??= FindNestedProperty(property, $"<{variableName}>k__BackingField");
 
 				if (variableProperty.type == "Void")
 				{

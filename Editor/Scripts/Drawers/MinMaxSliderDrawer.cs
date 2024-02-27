@@ -24,21 +24,26 @@ namespace EditorAttributes.Editor
 
 				if (minMaxAttribute.ShowValues)
 				{
-					EditorGUILayout.BeginHorizontal();
+					float labelWidth = EditorGUIUtility.labelWidth;
 
-					EditorGUILayout.PrefixLabel(label);
+					var prefixLabelRect = new Rect(position.x, position.y, labelWidth, EditorGUIUtility.singleLineHeight);
+					EditorGUI.PrefixLabel(prefixLabelRect, label);
 
-					minValue = isIntVector ? EditorGUILayout.IntField((int)minValue, GUILayout.Width(50f)) : EditorGUILayout.FloatField(minValue, GUILayout.Width(50f));
+					float fieldWidth = (position.width - labelWidth - 200f) / 3f;
+					const float fieldsOffset = 10f;
 
-					EditorGUILayout.MinMaxSlider(ref minValue, ref maxValue, minMaxAttribute.MinRange, minMaxAttribute.MaxRange);
+					var minValueRect = new Rect(prefixLabelRect.xMax, position.y, fieldWidth - fieldsOffset, EditorGUIUtility.singleLineHeight);
+					var sliderRect = new Rect(minValueRect.xMax + fieldsOffset, position.y, position.width - labelWidth - fieldWidth * 2f, EditorGUIUtility.singleLineHeight);
+					var maxValueRect = new Rect(sliderRect.xMax + fieldsOffset, position.y, fieldWidth - fieldsOffset, EditorGUIUtility.singleLineHeight);
 
-					maxValue = isIntVector ? EditorGUILayout.IntField((int)maxValue, GUILayout.Width(50f)) : EditorGUILayout.FloatField(maxValue, GUILayout.Width(50f));
+					EditorGUI.MinMaxSlider(sliderRect, ref minValue, ref maxValue, minMaxAttribute.MinRange, minMaxAttribute.MaxRange);
 
-					EditorGUILayout.EndHorizontal();
+					minValue = isIntVector ? EditorGUI.IntField(minValueRect, (int)minValue) : EditorGUI.FloatField(minValueRect, minValue);
+					maxValue = isIntVector ? EditorGUI.IntField(maxValueRect, (int)maxValue) : EditorGUI.FloatField(maxValueRect, maxValue);
 				}
 				else
 				{
-					EditorGUILayout.MinMaxSlider(label, ref minValue, ref maxValue, minMaxAttribute.MinRange, minMaxAttribute.MaxRange);
+					EditorGUI.MinMaxSlider(position, label, ref minValue, ref maxValue, minMaxAttribute.MinRange, minMaxAttribute.MaxRange);
 				}
 
 				if (EditorGUI.EndChangeCheck())
@@ -61,7 +66,5 @@ namespace EditorAttributes.Editor
 				EditorGUILayout.HelpBox("MinMaxSlider Attribute can only be attached to a Vector2 and Vector2Int", MessageType.Warning);
 			}
 		}
-
-		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => -EditorGUIUtility.standardVerticalSpacing;
 	}
 }
