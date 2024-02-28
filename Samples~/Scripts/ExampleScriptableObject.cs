@@ -59,7 +59,7 @@ namespace EditorAttributesSamples
 			public int damage;
 			public float attackSpeed;
 			public bool isRanged;
-			public AmmoType ammoType;
+			[ShowField(nameof(isRanged))] public AmmoType ammoType;
 		}
 
 		[Serializable]

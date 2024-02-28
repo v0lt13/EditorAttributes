@@ -1620,7 +1620,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d54a8ed3d68d874f8e8a61ac46f3bb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleButtons: 0
+  toggleButtons: 1
 --- !u!1 &1280597147
 GameObject:
   m_ObjectHideFlags: 0
@@ -1668,7 +1668,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableCondition: 0
   enabledField: 0
-  enumEnableCondition: 0
+  enumEnableCondition: 2
   willEnableOnState02: 0
   willEnableOnState03: 0
 --- !u!114 &1280597150
@@ -1683,9 +1683,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca5b7b409c162f04eb911a90038b3c49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableCondition: 0
+  disableCondition: 1
   disabledField: 0
-  enumDisableCondition: 0
+  enumDisableCondition: 1
   willDisableOnState02: 0
   willDisableOnState03: 0
 --- !u!1 &1310779246

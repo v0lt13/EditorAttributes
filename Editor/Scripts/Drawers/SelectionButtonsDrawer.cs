@@ -105,6 +105,7 @@ namespace EditorAttributes.Editor
 			}
 			var selectionButtonsAttribute = attribute as SelectionButtonsAttribute;
 			var labelPosition = position;
+			var buttonsPosition = position;
 
 			if (selectionButtonsAttribute.ShowLabel)
 			{
@@ -112,12 +113,10 @@ namespace EditorAttributes.Editor
 
 				labelPosition.x += EditorGUIUtility.labelWidth;
 				labelPosition.width -= EditorGUIUtility.labelWidth;
+
+				buttonsPosition.x += EditorGUIUtility.labelWidth;
+				buttonsPosition.width -= EditorGUIUtility.labelWidth;
 			}
-
-			var buttonsPosition = position;
-
-			buttonsPosition.x += EditorGUIUtility.labelWidth;
-			buttonsPosition.width -= EditorGUIUtility.labelWidth;
 
 			for (int i = 0; i < valueLabels.Length; i++)
 			{
