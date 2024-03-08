@@ -12,7 +12,7 @@ namespace EditorAttributes
 		/// Attribute to add a suffix on a field
 		/// </summary>
 		/// <param name="suffix">The suffix to add</param>
-		/// <param name="offset">Offset to add between the suffix and field</param>
+		/// <param name="offset">Offset to add between the suffix and field in pixels</param>
 		/// <param name="stringInputMode">Set if the string input is set trough a constant or dynamically trough another member</param>
 		public SuffixAttribute(string suffix, float offset = 0f, StringInputMode stringInputMode = StringInputMode.Constant)
 		{

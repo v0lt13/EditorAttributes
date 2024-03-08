@@ -38,8 +38,8 @@ namespace EditorAttributes
 		/// <summary>
 		/// Attribute to display specified fields horizontally
 		/// </summary>
-		/// <param name="labelWidth">The width of the field labels</param>
-		/// <param name="fieldWidth">The width of the input fields</param>
+		/// <param name="labelWidth">The width of the field labels in pixels</param>
+		/// <param name="fieldWidth">The width of the input fields in pixels</param>
 		/// <param name="drawInBox">Draw the group in a nice box</param>
 		/// <param name="fieldsToGroup">The name of the fields to group</param>
 		public HorizontalGroupAttribute(float labelWidth = 100f, float fieldWidth = 50f, bool drawInBox = false, params string[] fieldsToGroup) 

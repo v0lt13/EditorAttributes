@@ -8,6 +8,7 @@ namespace EditorAttributes
 	{
 		public string ButtonLabel { get; private set; }
 		public float ButtonHeight { get; private set; }
+		public bool SerializeParameters { get; private set; }
 
 		public int EnumValue { get; private set; }
 		public bool Negate { get; private set; }
@@ -18,12 +19,14 @@ namespace EditorAttributes
 		/// Attribute to add a button in the inspector
 		/// </summary>
 		/// <param name="buttonLabel">The label displayed on the button</param>
-		/// <param name="buttonHeight">The height of the button</param>
-		public ButtonAttribute(string buttonLabel = "", float buttonHeight = 18f)
+		/// <param name="buttonHeight">The height of the button in pixels</param>
+		/// <param name="serializeParameters">Have the button parameters persist between selections</param>
+		public ButtonAttribute(string buttonLabel = "", float buttonHeight = 18f, bool serializeParameters = true)
 		{
 			ConditionName = "";
 			ButtonLabel = buttonLabel;
 			ButtonHeight = buttonHeight;
+			SerializeParameters = serializeParameters;
 		}
 
 		/// <summary>
@@ -33,8 +36,10 @@ namespace EditorAttributes
 		/// <param name="conditionResult">What happens to the button when the condition evaluates to true</param>
 		/// <param name="negate">Negate the evaluated condition</param>
 		/// <param name="buttonLabel">The label displayed on the button</param>
-		/// <param name="buttonHeight">The height of the button</param>
-		public ButtonAttribute(string conditionName, ConditionResult conditionResult, bool negate = false, string buttonLabel = "", float buttonHeight = 18f) : this(buttonLabel, buttonHeight)
+		/// <param name="buttonHeight">The height of the button in pixels</param>
+		/// <param name="serializeParameters">Have the button parameters persist between selections</param>
+		public ButtonAttribute(string conditionName, ConditionResult conditionResult, bool negate = false, string buttonLabel = "", float buttonHeight = 18f, bool serializeParameters = true) 
+			: this(buttonLabel, buttonHeight, serializeParameters)
 		{
 			ConditionResult = conditionResult;
 			ConditionName = conditionName;
@@ -49,8 +54,10 @@ namespace EditorAttributes
 		/// <param name="conditionResult">What happens to the button when the condition evaluates to true</param>
 		/// <param name="negate">Negate the evaluated condition</param>
 		/// <param name="buttonLabel">The label displayed on the button</param>
-		/// <param name="buttonHeight">The height of the button</param>
-		public ButtonAttribute(string conditionName, object enumValue, ConditionResult conditionResult, bool negate = false, string buttonLabel = "", float buttonHeight = 18f) : this(buttonLabel, buttonHeight)
+		/// <param name="buttonHeight">The height of the button in pixels</param>
+		/// <param name="serializeParameters">Have the button parameters persist between selections</param>
+		public ButtonAttribute(string conditionName, object enumValue, ConditionResult conditionResult, bool negate = false, string buttonLabel = "", float buttonHeight = 18f, bool serializeParameters = true) 
+			: this(buttonLabel, buttonHeight, serializeParameters)
 		{
 			ConditionResult = conditionResult;
 			ConditionName = conditionName;

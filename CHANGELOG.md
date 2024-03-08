@@ -1,3 +1,9 @@
+EditorAttributes v2.1.1 Changelog:
+- Added an option to disable button parameter serialization
+- The MessageBox Attribute now supports dynamic string inputs
+- The PropertyDropdown properties are now indented a bit
+- The PropertyDropdown Attribute will now work when placed directly on a field of type ScriptableObject or Component
+
 EditorAttributes v2.1.0 Changelog:
 - Added IndentProperty Attribute
 - Added HideInChildren Attribute

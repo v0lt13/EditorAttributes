@@ -44,8 +44,8 @@ namespace EditorAttributes
 		/// Attribute to display the specified fields in a foldout
 		/// </summary>
 		/// <param name="groupName">The name of the group</param>
-		/// <param name="labelWidth">The width of the field labels</param>
-		/// <param name="fieldWidth">The width of the input fields</param>
+		/// <param name="labelWidth">The width of the field labels in pixels</param>
+		/// <param name="fieldWidth">The width of the input fields in pixels</param>
 		/// <param name="drawInBox">Draw the fields in the group in a nice box</param>
 		/// <param name="fieldsToGroup">The name of the fields to group</param>
 		public FoldoutGroupAttribute(string groupName, float labelWidth = 150f, float fieldWidth = 50f, bool drawInBox = false, params string[] fieldsToGroup)

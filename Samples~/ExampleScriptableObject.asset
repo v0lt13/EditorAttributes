@@ -13,21 +13,21 @@ MonoBehaviour:
   m_Name: ExampleScriptableObject
   m_EditorClassIdentifier: 
   currency: Gold
-  currencyIcon: {fileID: 0}
+  currencyIcon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   itemCategories:
   - categoryName: Weapons
     items:
     - itemName: Sword
       itemType: 0
-      itemIcon: {fileID: 0}
+      itemIcon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
       itemPrice: 100
       itemDescription: 
       isPurchasable: 1
-      priceRange: {x: 10, y: 50}
+      priceRange: {x: 15, y: 50}
       weaponData:
         damage: 100
         attackSpeed: 1
-        isRanged: 1
+        isRanged: 0
         ammoType: 0
       consumableData:
         effectType: 0

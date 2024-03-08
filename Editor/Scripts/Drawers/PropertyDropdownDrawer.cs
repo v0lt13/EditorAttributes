@@ -25,6 +25,7 @@ namespace EditorAttributes.Editor
 				}
 
 				EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+				
 
 				var foldoutStyle = new GUIStyle(EditorStyles.foldout) 
 				{
@@ -34,21 +35,24 @@ namespace EditorAttributes.Editor
 
 				property.isExpanded = EditorGUILayout.Foldout(property.isExpanded, "Properties", foldoutStyle);
 
-                if (fieldType.IsSubclassOf(typeof(Component)))
-                {
-					var component = property.objectReferenceValue as Component;
+				using (new EditorGUI.IndentLevelScope(1))
+				{
+					if (fieldType.IsSubclassOf(typeof(Component)) || fieldType == typeof(Component))
+					{
+						var component = property.objectReferenceValue as Component;
 
-					if (property.isExpanded) DrawProperties(new SerializedObject(component));
-                }
-                else if (fieldType.IsSubclassOf(typeof(ScriptableObject)))
-                {
-					var scriptableObject = property.objectReferenceValue as ScriptableObject;
+						if (property.isExpanded) DrawProperties(new SerializedObject(component));
+					}
+					else if (fieldType.IsSubclassOf(typeof(ScriptableObject)) || fieldType == typeof(ScriptableObject))
+					{
+						var scriptableObject = property.objectReferenceValue as ScriptableObject;
 
-					if (property.isExpanded) DrawProperties(new SerializedObject(scriptableObject));
-				}
-                else
-                {
-					EditorGUILayout.HelpBox("The PropertyDropdown Attribute can only be attached to objects deriving from Component or ScriptableObject", MessageType.Error);
+						if (property.isExpanded) DrawProperties(new SerializedObject(scriptableObject));
+					}
+					else
+					{
+						EditorGUILayout.HelpBox("The PropertyDropdown Attribute can only be attached to objects deriving from Component or ScriptableObject", MessageType.Error);
+					}
 				}
 
 				EditorGUILayout.EndVertical();

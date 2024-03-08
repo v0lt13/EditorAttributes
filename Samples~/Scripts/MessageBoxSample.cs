@@ -27,6 +27,9 @@ namespace EditorAttributesSamples
 		[MessageBox("This is an <color=#FF0000>error</color> box", nameof(showMessageBoxes), MessageMode.Error)]
 		[SerializeField] private int errorBox;
 
+		[MessageBox(nameof(dynamicMessageBox), nameof(showMessageBoxes), stringInputMode: StringInputMode.Dynamic)]
+		[SerializeField] private string dynamicMessageBox;
+
 		[Header("MessageBox Attribute Enum condition:")]
 		[SerializeField] private States states;
 

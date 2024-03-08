@@ -75,11 +75,19 @@ namespace EditorAttributes.Editor
 		
 		public static string GetFunctionID(MethodInfo function, object target) => $"{target}_{function.Name}_{string.Join("_", function.GetParameters().Select(param => param.ParameterType.Name))}";
 
-		public static bool IsButtonFunction(MethodInfo function)
+		public static bool IsButtonFunction(MethodInfo function, out bool serializeParameters)
 		{
 			var buttonAttribute = function.GetCustomAttribute<ButtonAttribute>();
 
-			return buttonAttribute != null;
+			if (buttonAttribute != null)
+			{
+				serializeParameters = buttonAttribute.SerializeParameters;
+
+				return true;
+			}
+
+			serializeParameters = false;
+			return false;
 		}
 
 		public static void SaveParamsData(MethodInfo[] functions, object target, Dictionary<MethodInfo, bool> foldouts, Dictionary<MethodInfo, object[]> parameterValues)
@@ -89,7 +97,7 @@ namespace EditorAttributes.Editor
 
 			foreach (var function in functions)
 			{
-				if (!IsButtonFunction(function)) continue;
+				if (!IsButtonFunction(function, out bool serializeParameters) || !serializeParameters) continue;
 
 				string id = GetFunctionID(function, target);
 				keyToMethod[id] = function;
@@ -122,7 +130,7 @@ namespace EditorAttributes.Editor
 
 					foreach (var function in functions)
 					{
-						if (!IsButtonFunction(function)) continue;
+						if (!IsButtonFunction(function, out bool serializeParameters) || !serializeParameters) continue;
 
 						string id = GetFunctionID(function, target);
 

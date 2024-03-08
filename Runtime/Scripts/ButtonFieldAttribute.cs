@@ -13,7 +13,7 @@ namespace EditorAttributes
 		/// </summary>
 		/// <param name="functionName">The name of the function to call</param>
 		/// <param name="buttonLabel">The label displayed on the button</param>
-		/// <param name="buttonHeight">The height of the button</param>
+		/// <param name="buttonHeight">The height of the button in pixels</param>
 		public ButtonFieldAttribute(string functionName, string buttonLabel = "", float buttonHeight = 18f)
 		{
 			FunctionName = functionName;

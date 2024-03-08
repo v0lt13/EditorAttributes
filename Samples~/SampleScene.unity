@@ -1523,11 +1523,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 964b0cbcfa2fb3449a633599e3c7ac2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showMessageBoxes: 0
+  showMessageBoxes: 1
   messageBox: 0
   logBox: 0
   warningBox: 0
   errorBox: 0
+  dynamicMessageBox: TypeHere
   states: 1
 --- !u!1 &1232845093
 GameObject:

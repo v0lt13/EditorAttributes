@@ -22,7 +22,8 @@ namespace EditorAttributes.Editor
 			int initialDepth = property.depth;
 			float currentX = position.x;
 
-			if (dataTableAttribute.DrawInBox) EditorGUI.HelpBox(new Rect(position.x - 5f, position.y - 1f, position.width, position.height + 2f), string.Empty, MessageType.None);
+			if (dataTableAttribute.DrawInBox) 
+				EditorGUI.HelpBox(new Rect(position.x - 5f, position.y - 1f, position.width, position.height + 2f), string.Empty, MessageType.None);
 
 			var labelRect = new Rect(currentX, position.y, EditorGUIUtility.labelWidth, position.height);
 			EditorGUI.LabelField(labelRect, label, EditorStyles.boldLabel);

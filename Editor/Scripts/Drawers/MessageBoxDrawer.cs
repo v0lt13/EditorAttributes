@@ -8,15 +8,17 @@ namespace EditorAttributes.Editor
     {
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
-			var messageBox = attribute as MessageBoxAttribute;
-			var conditionalProperty = ReflectionUtility.GetValidMemberInfo(messageBox.ConditionName, property);
+			var messageBoxAttribute = attribute as MessageBoxAttribute;
+			var conditionalProperty = ReflectionUtility.GetValidMemberInfo(messageBoxAttribute.ConditionName, property);
 
 			var helpBoxStyle = GUI.skin.GetStyle("HelpBox");
 			helpBoxStyle.richText = true;
 
-			if (GetConditionValue(conditionalProperty, messageBox, property)) EditorGUILayout.HelpBox(messageBox.Message, (MessageType)messageBox.MessageType);
+			if (GetConditionValue(conditionalProperty, messageBoxAttribute, property)) 
+				EditorGUILayout.HelpBox(GetDynamicString(messageBoxAttribute.Message, property, messageBoxAttribute), (MessageType)messageBoxAttribute.MessageType);
 
-			if (messageBox.DrawProperty) DrawProperty(position, property, label);
+			if (messageBoxAttribute.DrawProperty) 
+				DrawProperty(position, property, label);
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)

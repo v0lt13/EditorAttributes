@@ -10,8 +10,8 @@ namespace EditorAttributes
 		/// <summary>
 		/// Attribute to adjust the width of a property's label and field
 		/// </summary>
-		/// <param name="labelWidth">The width of the label</param>
-		/// <param name="fieldWidth">The minimum width in reserved for the fields</param>
+		/// <param name="labelWidth">The width of the label in pixels</param>
+		/// <param name="fieldWidth">The minimum width in reserved for the fields in pixels</param>
 		public PropertyWidthAttribute(float labelWidth, float fieldWidth = 50f)
         {
             LabelWidth = labelWidth;
