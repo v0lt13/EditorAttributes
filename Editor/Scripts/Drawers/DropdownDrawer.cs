@@ -25,9 +25,11 @@ namespace EditorAttributes.Editor
 				if (stringArray[i] == GetPropertyValueAsString(property)) selectedIndex = i;
 			}
 
-			selectedIndex = EditorGUI.Popup(position, label.text, selectedIndex, stringArray);
-
-			if (selectedIndex >= 0 && selectedIndex < stringArray.Length) SetProperyValueFromString(stringArray[selectedIndex], ref property);
+			EditorGUI.BeginChangeCheck();
+            		EditorGUI.showMixedValue = property.hasMultipleDifferentValues;
+            		selectedIndex = EditorGUI.Popup(position, label.text, selectedIndex, stringArray);
+            		if (EditorGUI.EndChangeCheck() && selectedIndex >= 0 && selectedIndex < stringArray.Length)
+                		SetProperyValueFromString(stringArray[selectedIndex], ref property);
 		}
 
 		public string[] GetArrayValues(SerializedProperty serializedProperty, MemberInfo memberInfo)
