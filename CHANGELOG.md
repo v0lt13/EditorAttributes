@@ -8,7 +8,7 @@ EditorAttributes v2.2.0 Changelog:
 - Removed the drawProperty parameter from the MessageBox Attribute
 - The DataTable Attribute will no longer display the field labels in array elements except for the first element
 - Fixed Button Attribute parameter serialization with Unity types
-- Reorganised the project
+- Reorganized the project
 - Updated samples
 
 • Ported the whole package from the ImGUI system to UI Toolkit which results in the following changes:
