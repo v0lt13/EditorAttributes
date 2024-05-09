@@ -12,23 +12,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bff6eaa62d1d60e4abac2a2222c3a8f9, type: 3}
   m_Name: ExampleScriptableObject
   m_EditorClassIdentifier: 
-  currency: Gold
-  currencyIcon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  itemCategories:
-  - categoryName: Weapons
-    items:
-    - itemName: Sword
-      itemType: 0
-      itemIcon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-      itemPrice: 100
-      itemDescription: 
-      isPurchasable: 1
-      priceRange: {x: 15, y: 50}
-      weaponData:
-        damage: 100
-        attackSpeed: 1
-        isRanged: 0
-        ammoType: 0
-      consumableData:
-        effectType: 0
-        effectValue: 0
+  gameName: My Game
+  isMultiplayer: 1
+  maxPlayers: 5
+  startingCurrency: {x: 20, y: 80}
+  playerClasses:
+  - className: 
+    playerHealth: 100
+    playerPrefab: {fileID: 0}
+  - className: 
+    playerHealth: 100
+    playerPrefab: {fileID: 0}
+  - className: 
+    playerHealth: 100
+    playerPrefab: {fileID: 0}
+  enemies:
+  - enemyName: 
+    enemyHealth: 100
+    enemyDamage: 10
+    enemyPrefab: {fileID: 0}
+  - enemyName: 
+    enemyHealth: 100
+    enemyDamage: 10
+    enemyPrefab: {fileID: 0}
+  - enemyName: 
+    enemyHealth: 100
+    enemyDamage: 10
+    enemyPrefab: {fileID: 0}
+  - enemyName: 
+    enemyHealth: 100
+    enemyDamage: 10
+    enemyPrefab: {fileID: 0}
+  season: 0
+  timeOfDay: 750
+  backgroundMusic: Music/BackgroundMusic1
+  levelBackground: {fileID: 21300000, guid: bcc7dd75abdc1a74497c9d657e1d6cf5, type: 3}

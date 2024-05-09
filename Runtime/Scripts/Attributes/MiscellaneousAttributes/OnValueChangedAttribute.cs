@@ -1,0 +1,15 @@
+using UnityEngine;
+
+namespace EditorAttributes
+{
+    public class OnValueChangedAttribute : PropertyAttribute
+    {
+        public string FunctionName { get; private set; }
+
+        /// <summary>
+        /// Attribute to call a function when the value of the attached property changes
+        /// </summary>
+        /// <param name="functionName">The name of the funciton to call</param>
+    	public OnValueChangedAttribute(string functionName) => FunctionName = functionName;
+    }
+}

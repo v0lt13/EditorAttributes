@@ -1,3 +1,27 @@
+EditorAttributes v2.2.0 Changelog:
+- Added TimeField Attribute
+- Added OnValueChanged Attribute
+- Added AnimatorParamDropdown Attribute
+- Added titleSpace parameter to the TitleAttribute
+- Removed the fieldWidth parameter from all attributes having it
+- Void fields will no longer be drawn in the inspector
+- Removed the drawProperty parameter from the MessageBox Attribute
+- The DataTable Attribute will no longer display the field labels in array elements except for the first element
+- Fixed Button Attribute parameter serialization with Unity types
+- Reorganised the project
+- Updated samples
+
+• Ported the whole package from the ImGUI system to UI Toolkit which results in the following changes:
+- Better layouts
+- Collections will now have a scrollbar when too long
+- Dynamic text will always update even if not focused on the inspector window
+- The TypeFilter Attribute will now display the filtered type in the object field
+- The IndentProperty Attribute will now use pixel values
+- The labelWidth parameters have been changed to widthOffset and now offset the existing width instead of setting a completly new width
+- The way inspectors are colored has changed and the ColorField Attribute has been deprecated for now
+- You can use the UI Toolkit Debugger window with the package
+- Since the inspector is now drawn with UI Toolkit any custom property drawers using ImGUI will not work, you will have to port them to UI toolkit or use the IMGUIContainer
+
 EditorAttributes v2.1.1 Changelog:
 - Added an option to disable button parameter serialization
 - The MessageBox Attribute now supports dynamic string inputs

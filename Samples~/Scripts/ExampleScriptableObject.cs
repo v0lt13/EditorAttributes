@@ -8,86 +8,50 @@ namespace EditorAttributesSamples
 	[CreateAssetMenu(fileName = "ExampleScriptableObject", menuName = "ScriptableObjects/ExampleScriptableObject")]
 	public class ExampleScriptableObject : ScriptableObject
 	{
-		public enum AmmoType
+		public enum Season { Winter, Spring, Summer, Fall }
+
+		[Serializable]
+		public class PlayerClass
 		{
-			Bullets,
-			Arrows,
-			EnergyCells
+			public string className;
+			[Range(0f, 100f)] public float playerHealth;
+			public GameObject playerPrefab;
 		}
 
 		[Serializable]
-		public class ItemData
+		public class EnemyData
 		{
-			public string itemName;
-			[SelectionButtons] public ItemType itemType;
-			[AssetPreview(64f, 64f)] public Sprite itemIcon;
-
-			[Line(GUIColor.Blue, 0.5f)]
-			[Clamp(0, 100), Prefix("Coins:", -100f)] public int itemPrice;
-			[TextArea(3, 5)] public string itemDescription;
-
-			[Line(GUIColor.Cyan, 0.5f)]
-			public bool isPurchasable;
-
-			[ShowField(nameof(isPurchasable)), IndentProperty, MinMaxSlider(0, 100)] 
-			public Vector2Int priceRange;
-
-			[Line(GUIColor.Magenta)]
-			[ShowField(nameof(itemType), ItemType.Weapon), ColorField("#e3a6ff"), DataTable(true)] 
-			public WeaponData weaponData;
-
-			[ShowField(nameof(itemType), ItemType.Consumable), ColorField("#ffa6f0"), DataTable(true)] 
-			public ConsumableData consumableData;
-
-			public enum ItemType
-			{
-				Weapon,
-				Consumable
-			}
+			public string enemyName;
+			[Range(0, 100)] public int enemyHealth;
+			public float enemyDamage;
+			public GameObject enemyPrefab;
 		}
 
-		[Serializable]
-		public class ItemCategory
-		{
-			public string categoryName;
-			[ColorField("#a6ffe1")] public ItemData[] items;
-		}
+		[Title("General Settings")]
+		public string gameName;
+		public bool isMultiplayer;
+		[ShowField(nameof(isMultiplayer)), Clamp(0, 5), IndentProperty(20f)] 
+		public int maxPlayers;
+		[Space]
+		[Title("Entity Settings", titleSpace: 20f)]
+		[SerializeField] private Void titleHolder;
 
-		[Serializable]
-		public class WeaponData
-		{
-			public int damage;
-			public float attackSpeed;
-			public bool isRanged;
-			[ShowField(nameof(isRanged))] public AmmoType ammoType;
-		}
+		[HelpBox("Will apply randomly to each player in the list", MessageMode.None)]
+		[MinMaxSlider(0, 100)] public Vector2Int startingCurrency;
 
-		[Serializable]
-		public class ConsumableData
-		{
-			public EffectType effectType;
-			[Wrap(0, 100)] public int effectValue;
+		[DataTable] public PlayerClass[] playerClasses;
+		[Space]
+		[DataTable(true)] public EnemyData[] enemies;
 
-			public enum EffectType
-			{
-				Health,
-				Stamina
-			}
-		}
+		[Title("Level Settings")]
+		[SelectionButtons] public Season season;
+		[Suffix(nameof(GetTimeOfDay), stringInputMode: StringInputMode.Dynamic), TimeField(TimeFormat.HourMinuteSecond, ConvertTo.Minutes)] 
+		public float timeOfDay;
+		[Space]
+		[Dropdown(nameof(GetAudioClips))] public string backgroundMusic;
+		[AssetPreview] public Sprite levelBackground;
 
-		[GUIColor("#fffea6"), Title("Item Config", 30, alignment: TextAnchor.MiddleCenter)]
-		[FoldoutGroup("Currency Settings", true, nameof(currency), nameof(currencyIcon))]
-		[SerializeField] private Void currencyFoldout;
-
-		[Dropdown(nameof(currencyTypes))] 
-		[HideInInspector] public string currency;
-
-		[AssetPreview(64f, 64f)] 
-		[HideInInspector] public Sprite currencyIcon;
-
-		[GUIColor("#a6c8ff")] 
-		public ItemCategory[] itemCategories;
-
-		private string[] currencyTypes = new string[] { "Gold", "Silver", "Bronze" };
+		private string[] GetAudioClips() => new string[] { "Music/BackgroundMusic1", "Music/BackgroundMusic2", "SFX/Explosion" };
+		private string GetTimeOfDay() => $"{timeOfDay} minutes";
 	}
 }
