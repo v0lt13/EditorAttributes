@@ -230,7 +230,7 @@ namespace EditorAttributes.Editor.Utility
 			}
 			else
 			{
-				Debug.LogError($"Serialization of type {value.GetType()} is not supported by UnityTypeConverter");
+				Debug.LogError($"Serialization of type {value.GetType()} is not supported");
 			}
 		}
 	}

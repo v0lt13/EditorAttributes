@@ -18,7 +18,7 @@ namespace EditorAttributes.Editor
 			{
 				var helpBox = new HelpBox($"The field <b>{property.displayName}</b> must be assigned", HelpBoxMessageType.Error);
 
-				if (canApplyGlobalColor)
+				if (CanApplyGlobalColor)
 				{
 					helpBox.style.color = EditorExtension.GLOBAL_COLOR;
 					helpBox.style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;

@@ -31,7 +31,7 @@ namespace EditorAttributes.Editor
 				root.Add(new HelpBox($"The provided value {lineAttribute.HexColor} is not a valid Hex color", HelpBoxMessageType.Error));
 			}
 
-			line.style.backgroundColor = ColorUtility.GUIColorToColor(lineAttribute, lineAttribute.A);
+			line.style.backgroundColor = ColorUtility.ColorAttributeToColor(lineAttribute, lineAttribute.A);
 			root.Add(line);
 
 			return root;

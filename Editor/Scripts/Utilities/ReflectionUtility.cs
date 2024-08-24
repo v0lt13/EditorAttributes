@@ -6,10 +6,16 @@ using System.Collections;
 
 namespace EditorAttributes.Editor.Utility
 {
-    public static class ReflectionUtility
+	public static class ReflectionUtility
     {
 		public const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
+		/// <summary>
+		/// Finds a field inside a serialized object
+		/// </summary>
+		/// <param name="fieldName">The name of the field to search</param>
+		/// <param name="property">The serialized property</param>
+		/// <returns>The field info of the desired field</returns>
 		public static FieldInfo FindField(string fieldName, SerializedProperty property)
 		{
 			var fieldInfo = FindField(fieldName, property.serializedObject.targetObject);
@@ -17,7 +23,7 @@ namespace EditorAttributes.Editor.Utility
 			// If the field null we try to see if its inside a serialized object
 			if (fieldInfo == null)
 			{
-				var serializedObjectType = GetNestedFieldType(property, out _);
+				var serializedObjectType = GetNestedObjectType(property, out _);
 
 				if (serializedObjectType != null)
 					fieldInfo = serializedObjectType.GetField(fieldName, BINDING_FLAGS);
@@ -28,6 +34,12 @@ namespace EditorAttributes.Editor.Utility
 
 		internal static FieldInfo FindField(string fieldName, object targetObject) => FindMember(fieldName, targetObject.GetType(), BINDING_FLAGS, MemberTypes.Field) as FieldInfo;
 
+		/// <summary>
+		/// Finds a property inside a serialized object
+		/// </summary>
+		/// <param name="propertyName">The name of the property to search</param>
+		/// <param name="property">The serialized property</param>
+		/// <returns>The property info of the desired property</returns>
 		public static PropertyInfo FindProperty(string propertyName, SerializedProperty property)
 		{
 			var propertyInfo = FindProperty(propertyName, property.serializedObject.targetObject);
@@ -35,7 +47,7 @@ namespace EditorAttributes.Editor.Utility
 			// If the property null we try to see if its inside a serialized object
 			if (propertyInfo == null)
 			{
-				var serializedObjectType = GetNestedFieldType(property, out _);
+				var serializedObjectType = GetNestedObjectType(property, out _);
 
 				if (serializedObjectType != null) 
 					propertyInfo = serializedObjectType.GetProperty(propertyName, BINDING_FLAGS);
@@ -46,6 +58,12 @@ namespace EditorAttributes.Editor.Utility
 
 		internal static PropertyInfo FindProperty(string propertyName, object targetObject) => FindMember(propertyName, targetObject.GetType(), BINDING_FLAGS, MemberTypes.Property) as PropertyInfo;
 
+		/// <summary>
+		/// Finds a funciton inside a serialized object
+		/// </summary>
+		/// <param name="functionName">The name of the function to search</param>
+		/// <param name="property">The serialized property</param>
+		/// <returns>The method info of the desired function</returns>
 		public static MethodInfo FindFunction(string functionName, SerializedProperty property)
 		{
 			MethodInfo methodInfo;
@@ -55,7 +73,7 @@ namespace EditorAttributes.Editor.Utility
 			// If the method is null we try to see if its inside a serialized object
 			if (methodInfo == null)
 			{
-				var serializedObjectType = GetNestedFieldType(property, out _);
+				var serializedObjectType = GetNestedObjectType(property, out _);
 
 				if (serializedObjectType == null)
 					return methodInfo;
@@ -99,6 +117,14 @@ namespace EditorAttributes.Editor.Utility
 			}
 		}
 
+		/// <summary>
+		/// Finds a member from the target type
+		/// </summary>
+		/// <param name="memberName">The name of the member to look for</param>
+		/// <param name="targetType">The type to get the member from</param>
+		/// <param name="bindingFlags">The binding flags</param>
+		/// <param name="memberType">The type of the member to look for. Only Field, Property and Method are supported</param>
+		/// <returns>The member info of the desired member</returns>
 		public static MemberInfo FindMember(string memberName, Type targetType, BindingFlags bindingFlags, MemberTypes memberType)
 		{
 			switch (memberType)
@@ -134,27 +160,56 @@ namespace EditorAttributes.Editor.Utility
 			return null;
 		}
 
-		public static bool TryGetField(string name, Type type, BindingFlags bindingFlags, out FieldInfo fieldInfo)
+		/// <summary>
+		/// Tries to get a field from the target type
+		/// </summary>
+		/// <param name="name">The name of the field to search for</param>
+		/// <param name="targetType">The type to get the field from</param>
+		/// <param name="bindingFlags">The binding flags</param>
+		/// <param name="fieldInfo">The field info of the desired field</param>
+		/// <returns>True if the field was succesfully found, false otherwise</returns>
+		public static bool TryGetField(string name, Type targetType, BindingFlags bindingFlags, out FieldInfo fieldInfo)
 		{
-			fieldInfo = type.GetField(name, bindingFlags);
+			fieldInfo = targetType.GetField(name, bindingFlags);
 
 			return fieldInfo != null;
 		}
 
-		public static bool TryGetProperty(string name, Type type, BindingFlags bindingFlags, out PropertyInfo propertyInfo)
+		/// <summary>
+		/// Tries to get a property from the target type
+		/// </summary>
+		/// <param name="name">The name of the property to search for</param>
+		/// <param name="targetType">The type to get the property from</param>
+		/// <param name="bindingFlags">The binding flags</param>
+		/// <param name="propertyInfo">The property info of the desired property</param>
+		/// <returns>True if the property was succesfully found, false otherwise</returns>
+		public static bool TryGetProperty(string name, Type targetType, BindingFlags bindingFlags, out PropertyInfo propertyInfo)
 		{
-			propertyInfo = type.GetProperty(name, bindingFlags);
+			propertyInfo = targetType.GetProperty(name, bindingFlags);
 
 			return propertyInfo != null;
 		}
 
-		public static bool TryGetMethod(string name, Type type, BindingFlags bindingFlags, out MethodInfo methodInfo)
+		/// <summary>
+		/// Tries to get a function from the target type
+		/// </summary>
+		/// <param name="name">The name of the function to search for</param>
+		/// <param name="targetType">The type to get the function from</param>
+		/// <param name="bindingFlags">The binding flags</param>
+		/// <param name="methodInfo">The method info of the desired function</param>
+		/// <returns>True if the function was succesfully found, false otherwise</returns>
+		public static bool TryGetMethod(string name, Type targetType, BindingFlags bindingFlags, out MethodInfo methodInfo)
 		{
-			methodInfo = type.GetMethod(name, bindingFlags);
+			methodInfo = targetType.GetMethod(name, bindingFlags);
 
 			return methodInfo != null;
 		}
 
+		/// <summary>
+		/// Checks to see if a seralized property is a list or array
+		/// </summary>
+		/// <param name="property">The serialized property to check</param>
+		/// <returns>True if the property is a list or array, false otherwise</returns>
 		public static bool IsPropertyCollection(SerializedProperty property)
 		{
 			var arrayField = FindField(property.propertyPath.Split(".")[0], property);
@@ -163,6 +218,12 @@ namespace EditorAttributes.Editor.Utility
 			return memberInfoType.IsArray || memberInfoType.GetInterfaces().Contains(typeof(IList));
 		}
 
+		/// <summary>
+		/// Finds a member inside a serialzied object
+		/// </summary>
+		/// <param name="memberName">The name of the member to look for</param>
+		/// <param name="serializedProperty">The serialized property</param>
+		/// <returns>The member info of the member</returns>
 		public static MemberInfo GetValidMemberInfo(string memberName, SerializedProperty serializedProperty)
 		{
 			MemberInfo memberInfo;
@@ -187,15 +248,20 @@ namespace EditorAttributes.Editor.Utility
 			return memberInfo;
 		}
 
-		// Code "borrowed" from https://forum.unity.com/threads/casting-serializedproperty-to-the-desired-type.1169618/
-		public static Type GetNestedFieldType(SerializedProperty property, out object targetObject)
+		/// <summary>
+		/// Gets the type of a nested serialized object
+		/// </summary>
+		/// <param name="property">The serialized property</param>
+		/// <param name="nestedObject">Outputs the serialized nested object</param>
+		/// <returns>The nested object type</returns>
+		public static Type GetNestedObjectType(SerializedProperty property, out object nestedObject)
 		{
 			try
 			{
-				targetObject = property.serializedObject.targetObject;
+				nestedObject = property.serializedObject.targetObject;
 				var cutPathIndex = property.propertyPath.LastIndexOf('.');
 
-				if (cutPathIndex == -1) // If the cutPathIndex is -1 it means that the property is not nested and we return null
+				if (cutPathIndex == -1) // If the cutPathIndex is -1 it means that the member is not nested and we return null
 					return null;
 
 				var path = property.propertyPath[..cutPathIndex].Replace(".Array.data[", "[");
@@ -208,19 +274,19 @@ namespace EditorAttributes.Editor.Utility
 						var elementName = element[..element.IndexOf("[")];
 						var index = Convert.ToInt32(element[element.IndexOf("[")..].Replace("[", "").Replace("]", ""));
 					
-						targetObject = GetValue(targetObject, elementName, index);
+						nestedObject = GetValue(nestedObject, elementName, index);
 					}
 					else
 					{
-						targetObject = GetValue(targetObject, element);
+						nestedObject = GetValue(nestedObject, element);
 					}
 				}
 
-				return targetObject?.GetType();
+				return nestedObject?.GetType();
 			}
 			catch (ObjectDisposedException)
 			{
-				targetObject = null;
+				nestedObject = null;
 				return null;
 			}
 		}
@@ -261,6 +327,11 @@ namespace EditorAttributes.Editor.Utility
 			return null;
 		}
 
+		/// <summary>
+		/// Gets the type of a member
+		/// </summary>
+		/// <param name="memberInfo">The member to get the type from</param>
+		/// <returns>The type of the member</returns>
 		public static Type GetMemberInfoType(MemberInfo memberInfo)
 		{
 			if (memberInfo is FieldInfo fieldInfo)
@@ -279,9 +350,18 @@ namespace EditorAttributes.Editor.Utility
 			return null;
 		}
 
+		/// <summary>
+		/// Gets the value of a member
+		/// </summary>
+		/// <param name="memberInfo">The member to get the value from</param>
+		/// <param name="property">The serialized property</param>
+		/// <returns>The value of the member</returns>
 		public static object GetMemberInfoValue(MemberInfo memberInfo, SerializedProperty property)
 		{
 			var targetObject = property.serializedObject.targetObject;
+
+			if (targetObject == null)
+				return null;
 
 			try
 			{
@@ -298,24 +378,31 @@ namespace EditorAttributes.Editor.Utility
 					return methodInfo.Invoke(targetObject, null);
 				}
 			}
-			catch (ArgumentException) // If this expection is thrown it means that the member we try to get the value from is inside a different target
+			catch (Exception exception)
 			{
-				GetNestedFieldType(property, out object serializedObjectTarget);
-
-				if (serializedObjectTarget != null)
+				if (exception is ArgumentException or TargetException) // If these expections are thrown it means that the member we try to get the value from is inside a different target
 				{
-					if (memberInfo is FieldInfo fieldInfo)
+					GetNestedObjectType(property, out object serializedObjectTarget);
+
+					if (serializedObjectTarget != null)
 					{
-						return fieldInfo.GetValue(serializedObjectTarget);
+						if (memberInfo is FieldInfo fieldInfo)
+						{
+							return fieldInfo.GetValue(serializedObjectTarget);
+						}
+						else if (memberInfo is PropertyInfo propertyInfo)
+						{
+							return propertyInfo.GetValue(serializedObjectTarget);
+						}
+						else if (memberInfo is MethodInfo methodInfo)
+						{
+							return methodInfo.Invoke(serializedObjectTarget, null);
+						}
 					}
-					else if (memberInfo is PropertyInfo propertyInfo)
-					{
-						return propertyInfo.GetValue(serializedObjectTarget);
-					}
-					else if (memberInfo is MethodInfo methodInfo)
-					{
-						return methodInfo.Invoke(serializedObjectTarget, null);
-					}
+				}
+				else
+				{
+					throw;
 				}
 			}
 
@@ -324,6 +411,9 @@ namespace EditorAttributes.Editor.Utility
 
 		internal static object GetMemberInfoValue(MemberInfo memberInfo, object targetObject) // Internal function used for the button drawer
 		{
+			if (targetObject == null)
+				return null;
+
 			if (memberInfo is FieldInfo fieldInfo)
 			{
 				return fieldInfo.GetValue(targetObject);

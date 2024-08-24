@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(PrefixAttribute))]
+	[CustomPropertyDrawer(typeof(PrefixAttribute))]
     public class PrefixDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -27,10 +27,10 @@ namespace EditorAttributes.Editor
 				}
 			};
 
-			prefixLabel.style.color = canApplyGlobalColor ? EditorExtension.GLOBAL_COLOR : Color.gray;
+			prefixLabel.style.color = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR : Color.gray;
 			root.Add(propertyField);
 
-			UpdateVisualElement(root, () =>
+			UpdateVisualElement(() =>
 			{
 				prefixLabel.text = GetDynamicString(prefixAttribute.Prefix, property, prefixAttribute, errorBox);		
 				DisplayErrorBox(root, errorBox);

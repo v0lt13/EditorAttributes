@@ -25,9 +25,13 @@ namespace EditorAttributesSamples
 		}
 
 		[Header("SelectionButtons Attribute:")]
+#if UNITY_6000_0_OR_NEWER
+		[SerializeField, HelpBox("This attribute has been deprecated use EnumButtons instead", MessageMode.Warning)] private EditorAttributes.Void helpBoxHolder;
+#else
 		[SerializeField, SelectionButtons] private States states;
 		[SerializeField, SelectionButtons(showLabel: false)] private Flags flags;
 		[SerializeField, SelectionButtons(nameof(stringValues), buttonsHeight: 30f)] private string stringField;
+#endif
 
 		private string[] stringValues = new string[]
 		{

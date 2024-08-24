@@ -1,9 +1,12 @@
+using System;
 using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEditorInternal;
 using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(HorizontalGroupAttribute))]
+	[CustomPropertyDrawer(typeof(HorizontalGroupAttribute))]
     public class HorizontalGroupDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -18,10 +21,7 @@ namespace EditorAttributes.Editor
 
 			foreach (string variableName in horizontalGroup.FieldsToGroup)
 			{
-				var variableProperty = FindNestedProperty(property, variableName);
-
-				// Check for serialized properties since they have a weird naming when serialized and they cannot be found by the normal name
-				variableProperty ??= FindNestedProperty(property, $"<{variableName}>k__BackingField");
+				var variableProperty = FindNestedProperty(property, GetSerializedPropertyName(variableName, property));
 
 				if (variableProperty != null)
 				{
@@ -44,17 +44,15 @@ namespace EditorAttributes.Editor
 						}
 					};
 
-					var propertyField = DrawProperty(variableProperty, new Label());
+					var propertyField = DrawProperty(variableProperty);
 
 					propertyField.style.flexGrow = 1f;
 					propertyField.style.flexBasis = 0.1f;
+					groupBox.style.paddingLeft = 20f;
 
-					if (variableProperty.type != "Void") // Do not add labels to Void holders
-					{
-						groupBox.style.paddingLeft = 10f;
-						groupBox.Add(label);
-					}
-					
+					if (variableProperty.propertyType != SerializedPropertyType.Generic) 
+						groupBox.Add(label); // Do not add labels to serialized objects else it will show twice
+
 					groupBox.Add(propertyField);
 					root.Add(groupBox);
 				}
@@ -66,6 +64,30 @@ namespace EditorAttributes.Editor
 			}
 
 			return root;
+		}
+
+		// Had to override this function to remove the label from property fields since they are drawn manualy
+		protected override VisualElement DrawProperty(SerializedProperty property, Label label = null)
+		{
+			eventDrawer ??= new UnityEventDrawer();
+
+			try
+			{
+				var eventContainer = eventDrawer.CreatePropertyGUI(property);
+				var eventLabel = eventContainer.Q<Label>();
+
+				eventLabel.text = label == null ? eventLabel.text : "";
+
+				return eventContainer;
+			}
+			catch (NullReferenceException)
+			{
+				var propertyField = new PropertyField(property, "");
+
+				propertyField.BindProperty(property);
+
+				return propertyField;
+			}
 		}
 	}
 }

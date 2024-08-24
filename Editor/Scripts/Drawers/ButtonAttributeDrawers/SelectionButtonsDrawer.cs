@@ -54,7 +54,7 @@ namespace EditorAttributes.Editor
 			else if (property.propertyType != SerializedPropertyType.Enum && !string.IsNullOrEmpty(selectionButtonsAttribute.CollectionName))
 			{
 				var memberInfo = ReflectionUtility.GetValidMemberInfo(selectionButtonsAttribute.CollectionName, property);
-				var displayNames = GetCollectionValuesAsString(selectionButtonsAttribute.CollectionName, property, memberInfo, errorBox).ToArray();
+				var displayNames = ConvertCollectionValuesToStrings(selectionButtonsAttribute.CollectionName, property, memberInfo, errorBox).ToArray();
 
 				var buttonsValue = Array.IndexOf(displayNames, GetPropertyValueAsString(property));
 

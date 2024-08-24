@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(ProgressBarAttribute))]
+	[CustomPropertyDrawer(typeof(ProgressBarAttribute))]
     public class ProgressBarDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -24,17 +24,17 @@ namespace EditorAttributes.Editor
 
 				progressBar.schedule.Execute(() =>
 				{
-					if (canApplyGlobalColor)
+					if (CanApplyGlobalColor)
 						progressBar.Q(className: "unity-progress-bar__progress").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
 				}).ExecuteLater(1);
 
-				UpdateVisualElement(root, () =>
+				UpdateVisualElement(() =>
 				{
 					var propertyValue = GetPropertyValue(property);
 
 					progressBar.value = propertyValue;
 					progressBar.title = $"{property.displayName}: {propertyValue}/{progressBarAttribute.MaxValue}";
-				}, 10);
+				});
 
 				root.Add(progressBar);
 			}

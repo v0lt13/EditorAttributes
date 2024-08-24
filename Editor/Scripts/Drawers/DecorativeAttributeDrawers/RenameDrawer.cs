@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(RenameAttribute))]
+	[CustomPropertyDrawer(typeof(RenameAttribute))]
     public class RenameDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -13,7 +13,7 @@ namespace EditorAttributes.Editor
 			var errorBox = new HelpBox();
 			var propertyField = DrawProperty(property, new Label(property.displayName));
 
-			UpdateVisualElement(root, () =>
+			UpdateVisualElement(() =>
 			{
 				propertyField.Q<Label>().text = GetNewName(property, errorBox);
 				DisplayErrorBox(root, errorBox);

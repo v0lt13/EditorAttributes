@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(FolderPathAttribute))]
+	[CustomPropertyDrawer(typeof(FolderPathAttribute))]
     public class FolderPathDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -29,7 +29,7 @@ namespace EditorAttributes.Editor
 
 			var buttonIcon = new Image() { image = EditorGUIUtility.IconContent("d_Folder Icon").image };
 
-			UpdateVisualElement(root, () =>
+			UpdateVisualElement(() =>
 			{
 				if (folderPathAttribute.GetRelativePath && !string.IsNullOrEmpty(folderPath))
 				{

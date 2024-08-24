@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
@@ -6,6 +7,7 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Collections.Generic;
 using EditorAttributes.Editor.Utility;
+using Object = UnityEngine.Object;
 
 namespace EditorAttributes.Editor
 {
@@ -21,27 +23,30 @@ namespace EditorAttributes.Editor
 		private Dictionary<MethodInfo, object[]> buttonParameterValues = new();
 
 		private MethodInfo[] functions;
+		private static List<Action> updateExecutionList = new();
 
-		void OnEnable()
+		protected virtual void OnEnable()
 		{
 			functions = target.GetType().GetMethods(ReflectionUtility.BINDING_FLAGS);
 
 			ButtonDrawer.LoadParamsData(functions, target, ref buttonFoldouts, ref buttonParameterValues);
-
+			
 			try
 			{
 				buttonParamsDataFilePath = Path.Combine(ButtonDrawer.PARAMS_DATA_LOCATION, $"{target}ParamsData.json");
 			}
-			catch (System.ArgumentException)
+			catch (ArgumentException)
 			{
 				return;
 			}
 		}
 
-		void OnDisable()
+		protected virtual void OnDisable()
 		{
 			if (target == null)
 				ButtonDrawer.DeleteParamsData(buttonParamsDataFilePath);
+
+			updateExecutionList.Clear();
 		}
 
 		public override VisualElement CreateInspectorGUI()
@@ -54,10 +59,12 @@ namespace EditorAttributes.Editor
 
 			root.Add(buttons);
 
+			RunUpdateLoop(root);
+
 			return root;
 		}
 
-		private new VisualElement DrawDefaultInspector()
+		protected virtual new VisualElement DrawDefaultInspector()
 		{
 			var root = new VisualElement();
 
@@ -75,6 +82,10 @@ namespace EditorAttributes.Editor
 							propertyField.SetEnabled(false);
 
 						var field = ReflectionUtility.FindField(property.name, target);
+
+						if (field?.GetCustomAttribute<HidePropertyAttribute>() != null)
+							continue;
+
 						var colorAttribute = field?.GetCustomAttribute<GUIColorAttribute>();
 
 						if (colorAttribute != null)
@@ -96,7 +107,25 @@ namespace EditorAttributes.Editor
             return root;
 		}
 
-		private VisualElement DrawButtons()
+		internal static void AddToUpdateLoop(Action action) => updateExecutionList.Add(action);
+
+		private void RunUpdateLoop(VisualElement root)
+		{
+			root.schedule.Execute(() => 
+			{
+				if (!PropertyDrawerBase.IsCollectionValid(updateExecutionList))
+					return;
+
+				foreach (var action in updateExecutionList)
+					action.Invoke();
+			}).Every(50);				
+		}
+
+		/// <summary>
+		/// Draws all the buttons from functions using the Button Attribute
+		/// </summary>
+		/// <returns>A visual element containing all drawn buttons</returns>
+		protected VisualElement DrawButtons()
 		{
 			var root = new VisualElement();
 			var errorBox = new HelpBox();
@@ -129,7 +158,7 @@ namespace EditorAttributes.Editor
 
 				if (conditionalProperty != null)
 				{
-					PropertyDrawerBase.UpdateVisualElement(root, () =>
+					AddToUpdateLoop(() =>
 					{
 						var conditionValue = PropertyDrawerBase.GetConditionValue(conditionalProperty, buttonAttribute, target, errorBox);
 

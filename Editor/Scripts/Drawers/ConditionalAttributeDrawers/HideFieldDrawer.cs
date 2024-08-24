@@ -4,7 +4,7 @@ using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(HideFieldAttribute))]
+	[CustomPropertyDrawer(typeof(HideFieldAttribute))]
     public class HideFieldDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -17,7 +17,7 @@ namespace EditorAttributes.Editor
 
 			var propertyField = DrawProperty(property);
 
-			UpdateVisualElement(root, () =>
+			UpdateVisualElement(() =>
 			{
 				if (!GetConditionValue(conditionalProperty, hideAttribute, property, errorBox))
 				{

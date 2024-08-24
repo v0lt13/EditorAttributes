@@ -1,18 +1,19 @@
 using UnityEditor;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
-using UnityEngine;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(ButtonFieldAttribute))]
+	[CustomPropertyDrawer(typeof(ButtonFieldAttribute))]
     public class ButtonFieldDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var buttonFieldAttribute = attribute as ButtonFieldAttribute;
-			object ownerObject = null;
+
 			var path = property.propertyPath.Split('.');
+			object ownerObject = null;
+
 			if (path.Length == 1)
 			{
 				ownerObject = property.serializedObject.targetObject;
@@ -20,11 +21,10 @@ namespace EditorAttributes.Editor
 			else
 			{
 				// Get the object that the property is a member of
-				var type = ReflectionUtility.GetNestedFieldType(property, out ownerObject);
+				var type = ReflectionUtility.GetNestedObjectType(property, out ownerObject);
+
 				if (type == null)
-				{
 					return new HelpBox("Field must be a member of a class", HelpBoxMessageType.Error);
-				}
 			}
 
 			var function = ReflectionUtility.FindFunction(buttonFieldAttribute.FunctionName, ownerObject);

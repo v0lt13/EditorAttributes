@@ -11,13 +11,20 @@ using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-    public class PropertyDrawerBase : PropertyDrawer
+	public class PropertyDrawerBase : PropertyDrawer
     {
-		protected readonly bool canApplyGlobalColor = EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR;
-		protected UnityEventDrawer eventDrawer;
+		private protected UnityEventDrawer eventDrawer;
+
+		protected bool CanApplyGlobalColor => EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR;				
 
 		public override VisualElement CreatePropertyGUI(SerializedProperty property) => DrawProperty(property);	
 
+		/// <summary>
+		/// Draws a property field also accounting for Unity Events
+		/// </summary>
+		/// <param name="property">The serialized property to draw</param>
+		/// <param name="label">Add a custom label to the property</param>
+		/// <returns>The property visual element</returns>
 		protected virtual VisualElement DrawProperty(SerializedProperty property, Label label = null)
 		{
 			eventDrawer ??= new UnityEventDrawer();
@@ -43,6 +50,12 @@ namespace EditorAttributes.Editor
 			}
 		}
 
+		/// <summary>
+		/// Sets the value of a property from a string
+		/// </summary>
+		/// <param name="value">The string value to convert</param>
+		/// <param name="property">The serialized property reference to assign the value to</param>
+		/// <param name="errorBox">The error box to display any errors to</param>
 		protected static void SetProperyValueFromString(string value, ref SerializedProperty property, HelpBox errorBox)
 		{
 			try
@@ -77,6 +90,11 @@ namespace EditorAttributes.Editor
 			}
 		}
 
+		/// <summary>
+		/// Gets the value of a serialzied property and returns it as a string
+		/// </summary>
+		/// <param name="property">The serialized property to get the value from</param>
+		/// <returns>The serialized property value as a string</returns>
 		protected static string GetPropertyValueAsString(SerializedProperty property)
 		{
 			return property.propertyType switch
@@ -89,9 +107,15 @@ namespace EditorAttributes.Editor
 			};
 		}
 
-		internal static bool IsCollectionValid(ICollection collection) => collection != null && collection.Count != 0;
-
-		protected static List<string> GetCollectionValuesAsString(string collectionName, SerializedProperty serializedProperty, MemberInfo memberInfo, HelpBox errorBox)
+		/// <summary>
+		/// Converts the values of a collection into strings
+		/// </summary>
+		/// <param name="collectionName">The name of the collection to convert</param>
+		/// <param name="serializedProperty">The serialized property</param>
+		/// <param name="memberInfo">The member info of the collection</param>
+		/// <param name="errorBox">The error box to display any errors to</param>
+		/// <returns>The values of the collection in a list of strings</returns>
+		protected static List<string> ConvertCollectionValuesToStrings(string collectionName, SerializedProperty serializedProperty, MemberInfo memberInfo, HelpBox errorBox)
 		{
 			var stringList = new List<string>();
 			var memberInfoValue = ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
@@ -114,6 +138,12 @@ namespace EditorAttributes.Editor
 			return stringList;
 		}
 
+		/// <summary>
+		/// Finds a nested serialized property
+		/// </summary>
+		/// <param name="property">The serialized property</param>
+		/// <param name="propertyName">The name of the property to find</param>
+		/// <returns>The nested serialized property</returns>
 		protected static SerializedProperty FindNestedProperty(SerializedProperty property, string propertyName)
 		{
 			var propertyPath = property.propertyPath;
@@ -131,24 +161,82 @@ namespace EditorAttributes.Editor
 			}
 		}
 
-		protected void Print(object message) => Debug.Log(message);
+		/// <summary>
+		/// Gets the name of a serialized property accounting for C# properties
+		/// </summary>
+		/// <param name="propertyName">The name of the property to look for</param>
+		/// <param name="property">The serialized property</param>
+		/// <returns>The name of the serialized property</returns>
+		public static string GetSerializedPropertyName(string propertyName, SerializedProperty property)
+		{
+			var memberInfo = ReflectionUtility.GetValidMemberInfo(propertyName, property);
 
+			return memberInfo is PropertyInfo ? $"<{propertyName}>k_BackingField" : propertyName;
+		}
+
+		/// <summary>
+		/// Displays an error box in the inspector
+		/// </summary>
+		/// <param name="root">The root visual element</param>
+		/// <param name="errorBox">The help box to displaying the errors</param>
 		public static void DisplayErrorBox(VisualElement root, HelpBox errorBox)
 		{
 			errorBox.messageType = HelpBoxMessageType.Error;
 
 			if (!string.IsNullOrEmpty(errorBox.text))
+			{
 				root.Add(errorBox);
+			}
+			else
+			{
+				RemoveElement(root, errorBox);
+			}
 		}
 
-		public static void UpdateVisualElement(VisualElement visualElement, Action logicToUpdate, long intervalMs = 60) => visualElement.schedule.Execute(logicToUpdate).Every(intervalMs);
+		/// <summary>
+		/// Update logic for a visual element
+		/// </summary>
+		/// <param name="logicToUpdate">The logic to update</param>
+		protected void UpdateVisualElement(Action logicToUpdate) => EditorExtension.AddToUpdateLoop(logicToUpdate);
 
-		public static void RemoveElement(VisualElement root, VisualElement element)
+		/// <summary>
+		/// Updates a visual element at a set interval
+		/// </summary>
+		/// <param name="visualElement">The visual element to update</param>
+		/// <param name="logicToUpdate">The logic to execute on the specified element</param>
+		/// <param name="intervalMs">The update interval in milliseconds</param>
+		public static void UpdateVisualElementAtInterval(VisualElement visualElement, Action logicToUpdate, long intervalMs = 60) => visualElement.schedule.Execute(logicToUpdate).Every(intervalMs);
+
+		/// <summary>
+		/// Add an element from another visual element if it doesn't exist
+		/// </summary>
+		/// <param name="root">The root to add the element on</param>
+		/// <param name="element">The element to add</param>
+		public static void AddElement(VisualElement root, VisualElement element)
 		{
-			if (root.Contains(element))
-				root.Remove(element);
+			if (!root.Contains(element))
+				root.Add(element);
 		}
 
+		/// <summary>
+		/// Removes an element from another visual element if it exists
+		/// </summary>
+		/// <param name="owner">The owner containing the element</param>
+		/// <param name="element">The element to remove</param>
+		public static void RemoveElement(VisualElement owner, VisualElement element)
+		{
+			if (owner.Contains(element))
+				owner.Remove(element);
+		}
+
+		/// <summary>
+		/// Gets the value of a condition for a conditional attribute
+		/// </summary>
+		/// <param name="memberInfo">The member info of the condition</param>
+		/// <param name="conditionalAttribute">The conditional attribute</param>
+		/// <param name="serializedProperty">The serialized property</param>
+		/// <param name="errorBox">The error box to display any errors to</param>
+		/// <returns>True if the condition is satisfied</returns>
 		public static bool GetConditionValue(MemberInfo memberInfo, IConditionalAttribute conditionalAttribute, SerializedProperty serializedProperty, HelpBox errorBox)
 		{
 			var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
@@ -206,6 +294,14 @@ namespace EditorAttributes.Editor
 			return false;
 		}
 
+		/// <summary>
+		/// Gets the string value from a member if the input mode is set to Dynamic
+		/// </summary>
+		/// <param name="inputText">The string input that may contain the member name</param>
+		/// <param name="property">The serialized property</param>
+		/// <param name="dynamicStringAttribute">The dynamic string attribute</param>
+		/// <param name="errorBox">The error box to display any errors to</param>
+		/// <returns>If the input mode is Constant will return the base input string, if is Dynamic will return the string value of the member</returns>
 		public static string GetDynamicString(string inputText, SerializedProperty property, IDynamicStringAttribute dynamicStringAttribute, HelpBox errorBox)
 		{
 			switch (dynamicStringAttribute.StringInputMode)
@@ -232,13 +328,15 @@ namespace EditorAttributes.Editor
 					if (memberType == typeof(string))
 						return memberValue.ToString();
 
-					errorBox.text = $"The member {inputText} needs to be a string";
+					errorBox.text = $"The member {inputText} needs to return a string";
 					return inputText;
 			}
 		}
 
-		public static Vector2Int Vector3IntToVector2Int(Vector3Int vector3Int) => new(vector3Int.x, vector3Int.y);
-
+		/// <summary>
+		/// Applies the help box style to a visual element
+		/// </summary>
+		/// <param name="visualElement">The element to apply the style to</param>
 		public static void ApplyBoxStyle(VisualElement visualElement)
 		{
 			visualElement.style.borderTopLeftRadius = 3f;
@@ -268,5 +366,36 @@ namespace EditorAttributes.Editor
 			visualElement.style.marginRight = 3f;
 			visualElement.style.marginLeft = 3f;
 		}
+
+		#region NON_GUI_RELATED_UTILITY_FUNCITONS
+
+		/// <summary>
+		/// A short handy version of Debug.Log
+		/// </summary>
+		/// <param name="message">The message to print</param>
+		protected void Print(object message) => Debug.Log(message);
+
+		/// <summary>
+		/// Checks if a collection is null or has no members
+		/// </summary>
+		/// <param name="collection">The collection to check</param>
+		/// <returns>False is the collection is null or has no members, true otherwise</returns>
+		public static bool IsCollectionValid(ICollection collection) => collection != null && collection.Count != 0;
+
+		/// <summary>
+		/// Converts a Vector3Int to a Vector2Int
+		/// </summary>
+		/// <param name="vector3Int">The Vector3Int to convert</param>
+		/// <returns>The converted Vector2Int</returns>
+		public static Vector2Int Vector3IntToVector2Int(Vector3Int vector3Int) => new(vector3Int.x, vector3Int.y);
+
+		/// <summary>
+		/// Gets the size of a 2D texture
+		/// </summary>
+		/// <param name="texture">The texture to get the size from</param>
+		/// <returns>The width and height of the texture as a Vector2</returns>
+		public static Vector2 GetTextureSize(Texture2D texture) => new(texture.width, texture.height);
+
+		#endregion
 	}
 }

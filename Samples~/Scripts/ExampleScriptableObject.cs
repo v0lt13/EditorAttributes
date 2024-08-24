@@ -44,7 +44,12 @@ namespace EditorAttributesSamples
 		[DataTable(true)] public EnemyData[] enemies;
 
 		[Title("Level Settings")]
-		[SelectionButtons] public Season season;
+#if UNITY_6000_OR_NEWER
+		[EnumButtons]
+#else
+		[SelectionButtons]
+#endif
+		public Season season;
 		[Suffix(nameof(GetTimeOfDay), stringInputMode: StringInputMode.Dynamic), TimeField(TimeFormat.HourMinuteSecond, ConvertTo.Minutes)] 
 		public float timeOfDay;
 		[Space]

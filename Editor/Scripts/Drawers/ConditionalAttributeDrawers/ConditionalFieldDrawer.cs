@@ -5,7 +5,7 @@ using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(ConditionalFieldAttribute))]
+	[CustomPropertyDrawer(typeof(ConditionalFieldAttribute))]
     public class ConditionalFieldDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -17,7 +17,7 @@ namespace EditorAttributes.Editor
 
 			var errorBox = new HelpBox();
 
-			UpdateVisualElement(root, () =>
+			UpdateVisualElement(() =>
 			{
 				var canDrawProperty = CanDrawProperty(conditionalAttribute, conditionalAttribute.BooleanNames, property, errorBox);
 
@@ -84,7 +84,8 @@ namespace EditorAttributes.Editor
 			{
 				if (!(attribute.NegatedValues == null || attribute.NegatedValues.Length == 0))
 				{
-					if (attribute.NegatedValues[i]) booleanList[i] = !booleanList[i];
+					if (attribute.NegatedValues[i]) 
+						booleanList[i] = !booleanList[i];
 				}
 
 				switch (attribute.ConditionType)

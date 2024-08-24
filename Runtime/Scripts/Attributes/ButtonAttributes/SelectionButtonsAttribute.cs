@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class SelectionButtonsAttribute : PropertyAttribute
+#if UNITY_6000_0_OR_NEWER
+	[System.Obsolete("This attribute has been deprecated use EnumButtons instead")]
+#endif
+	public class SelectionButtonsAttribute : PropertyAttribute
     {
 	    public string CollectionName { get; private set; }
 	    public float ButtonsHeight { get; private set; }

@@ -13,7 +13,7 @@ using ColorUtility = EditorAttributes.Editor.Utility.ColorUtility;
 
 namespace EditorAttributes.Editor
 {
-    public class ButtonDrawer
+	public class ButtonDrawer
     {
 		[Serializable]
 		private class FunctionParamData
@@ -238,6 +238,18 @@ namespace EditorAttributes.Editor
 			{
 				return new IntegerField(fieldName) { value = (int)ConvertParameterValue(fieldType, fieldValue) };
 			}
+			else if (fieldType == typeof(uint))
+			{
+				return new UnsignedIntegerField(fieldName) { value = (uint)ConvertParameterValue(fieldType, fieldValue) };
+			}
+			else if (fieldType == typeof(long))
+			{
+				return new LongField(fieldName) { value = (long)ConvertParameterValue(fieldType, fieldValue) };
+			}
+			else if (fieldType == typeof(ulong))
+			{
+				return new UnsignedLongField(fieldName) { value = (ulong)ConvertParameterValue(fieldType, fieldValue) };
+			}
 			else if (fieldType == typeof(float))
 			{
 				return new FloatField(fieldName) { value = (float)ConvertParameterValue(fieldType, fieldValue) };
@@ -322,6 +334,18 @@ namespace EditorAttributes.Editor
 			{
 				field.RegisterCallback<ChangeEvent<int>>((callback) => valueCallback.Invoke(callback.newValue));
 			}
+			else if (parameterType == typeof(uint))
+			{
+				field.RegisterCallback<ChangeEvent<uint>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (parameterType == typeof(long))
+			{
+				field.RegisterCallback<ChangeEvent<long>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (parameterType == typeof(ulong))
+			{
+				field.RegisterCallback<ChangeEvent<ulong>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
 			else if (parameterType == typeof(float))
 			{
 				field.RegisterCallback<ChangeEvent<float>>((callback) => valueCallback.Invoke(callback.newValue));
@@ -398,11 +422,23 @@ namespace EditorAttributes.Editor
 
 			if (parameterType == typeof(string))
 			{
-				return parameterValue.ToString();
+				return parameterValue?.ToString();
 			}
 			else if (parameterType == typeof(int))
 			{
 				return isDBNull ? 0 : Convert.ToInt32(parameterValue);
+			}
+			else if (parameterType == typeof(uint))
+			{
+				return isDBNull ? 0 : Convert.ToUInt32(parameterValue);
+			}
+			else if (parameterType == typeof(long))
+			{
+				return isDBNull ? 0 : Convert.ToInt64(parameterValue);
+			}
+			else if (parameterType == typeof(ulong))
+			{
+				return isDBNull ? 0 : Convert.ToUInt64(parameterValue);
 			}
 			else if (parameterType == typeof(float))
 			{

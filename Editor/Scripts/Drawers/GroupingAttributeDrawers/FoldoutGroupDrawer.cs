@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(FoldoutGroupAttribute))]
+	[CustomPropertyDrawer(typeof(FoldoutGroupAttribute))]
     public class FoldoutGroupDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -28,23 +28,24 @@ namespace EditorAttributes.Editor
 			{
 				var toggle = foldout.Q<Toggle>();
 
-				toggle.style.backgroundColor = canApplyGlobalColor ? EditorExtension.GLOBAL_COLOR / 3f : new Color(0.1f, 0.1f, 0.1f, 0.2f);
+				toggle.style.backgroundColor = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR / 3f : new Color(0.1f, 0.1f, 0.1f, 0.2f);
 			}).ExecuteLater(1);
 
 			foreach (string variableName in foldoutGroup.FieldsToGroup)
 			{
-				var variableProperty = FindNestedProperty(property, variableName);
-
-				// Check for serialized properties since they have a weird naming when serialized and they cannot be found by the normal name
-				variableProperty ??= FindNestedProperty(property, $"<{variableName}>k__BackingField");
+				var variableProperty = FindNestedProperty(property, GetSerializedPropertyName(variableName, property));
 
 				if (variableProperty != null)
 				{
-					var properyField = DrawProperty(variableProperty);
-					properyField.style.unityFontStyleAndWeight = FontStyle.Normal;
-					properyField.schedule.Execute(() => properyField.Q<Label>().style.marginRight = foldoutGroup.WidthOffset).ExecuteLater(30);
+					var propertyField = DrawProperty(variableProperty);
 
-					foldout.Add(properyField);
+					if (variableProperty.propertyType == SerializedPropertyType.Generic) // Slightly move dropdowns for serialized objects
+						propertyField.style.marginLeft = 10f;
+
+					propertyField.style.unityFontStyleAndWeight = FontStyle.Normal;
+					propertyField.schedule.Execute(() => propertyField.Q<Label>().style.marginRight = foldoutGroup.WidthOffset).ExecuteLater(30);
+
+					foldout.Add(propertyField);
 				}
 				else
 				{

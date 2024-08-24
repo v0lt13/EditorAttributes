@@ -9,7 +9,7 @@ namespace EditorAttributes
         /// <summary>
         /// Attribute to call a function when the value of the attached property changes
         /// </summary>
-        /// <param name="functionName">The name of the funciton to call</param>
+        /// <param name="functionName">The name of the function to call</param>
     	public OnValueChangedAttribute(string functionName) => FunctionName = functionName;
     }
 }

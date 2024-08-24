@@ -32,7 +32,7 @@ namespace EditorAttributes.Editor
 				root.style.flexDirection = FlexDirection.Row;
 				label.style.minWidth = 150f;
 
-				if (canApplyGlobalColor)
+				if (CanApplyGlobalColor)
 				{
 					root.schedule.Execute(() =>
 					{
@@ -46,7 +46,7 @@ namespace EditorAttributes.Editor
 					var minField = new FloatField(5) { showMixedValue = property.hasMultipleDifferentValues, style = { maxWidth = 50f, minWidth = 50f } };
 					var maxField = new FloatField(5) { showMixedValue = property.hasMultipleDifferentValues, style = { maxWidth = 50f, minWidth = 50f } };
 
-					if (canApplyGlobalColor)
+					if (CanApplyGlobalColor)
 					{
 						root.schedule.Execute(() =>
 						{

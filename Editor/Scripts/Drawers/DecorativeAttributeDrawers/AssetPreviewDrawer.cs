@@ -1,11 +1,10 @@
 using System;
-using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(AssetPreviewAttribute))]
+	[CustomPropertyDrawer(typeof(AssetPreviewAttribute))]
     public class AssetPreviewDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -21,7 +20,7 @@ namespace EditorAttributes.Editor
             {
 				var image = new Image();
 
-				UpdateVisualElement(root, () =>
+				UpdateVisualElement(() =>
                 {
 					try
 					{
@@ -43,8 +42,8 @@ namespace EditorAttributes.Editor
 							return;
 						}
 
-						var imageWidth = assetPreviewAttribute.PreviewWidth == 0f ? GetImageSize(texture).x : assetPreviewAttribute.PreviewWidth;
-						var imageHeight = assetPreviewAttribute.PreviewHeight == 0f ? GetImageSize(texture).y : assetPreviewAttribute.PreviewHeight;
+						var imageWidth = assetPreviewAttribute.PreviewWidth == 0f ? GetTextureSize(texture).x : assetPreviewAttribute.PreviewWidth;
+						var imageHeight = assetPreviewAttribute.PreviewHeight == 0f ? GetTextureSize(texture).y : assetPreviewAttribute.PreviewHeight;
 
 						image.image = texture;
 						image.style.width = imageWidth;
@@ -67,7 +66,5 @@ namespace EditorAttributes.Editor
 
 			return root;
 		}
-
-		private Vector2 GetImageSize(Texture2D texture) => new(texture.width, texture.height);
 	}
 }

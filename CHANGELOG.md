@@ -1,3 +1,16 @@
+EditorAttributes v2.3.0 Changelog:
+- Added HideProperty Attribute
+- Added button parameter support for uint, long and ulong
+- Added documentation for scripting API
+- Improved the backend of the package to make it easier to create custom attributes or expand it
+- Serialized objects and collections should now display corectly inside groups
+- Fixed conditional attributes not being able to find functions and properties inside serialized objects
+- Fixed an error sometimes being thrown then deleting an object using a conditional attribute
+- Fixed an error thrown when a string button parameter is null 
+- Fixed an issue where the Dropdown Attribute error box doesn't update properly
+- The SelectionButtons Attribute has been deprecated in Unity 6 in favor of the built in EnumButtons Attribute
+- The Rename Attribute is now a decorative attribute
+
 EditorAttributes v2.2.0 Changelog:
 - Added TimeField Attribute
 - Added OnValueChanged Attribute
@@ -93,7 +106,7 @@ EditorAttributes v1.6.0 Changelog:
 - Added ColorField attribute
 - Added GUIColor attribute
 - Added option to draw groups inside boxes
-- Fixed functions not beeing found
+- Fixed functions not being found
 - Handled Illegal characters in path ArgumentException on the button
 - Updated FoldoutGroup GUI
 

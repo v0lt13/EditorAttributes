@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(SuffixAttribute))]
+	[CustomPropertyDrawer(typeof(SuffixAttribute))]
     public class SuffixDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -29,11 +29,11 @@ namespace EditorAttributes.Editor
 
 			root.style.flexDirection = FlexDirection.Row;
 			propertyField.style.flexGrow = 1f;
-			suffixLabel.style.color = suffixLabel.style.color = canApplyGlobalColor ? EditorExtension.GLOBAL_COLOR : Color.gray;
+			suffixLabel.style.color = suffixLabel.style.color = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR : Color.gray;
 
 			root.Add(propertyField);
 
-			UpdateVisualElement(root, () =>
+			UpdateVisualElement(() =>
 			{
 				suffixLabel.text = GetDynamicString(suffixAttribute.Suffix, property, suffixAttribute, errorBox);
 				DisplayErrorBox(root, errorBox);

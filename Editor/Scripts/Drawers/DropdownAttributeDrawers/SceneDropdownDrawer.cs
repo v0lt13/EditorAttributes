@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(SceneDropdownAttribute))]
+	[CustomPropertyDrawer(typeof(SceneDropdownAttribute))]
     public class SceneDropdownDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -30,7 +30,7 @@ namespace EditorAttributes.Editor
 					ApplyPropertyValue(property, dropdownField);
 				}
 
-				UpdateVisualElement(root, () =>
+				UpdateVisualElement(() =>
 				{
 					var sceneNames = GetSceneNames(errorBox);
 

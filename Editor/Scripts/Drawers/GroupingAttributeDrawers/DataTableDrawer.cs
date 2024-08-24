@@ -6,7 +6,7 @@ using ColorUtility = EditorAttributes.Editor.Utility.ColorUtility;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(DataTableAttribute))]
+	[CustomPropertyDrawer(typeof(DataTableAttribute))]
     public class DataTableDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -78,13 +78,13 @@ namespace EditorAttributes.Editor
 			}
 
 			// When there are other attributes on the dataTable field they would recreate the label of the property field so we make sure it will never be there
-			UpdateVisualElement(root, () =>
+			UpdateVisualElement(() =>
 			{
 				var labels = root.Query<Label>(className: "unity-base-field__label").ToList();
 
 				foreach (var label in labels)
 					label.RemoveFromHierarchy();
-			}, 30);
+			});
 
 			return root;
 		}

@@ -4,7 +4,7 @@ using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(MessageBoxAttribute))]
+	[CustomPropertyDrawer(typeof(MessageBoxAttribute))]
     public class MessageBoxDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -16,13 +16,13 @@ namespace EditorAttributes.Editor
 			var errorBox = new HelpBox();
 			var messageBox = new HelpBox("", (HelpBoxMessageType)messageBoxAttribute.MessageType);
 
-			if (canApplyGlobalColor)
+			if (CanApplyGlobalColor)
 			{
 				messageBox.style.color = EditorExtension.GLOBAL_COLOR;
 				messageBox.style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
 			}
 
-			UpdateVisualElement(root, () =>
+			UpdateVisualElement(() =>
 			{
 				if (GetConditionValue(conditionalProperty, messageBoxAttribute, property, errorBox))
 				{

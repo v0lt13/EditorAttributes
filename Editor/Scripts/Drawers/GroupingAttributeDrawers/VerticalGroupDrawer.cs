@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(VerticalGroupAttribute))]
+	[CustomPropertyDrawer(typeof(VerticalGroupAttribute))]
     public class VerticalGroupDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -16,10 +16,7 @@ namespace EditorAttributes.Editor
 
 			foreach (string variableName in verticalGroup.FieldsToGroup)
 			{
-				var variableProperty = FindNestedProperty(property, variableName);
-
-				// Check for serialized properties since they have a weird naming when serialized and they cannot be found by the normal name
-				variableProperty ??= FindNestedProperty(property, $"<{variableName}>k__BackingField");
+				var variableProperty = FindNestedProperty(property, GetSerializedPropertyName(variableName, property));
 
 				if (variableProperty != null)
 				{
@@ -45,7 +42,10 @@ namespace EditorAttributes.Editor
 					propertyField.style.flexGrow = 1f;
 					propertyField.style.flexBasis = 0.1f;
 
-					if (variableProperty.type != "Void") // Do not add labels to Void holders
+					if (variableProperty.propertyType == SerializedPropertyType.Generic && verticalGroup.DrawInBox) // Add an offset to serialized objects drawn in a box
+						propertyField.style.marginLeft = 10f;
+
+					if (variableProperty.propertyType != SerializedPropertyType.Generic) // Do not add labels to serialized objects else it will show twice
 						groupBox.Add(label);
 
 					groupBox.Add(propertyField);

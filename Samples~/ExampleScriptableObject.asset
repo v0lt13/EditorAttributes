@@ -15,7 +15,7 @@ MonoBehaviour:
   gameName: My Game
   isMultiplayer: 1
   maxPlayers: 5
-  startingCurrency: {x: 20, y: 80}
+  startingCurrency: {x: 22, y: 82}
   playerClasses:
   - className: 
     playerHealth: 100

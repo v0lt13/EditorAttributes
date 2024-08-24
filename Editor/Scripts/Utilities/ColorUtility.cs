@@ -5,8 +5,14 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor.Utility
 {
-    public static class ColorUtility
+	public static class ColorUtility
     {
+		/// <summary>
+		/// Applies a color to a visual element via the color attribute
+		/// </summary>
+		/// <param name="visualElement">The visual element to color</param>
+		/// <param name="color">The color attribute</param>
+		/// <param name="errorBox">The error box to display any errors to</param>
 		public static void ApplyColor(VisualElement visualElement, IColorAttribute color, HelpBox errorBox)
 		{
 			if (color.Color == GUIColor.Default && !color.UseRGB && string.IsNullOrEmpty(color.HexColor))
@@ -45,7 +51,13 @@ namespace EditorAttributes.Editor.Utility
 			}).ExecuteLater(50);
 		}
 
-		public static void ApplyColor(VisualElement visualElement, Color color, int executeLaterMs = 50)
+		/// <summary>
+		/// Applies a color to a visual element
+		/// </summary>
+		/// <param name="visualElement">The visual element to color</param>
+		/// <param name="color">The color to apply</param>
+		/// <param name="delay">How many milliseconds to delay before applying the color</param>
+		public static void ApplyColor(VisualElement visualElement, Color color, int delay = 50)
 		{
 			visualElement.schedule.Execute(() =>
 			{
@@ -77,10 +89,10 @@ namespace EditorAttributes.Editor.Utility
 					checkMark.parent.style.backgroundColor = StyleKeyword.Initial;
 				}
 
-			}).ExecuteLater(executeLaterMs);
+			}).ExecuteLater(delay);
 		}
 
-		public static Color? GetColor(SerializedProperty property)
+		internal static Color? GetPropertyColor(SerializedProperty property)
 		{
 			var propertyColor = GetColorFromProperty(property);
 
@@ -96,7 +108,7 @@ namespace EditorAttributes.Editor.Utility
 			return null;
 		}
 
-		public static Color? GetColor(SerializedProperty property, float customAlpha)
+		internal static Color? GetPropertyColor(SerializedProperty property, float customAlpha)
 		{
 			var propertyColor = GetColorFromProperty(property);
 
@@ -112,6 +124,11 @@ namespace EditorAttributes.Editor.Utility
 			return null;
 		}
 
+		/// <summary>
+		/// Gets the color from a serialzied property with a color attribute
+		/// </summary>
+		/// <param name="property">The property to get the color from</param>
+		/// <returns>The color from the attribute, null if the attribute is not found</returns>
 		public static Color? GetColorFromProperty(SerializedProperty property)
 		{
 			var field = ReflectionUtility.FindField(property.name, property);
@@ -123,6 +140,12 @@ namespace EditorAttributes.Editor.Utility
 			return colorAttribute != null ? GetColorFromAttribute(colorAttribute, new HelpBox()) : null;
 		}
 
+		/// <summary>
+		/// Gets the color value from a color attribute
+		/// </summary>
+		/// <param name="attribute">The color attribute</param>
+		/// <param name="errorBox">The error box to display any errors to</param>
+		/// <returns>The color from the attribute</returns>
 		public static Color GetColorFromAttribute(IColorAttribute attribute, HelpBox errorBox)
 		{
 			if (UnityEngine.ColorUtility.TryParseHtmlString(attribute.HexColor, out Color color))
@@ -134,40 +157,46 @@ namespace EditorAttributes.Editor.Utility
 				errorBox.text = $"The provided value <b>{attribute.HexColor}</b> is not a valid Hex color";
 			}
 
-			return GUIColorToColor(attribute);
+			return ColorAttributeToColor(attribute);
 		}
 
-		public static Color GUIColorToColor(IColorAttribute colorAttribute)
-		{
-			if (colorAttribute.UseRGB)
-				return new(colorAttribute.R / 255f, colorAttribute.G / 255f, colorAttribute.B / 255f);
+		/// <summary>
+		/// Converts the color attribute values from the color attribute to a color
+		/// </summary>
+		/// <param name="colorAttribute">The color attribute</param>
+		/// <returns>The color value</returns>
+		public static Color ColorAttributeToColor(IColorAttribute colorAttribute) => ColorAttributeToColor(colorAttribute, 1f);
 
-			return colorAttribute.Color switch
-			{
-				GUIColor.White => Color.white,
-				GUIColor.Black => Color.black,
-				GUIColor.Gray => Color.gray,
-				GUIColor.Red => Color.red,
-				GUIColor.Green => Color.green,
-				GUIColor.Blue => Color.blue,
-				GUIColor.Cyan => Color.cyan,
-				GUIColor.Magenta => Color.magenta,
-				GUIColor.Yellow => Color.yellow,
-				GUIColor.Orange => new(1f, 149f / 255f, 0f),
-				GUIColor.Brown => new(161f / 255f, 62f / 255f, 0f),
-				GUIColor.Purple => new(158f / 255f, 5f / 255f, 247f / 255f),
-				GUIColor.Pink => new(247f / 255f, 5f / 255f, 171f / 255f),
-				GUIColor.Lime => new(145f / 255f, 1f, 0f),
-				_ => EditorExtension.DEFAULT_GLOBAL_COLOR
-			};
-		}
-
-		public static Color GUIColorToColor(IColorAttribute colorAttribute, float alpha)
+		/// <summary>
+		/// Converts the color attribute values from the color attribute to a color
+		/// </summary>
+		/// <param name="colorAttribute">The color attribute</param>
+		/// <param name="alpha">Custom transparency value</param>
+		/// <returns>The color value</returns>
+		public static Color ColorAttributeToColor(IColorAttribute colorAttribute, float alpha)
 		{
 			if (colorAttribute.UseRGB)
 				return new(colorAttribute.R / 255f, colorAttribute.G / 255f, colorAttribute.B / 255f, alpha);
 
-			return colorAttribute.Color switch
+			return GUIColorToColor(colorAttribute.Color, alpha);
+		}
+
+		/// <summary>
+		/// Converts the GUIColor value to a color
+		/// </summary>
+		/// <param name="color">The GUIColor</param>
+		/// <returns>The color value</returns>
+		public static Color GUIColorToColor(GUIColor color) => GUIColorToColor(color, 1f);
+
+		/// <summary>
+		/// Converts the GUIColor value to a color
+		/// </summary>
+		/// <param name="color">The GUIColor</param>
+		/// <param name="alpha">Custom transparency value</param>
+		/// <returns>The color value</returns>
+		public static Color GUIColorToColor(GUIColor color, float alpha)
+		{
+			return color switch
 			{
 				GUIColor.White => new(Color.white.r, Color.white.g, Color.white.b, alpha),
 				GUIColor.Black => new(Color.black.r, Color.black.g, Color.black.b, alpha),

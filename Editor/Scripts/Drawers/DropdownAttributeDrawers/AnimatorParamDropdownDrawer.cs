@@ -7,7 +7,7 @@ using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(AnimatorParamDropdownAttribute))]
+	[CustomPropertyDrawer(typeof(AnimatorParamDropdownAttribute))]
     public class AnimatorParamDropdownDrawer : PropertyDrawerBase
     {
     	public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -48,7 +48,7 @@ namespace EditorAttributes.Editor
 					}
 				}
 
-				UpdateVisualElement(root, () =>
+				UpdateVisualElement(() =>
 				{
 					var animatorParams = GetAnimatorParams(animatorParamAttribute, property, errorBox);
 

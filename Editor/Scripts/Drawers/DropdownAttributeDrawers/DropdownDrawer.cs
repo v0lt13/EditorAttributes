@@ -5,7 +5,7 @@ using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(DropdownAttribute))]
+	[CustomPropertyDrawer(typeof(DropdownAttribute))]
     public class DropdownDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -15,7 +15,7 @@ namespace EditorAttributes.Editor
 			var errorBox = new HelpBox();
 
 			var memberInfo = ReflectionUtility.GetValidMemberInfo(dropdownAttribute.CollectionName, property);
-			var collectionValues = GetCollectionValuesAsString(dropdownAttribute.CollectionName, property, memberInfo, errorBox);
+			var collectionValues = ConvertCollectionValuesToStrings(dropdownAttribute.CollectionName, property, memberInfo, errorBox);
 
 			var dropdownField = IsCollectionValid(collectionValues) ? new DropdownField(property.displayName, collectionValues, GetDropdownDefaultValue(collectionValues, property)) 
 				: new DropdownField(property.displayName, new List<string>() { "NULL" }, 0);
@@ -44,16 +44,20 @@ namespace EditorAttributes.Editor
 				}
 			}
 
-			UpdateVisualElement(root, () =>
+			UpdateVisualElement(() =>
 			{
-				var dropdownValues = GetCollectionValuesAsString(dropdownAttribute.CollectionName, property, memberInfo, errorBox);
+				var dropdownValues = ConvertCollectionValuesToStrings(dropdownAttribute.CollectionName, property, memberInfo, errorBox);
 
 				if (IsCollectionValid(dropdownValues))
+				{
+					errorBox.text = string.Empty;
 					dropdownField.choices = dropdownValues;
-			}, 100);
+				}
+
+				DisplayErrorBox(root, errorBox);
+			});
 
 			root.Add(dropdownField);
-			DisplayErrorBox(root, errorBox);
 
 			return root;
 		}

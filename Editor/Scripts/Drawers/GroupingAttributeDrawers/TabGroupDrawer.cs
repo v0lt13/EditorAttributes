@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(TabGroupAttribute))]
+	[CustomPropertyDrawer(typeof(TabGroupAttribute))]
     public class TabGroupDrawer : PropertyDrawerBase
     {
 		private int selectedTab = 0;
@@ -64,6 +64,7 @@ namespace EditorAttributes.Editor
 					root.Remove(propertyField);
 
 					propertyField = GetDrawnProperty(property, tabGroupAttribute);
+					propertyField.style.marginLeft = 10f;
 
 					root.Add(propertyField);
 				});
@@ -77,12 +78,11 @@ namespace EditorAttributes.Editor
 
 		private VisualElement GetDrawnProperty(SerializedProperty property, TabGroupAttribute tabGroupAttribute)
 		{
-			var selectedProperty = FindNestedProperty(property, tabGroupAttribute.FieldsToGroup[selectedTab]);
+			var selectedProperty = FindNestedProperty(property, GetSerializedPropertyName(tabGroupAttribute.FieldsToGroup[selectedTab], property));
 
-			// Check for serialized properties since they have a weird naming when serialized and they cannot be found by the normal name
-			selectedProperty ??= FindNestedProperty(property, $"<{tabGroupAttribute.FieldsToGroup[selectedTab]}>k__BackingField");
+			var propertyField = DrawProperty(selectedProperty);
 
-			return DrawProperty(selectedProperty);
+			return propertyField;
 		}
 
 		private string[] GetPropertyNames(SerializedProperty property, TabGroupAttribute tabGroupAttribute)
@@ -91,8 +91,7 @@ namespace EditorAttributes.Editor
 
 			foreach (var field in tabGroupAttribute.FieldsToGroup)
 			{
-				var fieldProperty = FindNestedProperty(property, field);
-				fieldProperty ??= FindNestedProperty(property, $"<{field}>k__BackingField");
+				var fieldProperty = FindNestedProperty(property, GetSerializedPropertyName(field, property));
 
 				stringList.Add(fieldProperty.displayName);
 			}

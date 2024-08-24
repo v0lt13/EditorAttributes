@@ -5,7 +5,7 @@ using ColorUtility = EditorAttributes.Editor.Utility.ColorUtility;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(TitleAttribute))]
+	[CustomPropertyDrawer(typeof(TitleAttribute))]
     public class TitleDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -16,7 +16,7 @@ namespace EditorAttributes.Editor
 			var errorBox = new HelpBox();
 			var title = new Label();
 
-			UpdateVisualElement(root, () =>
+			UpdateVisualElement(() =>
 			{
 				title.text = GetDynamicString(titleAttribute.Title, property, titleAttribute, errorBox);
 				DisplayErrorBox(root, errorBox);
@@ -28,8 +28,8 @@ namespace EditorAttributes.Editor
 
 			if (titleAttribute.DrawLine)
 			{
-				var colorWithAlpha = ColorUtility.GetColor(property, 0.5f);
-				var color = ColorUtility.GetColor(property);
+				var colorWithAlpha = ColorUtility.GetPropertyColor(property, 0.5f);
+				var color = ColorUtility.GetPropertyColor(property);
 
 				if (color.HasValue)
 					title.style.color = color.Value;
