@@ -20,7 +20,7 @@ The asset adds over 50 Attributes that:
 - Make data tables
 - Add helpboxes
 - Clamp or Wrap numerical values
-- Group togheder multiple fields
+- Group together multiple fields
 - And more!
 
 ![EditorAttributes08](https://github.com/v0lt13/EditorAttributes/assets/83181883/5680dc39-d9c7-4f41-8ef4-10945b6817d6)
