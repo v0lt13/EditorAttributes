@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Collections.Generic;
 using EditorAttributes.Editor.Utility;
-using ColorUtility = EditorAttributes.Editor.Utility.ColorUtility;
+using ColorUtils = EditorAttributes.Editor.Utility.ColorUtils;
 
 namespace EditorAttributes.Editor
 {
@@ -45,7 +45,7 @@ namespace EditorAttributes.Editor
 				if (!foldouts.ContainsKey(function))
 					foldouts[function] = true;
 
-				var button = new Button(() =>
+				var button = MakeButton(function, buttonAttribute, () =>
 				{
 					var paramValueList = new object[functionParameters.Length];
 
@@ -53,10 +53,7 @@ namespace EditorAttributes.Editor
 						paramValueList[i] = ConvertParameterValue(functionParameters[i].ParameterType, parameterValues[function][i]);
 
 					function.Invoke(target, paramValueList);
-				})
-				{ text = string.IsNullOrWhiteSpace(buttonAttribute.ButtonLabel) ? function.Name : buttonAttribute.ButtonLabel };
-
-				button.style.height = buttonAttribute.ButtonHeight;
+				});
 
 				var foldout = new Foldout
 				{
@@ -83,7 +80,7 @@ namespace EditorAttributes.Editor
 					var field = DrawParameterField(parameter.ParameterType, parameter.Name, parameterValues[function][i]);
 
 					if (EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR)
-						ColorUtility.ApplyColor(field, EditorExtension.GLOBAL_COLOR);
+						ColorUtils.ApplyColor(field, EditorExtension.GLOBAL_COLOR);
 
 					int index = i;
 					RegisterParameterFieldValueChangedCallback(field, parameter.ParameterType, (valueCallback) => parameterValues[function][index] = valueCallback);
@@ -97,13 +94,35 @@ namespace EditorAttributes.Editor
 			}
 			else
 			{
-				var button = new Button(() => function.Invoke(target, null)) { text = string.IsNullOrWhiteSpace(buttonAttribute.ButtonLabel) ? function.Name : buttonAttribute.ButtonLabel };
+				var button = MakeButton(function, buttonAttribute, () => function.Invoke(target, null));
 
-				button.style.height = buttonAttribute.ButtonHeight;
 				root.Add(button);
 			}
 
 			return root;
+		}
+
+		private static VisualElement MakeButton(MethodInfo function, ButtonAttribute buttonAttribute, Action buttonLogic)
+		{
+			var buttonLabel = string.IsNullOrWhiteSpace(buttonAttribute.ButtonLabel) ? function.Name : buttonAttribute.ButtonLabel;
+
+			if (buttonAttribute.IsRepetable)
+			{
+				var repeatButton = new RepeatButton(buttonLogic, buttonAttribute.PressDelay, buttonAttribute.RepetitionInterval) { text = buttonLabel };
+
+				repeatButton.style.height = buttonAttribute.ButtonHeight;
+				repeatButton.AddToClassList("unity-button");
+
+				return repeatButton;
+			}
+			else
+			{
+				var button = new Button(buttonLogic) { text = buttonLabel };
+
+				button.style.height = buttonAttribute.ButtonHeight;
+
+				return button;
+			}
 		}
 
 		#region SERIALIZATION
@@ -226,7 +245,7 @@ namespace EditorAttributes.Editor
 		#endregion
 
 		#region ELSE_IF_CHAINS
-		private static VisualElement DrawParameterField(Type fieldType, string fieldName, object fieldValue)
+		internal static VisualElement DrawParameterField(Type fieldType, string fieldName, object fieldValue)
 		{
 			fieldName = ObjectNames.NicifyVariableName(fieldName);
 

@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using ColorUtility = EditorAttributes.Editor.Utility.ColorUtility;
+using ColorUtils = EditorAttributes.Editor.Utility.ColorUtils;
 
 namespace EditorAttributes.Editor
 {
@@ -28,14 +28,14 @@ namespace EditorAttributes.Editor
 
 			if (titleAttribute.DrawLine)
 			{
-				var colorWithAlpha = ColorUtility.GetPropertyColor(property, 0.5f);
-				var color = ColorUtility.GetPropertyColor(property);
+				var colorWithAlpha = ColorUtils.GetPropertyColor(property, 0.5f);
+				var color = ColorUtils.GetPropertyColor(property);
 
 				if (color.HasValue)
 					title.style.color = color.Value;
 
 				title.style.borderBottomColor = colorWithAlpha ?? Color.gray;
-				title.style.borderBottomWidth = 2f;
+				title.style.borderBottomWidth = titleAttribute.LineThickness;
 			}
 
 			root.Add(title);

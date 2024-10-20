@@ -16,7 +16,7 @@ namespace EditorAttributes.Editor
 	{
 		public static readonly Color DEFAULT_GLOBAL_COLOR = new(0.8f, 0.8f, 0.8f, 1.0f);
 		public static Color GLOBAL_COLOR = DEFAULT_GLOBAL_COLOR;
-
+		
 		private string buttonParamsDataFilePath;
 
 		private Dictionary<MethodInfo, bool> buttonFoldouts = new();
@@ -47,16 +47,25 @@ namespace EditorAttributes.Editor
 				ButtonDrawer.DeleteParamsData(buttonParamsDataFilePath);
 
 			updateExecutionList.Clear();
+			EditorHandles.handleProperties.Clear();
+			EditorHandles.boundsHandleList.Clear();
 		}
+
+		void OnSceneGUI() => EditorHandles.DrawHandles();
 
 		public override VisualElement CreateInspectorGUI()
 		{
 			// Reset the global color per component GUI so it doesnt leak from other components
 			GLOBAL_COLOR = DEFAULT_GLOBAL_COLOR;
 
-			var root = DrawDefaultInspector();
+			var root = new VisualElement();
+
+			var defaultInspector = DrawDefaultInspector();
+			//var staticFields = DrawStaticFields();
 			var buttons = DrawButtons();
 
+			root.Add(defaultInspector);
+			//root.Add(staticFields);
 			root.Add(buttons);
 
 			RunUpdateLoop(root);
@@ -119,6 +128,34 @@ namespace EditorAttributes.Editor
 				foreach (var action in updateExecutionList)
 					action.Invoke();
 			}).Every(50);				
+		}
+
+		/// <summary>
+		/// Draws all the static and const field marked as public or with SerializeField
+		/// </summary>
+		/// <remarks> 
+		/// THIS FUNCTION IS EXPERIMENTAL! To enable drawing of static variables uncomment the lines of code at 60 and 64 in the CreateInspectorGUI() function
+		/// </remarks>
+		/// <returns>A visual element containing all static and const fields</returns>
+		protected VisualElement DrawStaticFields()
+		{
+			var root = new VisualElement();
+			var staticFields = target.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+
+			foreach (var staticField in staticFields)
+			{
+				if (staticField.IsPrivate && staticField.GetCustomAttribute<SerializeField>() == null)
+					continue;
+				
+				var propertyField = ButtonDrawer.DrawParameterField(staticField.FieldType, ObjectNames.NicifyVariableName(staticField.Name), staticField.GetValue(target));
+
+				propertyField.AddToClassList("unity-base-field__aligned");
+				propertyField.SetEnabled(false);
+
+				root.Add(propertyField);
+			}
+
+			return root;
 		}
 
 		/// <summary>

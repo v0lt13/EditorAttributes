@@ -15,8 +15,8 @@ namespace EditorAttributesSamples
 		[Button]
 		public void ButtonWithParams(string messageToPrint) => print(messageToPrint);
 
-		[Button("Button", 30f)]
-		public void TallButton() => print("Tall button");
+		[Button(true, 60, 300, "Hold Me", 30f)]
+		public void TallRepetableButton() => print(Random.value);
 
 		[Button(nameof(toggleButtons), ConditionResult.EnableDisable, true)]
 		public void ButtonYouCanDisable() => print("Hello World!");

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace EditorAttributes
@@ -10,7 +9,9 @@ namespace EditorAttributes
         public float B { get; private set; }
         public float A { get; private set; }
 
-        public string HexColor { get; private set; }
+		public float LineThickness { get; private set; }
+
+		public string HexColor { get; private set; }
 		public bool UseRGB { get; private set; }
 
         public GUIColor Color { get; private set; }
@@ -20,10 +21,12 @@ namespace EditorAttributes
 		/// </summary>
 		/// <param name="color">The color of the line</param>
 		/// <param name="alpha">Alpha amount</param>
-		public LineAttribute(GUIColor color = default, float alpha = 1f)
+		/// <param name="lineThickness">The thickness of the line in pixels</param>
+		public LineAttribute(GUIColor color = default, float alpha = 1f, float lineThickness = 3f)
 		{
             Color = color;
 			A = alpha;
+			LineThickness = lineThickness;
 		}
 
 		/// <summary>
@@ -33,24 +36,28 @@ namespace EditorAttributes
 		/// <param name="green">Green amount</param>
 		/// <param name="blue">Blue amount</param>
 		/// <param name="alpha">Alpha amount</param>
-		public LineAttribute(float red, float green, float blue, float alpha = 1f)
+		/// <param name="lineThickness">The thickness of the line in pixels</param>
+		public LineAttribute(float red, float green, float blue, float alpha = 1f, float lineThickness = 3f)
         {
 			UseRGB = true;
             R = red;
             G = green;
             B = blue; 
             A = alpha;
-        }
+			LineThickness = lineThickness;
+		}
 
 		/// <summary>
 		/// Attribute to draw a line in the inspector
 		/// </summary>
 		/// <param name="hexColor">The color in hexadecimal</param>
 		/// <param name="alpha">Alpha amount</param>
-		public LineAttribute(string hexColor, float alpha = 1f)
+		/// <param name="lineThickness">The thickness of the line in pixels</param>
+		public LineAttribute(string hexColor, float alpha = 1f, float lineThickness = 3f)
 		{
             HexColor = hexColor;
 			A = alpha;
+			LineThickness = lineThickness;
 		}
 	}
 }

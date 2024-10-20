@@ -4,12 +4,14 @@ using UnityEditor.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(RequiredAttribute))]
+	[CustomPropertyDrawer(typeof(RequiredAttribute))]
     public class RequiredDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var root = new VisualElement();
+			var requiredAttribute = attribute as RequiredAttribute;
+
 			var propertyField = DrawProperty(property);
 
 			root.Add(propertyField);

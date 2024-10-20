@@ -29,16 +29,29 @@ namespace EditorAttributes.Editor
 
 			var function = ReflectionUtility.FindFunction(buttonFieldAttribute.FunctionName, ownerObject);
 			var functionParameters = function.GetParameters();
+			var buttonLabel = string.IsNullOrWhiteSpace(buttonFieldAttribute.ButtonLabel) ? function.Name : buttonFieldAttribute.ButtonLabel;
 
 			var root = new VisualElement();
 
 			if (functionParameters.Length == 0)
 			{
-				var button = new Button(() => function.Invoke(ownerObject, null)) { text = string.IsNullOrWhiteSpace(buttonFieldAttribute.ButtonLabel) ? function.Name : buttonFieldAttribute.ButtonLabel };
+				if (buttonFieldAttribute.IsRepetable)
+				{
+					var repeatButton = new RepeatButton(() => function.Invoke(ownerObject, null), buttonFieldAttribute.PressDelay, buttonFieldAttribute.RepetitionInterval) { text = buttonLabel };
 
-				button.style.height = buttonFieldAttribute.ButtonHeight;
+					repeatButton.style.height = buttonFieldAttribute.ButtonHeight;
+					repeatButton.AddToClassList("unity-button");
 
-				root.Add(button);
+					root.Add(repeatButton);
+				}
+				else
+				{
+					var button = new Button(() => function.Invoke(ownerObject, null)) { text = buttonLabel };
+
+					button.style.height = buttonFieldAttribute.ButtonHeight;
+
+					root.Add(button);
+				}
 			}
 			else
 			{

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
-using ColorUtility = EditorAttributes.Editor.Utility.ColorUtility;
+using ColorUtils = EditorAttributes.Editor.Utility.ColorUtils;
 
 namespace EditorAttributes.Editor
 {
@@ -46,12 +46,15 @@ namespace EditorAttributes.Editor
 
 			while (serializedProperty.NextVisible(true) && serializedProperty.depth > initialDepth)
 			{
-				if (serializedProperty.propertyType == SerializedPropertyType.Generic || serializedProperty.propertyType == SerializedPropertyType.Vector4 || serializedProperty.propertyType == SerializedPropertyType.ArraySize)
+				if (serializedProperty.propertyType is SerializedPropertyType.Generic or SerializedPropertyType.Vector4 or SerializedPropertyType.ArraySize)
 				{
 					var errorBox = new HelpBox("Collection, UnityEvent and Serialized object types are not supported", HelpBoxMessageType.Error);
 					root.Add(errorBox);
 					break;
 				}
+				 
+				if (serializedProperty.depth >= initialDepth + 2) // Skip the X Y Z properties that are inside Vectors since we draw the vector field ourself
+					continue;
 
 				var tableColumn = new VisualElement();
 				tableColumn.style.flexGrow = 1f;
@@ -71,7 +74,7 @@ namespace EditorAttributes.Editor
 				propertyField.style.marginRight = 10f;
 
 				if (EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR)
-					ColorUtility.ApplyColor(propertyField, EditorExtension.GLOBAL_COLOR, 100);
+					ColorUtils.ApplyColor(propertyField, EditorExtension.GLOBAL_COLOR, 100);
 
 				tableColumn.Add(propertyField);
 				root.Add(tableColumn);

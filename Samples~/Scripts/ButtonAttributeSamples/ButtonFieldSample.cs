@@ -19,7 +19,7 @@ namespace EditorAttributesSamples
 		[ButtonField(nameof(PrintMessage))]
 		[SerializeField, HideInInspector] private Void buttonHolder01;
 
-		[ButtonField(nameof(PrintMessage), "Press Me")] 
+		[ButtonField(nameof(PrintMessage), true, 60, 300, "Hold Me")] 
 		[SerializeField, HideInInspector] private Void buttonHolder02;
 
 		private void PrintNumber() => print(number);

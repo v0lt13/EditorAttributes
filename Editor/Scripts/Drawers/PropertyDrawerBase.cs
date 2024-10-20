@@ -383,13 +383,6 @@ namespace EditorAttributes.Editor
 		public static bool IsCollectionValid(ICollection collection) => collection != null && collection.Count != 0;
 
 		/// <summary>
-		/// Converts a Vector3Int to a Vector2Int
-		/// </summary>
-		/// <param name="vector3Int">The Vector3Int to convert</param>
-		/// <returns>The converted Vector2Int</returns>
-		public static Vector2Int Vector3IntToVector2Int(Vector3Int vector3Int) => new(vector3Int.x, vector3Int.y);
-
-		/// <summary>
 		/// Gets the size of a 2D texture
 		/// </summary>
 		/// <param name="texture">The texture to get the size from</param>

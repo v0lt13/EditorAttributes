@@ -4,7 +4,7 @@ using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(InlineButtonAttribute))]
+	[CustomPropertyDrawer(typeof(InlineButtonAttribute))]
     public class InlineButtonDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -16,7 +16,6 @@ namespace EditorAttributes.Editor
 
             var root = new VisualElement();
             var propertyField = DrawProperty(property);
-            var button = new Button(() => methodInfo.Invoke(property.serializedObject.targetObject, null)) { text = buttonLabel };
 
 			if (methodInfo.GetParameters().Length > 0)
 			{
@@ -24,12 +23,28 @@ namespace EditorAttributes.Editor
 				return root;
 			}
 
-			button.style.width = inlineButtonAttribute.ButtonWidth;
 			root.style.flexDirection = FlexDirection.Row;
 			propertyField.style.flexGrow = 1f;
 
 			root.Add(propertyField);
-			root.Add(button);
+
+			if (inlineButtonAttribute.IsRepetable)
+			{
+				var repeatButton = new RepeatButton(() => methodInfo.Invoke(property.serializedObject.targetObject, null), inlineButtonAttribute.PressDelay, inlineButtonAttribute.RepetitionInterval) { text = buttonLabel };
+
+				repeatButton.style.width = inlineButtonAttribute.ButtonWidth;
+				repeatButton.AddToClassList("unity-button");
+
+				root.Add(repeatButton);
+			}
+			else
+			{
+				var button = new Button(() => methodInfo.Invoke(property.serializedObject.targetObject, null)) { text = buttonLabel };
+
+				button.style.width = inlineButtonAttribute.ButtonWidth;
+
+				root.Add(button);
+			}
 
             return root;
 		}

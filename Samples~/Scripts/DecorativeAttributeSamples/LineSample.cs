@@ -14,7 +14,7 @@ namespace EditorAttributesSamples
 		[SerializeField] private int field03;
 		[Line(GUIColor.Yellow, 0.1f)]
 		[SerializeField] private int field04;
-		[Line("#327ba8")]
+		[Line("#327ba8", lineThickness: 10f)]
 		[SerializeField] private int field05;
 	}
 }

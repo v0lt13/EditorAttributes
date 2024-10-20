@@ -9,8 +9,8 @@ namespace EditorAttributes.Editor
 		{
 			var errorBox = new HelpBox();
 
-			EditorExtension.GLOBAL_COLOR = ColorUtility.GetColorFromAttribute(colorAttribute, errorBox);
-			ColorUtility.ApplyColor(root, colorAttribute, errorBox);
+			EditorExtension.GLOBAL_COLOR = ColorUtils.GetColorFromAttribute(colorAttribute, errorBox);
+			ColorUtils.ApplyColor(root, colorAttribute, errorBox);
 			PropertyDrawerBase.DisplayErrorBox(root, errorBox);
 		}
 	}

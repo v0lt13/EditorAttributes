@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(WrapAttribute))]
+	[CustomPropertyDrawer(typeof(WrapAttribute))]
     public class WrapDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -42,7 +42,7 @@ namespace EditorAttributes.Editor
 						break;
 
 					case SerializedPropertyType.Vector2Int:
-						property.vector2IntValue = Vector3IntToVector2Int(WrapIntVector(minMaxX, minMaxY, minMaxZ, minMaxW, new(property.vector2IntValue.x, property.vector2IntValue.y)));
+						property.vector2IntValue = VectorUtils.Vector3IntToVector2Int(WrapIntVector(minMaxX, minMaxY, minMaxZ, minMaxW, new(property.vector2IntValue.x, property.vector2IntValue.y)));
 						propertyField.Q<Vector2IntField>().SetValueWithoutNotify(property.vector2IntValue);
 						break;
 

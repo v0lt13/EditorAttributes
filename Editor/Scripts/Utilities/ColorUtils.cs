@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor.Utility
 {
-	public static class ColorUtility
+	public static class ColorUtils
     {
 		/// <summary>
 		/// Applies a color to a visual element via the color attribute
@@ -146,10 +146,20 @@ namespace EditorAttributes.Editor.Utility
 		/// <param name="attribute">The color attribute</param>
 		/// <param name="errorBox">The error box to display any errors to</param>
 		/// <returns>The color from the attribute</returns>
-		public static Color GetColorFromAttribute(IColorAttribute attribute, HelpBox errorBox)
+		public static Color GetColorFromAttribute(IColorAttribute attribute, HelpBox errorBox) => GetColorFromAttribute(attribute, 1f, errorBox);
+
+		/// <summary>
+		/// Gets the color value from a color attribute with custom alpha
+		/// </summary>
+		/// <param name="attribute">The color attribute</param>
+		/// <param name="alpha">Custom transparency value</param>
+		/// <param name="errorBox">The error box to display any errors to</param>
+		/// <returns>The color from the attribute</returns>
+		public static Color GetColorFromAttribute(IColorAttribute attribute, float alpha, HelpBox errorBox)
 		{
-			if (UnityEngine.ColorUtility.TryParseHtmlString(attribute.HexColor, out Color color))
+			if (ColorUtility.TryParseHtmlString(attribute.HexColor, out Color color))
 			{
+				color.a = alpha;
 				return color;
 			}
 			else if (!string.IsNullOrEmpty(attribute.HexColor))
@@ -157,7 +167,7 @@ namespace EditorAttributes.Editor.Utility
 				errorBox.text = $"The provided value <b>{attribute.HexColor}</b> is not a valid Hex color";
 			}
 
-			return ColorAttributeToColor(attribute);
+			return ColorAttributeToColor(attribute, alpha);
 		}
 
 		/// <summary>

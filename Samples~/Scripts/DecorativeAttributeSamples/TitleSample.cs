@@ -12,12 +12,12 @@ namespace EditorAttributesSamples
 		[SerializeField] private string stringField01;
 		[SerializeField] private float floatField01;
 
-		[Title("<b>Big bold title!</b>", 40, alignment: TextAnchor.MiddleRight)]
+		[Title("<b>Big bold title!</b>", 40, lineThickness: 4f, alignment: TextAnchor.MiddleRight)]
 		[SerializeField] private int intField02;
 		[SerializeField] private string stringField02;
 		[SerializeField] private float floatField02;
 
-		[Title("<i>This is an italic title with no line!</i>", 30, 20f, false, TextAnchor.MiddleCenter)]
+		[Title("<i>This is an italic title with no line!</i>", 30, 20f, false, alignment: TextAnchor.MiddleCenter)]
 		[SerializeField] private int intField03;
 		[SerializeField] private string stringField03;
 		[SerializeField] private float floatField03;

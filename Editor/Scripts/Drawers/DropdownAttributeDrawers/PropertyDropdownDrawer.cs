@@ -7,11 +7,9 @@ using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(PropertyDropdownAttribute))]
+	[CustomPropertyDrawer(typeof(PropertyDropdownAttribute))]
     public class PropertyDropdownDrawer : PropertyDrawerBase
     {
-		private bool isInitialized;
-
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var currentField = ReflectionUtility.GetValidMemberInfo(property.name, property);
@@ -41,27 +39,24 @@ namespace EditorAttributes.Editor
 
 		private void InitializeFoldoutDrawer(VisualElement root, SerializedProperty property, Type fieldType, HelpBox errorBox)
 		{
+			root.schedule.Execute(() =>
+			{
+				var foldouts = root.Query<Foldout>().ToList();
+
+				// The SerializedPropertyChangeEvent may be called multiple times and draw the foldout more then once so we remove the extras
+				for (int i = 1; i < foldouts.Count; i++) 
+					root.Remove(foldouts[i]);
+			}).ExecuteLater(1);
+
 			if (property.objectReferenceValue == null)
 			{
-				root.schedule.Execute(() =>
-				{
-					var foldout = root.Q<Foldout>();
+				var foldout = root.Q<Foldout>();
 
-					if (foldout != null)
-					{
-						if (root.Contains(foldout))
-						{
-							root.Remove(foldout);
-							isInitialized = false;
-						}
-					}
-				}).ExecuteLater(1);
-				
+				if (foldout != null)
+					root.Remove(foldout);
+
 				return;
 			}
-
-			if (isInitialized)
-				return;
 
 			if (fieldType.IsSubclassOf(typeof(Component)) || fieldType == typeof(Component))
 			{
@@ -79,8 +74,6 @@ namespace EditorAttributes.Editor
 			{
 				root.Add(errorBox);
 			}
-
-			isInitialized = true;
 		}
 
 		private Foldout CreatePropertyFoldout(SerializedObject serializedObject)
@@ -102,7 +95,8 @@ namespace EditorAttributes.Editor
 				{
 					do
 					{
-						if (property.name.Equals("m_Script", StringComparison.Ordinal)) continue; // Exclude the field containing the script reference
+						if (property.name.Equals("m_Script", StringComparison.Ordinal)) // Exclude the field containing the script reference
+							continue; 
 
 						var propertyField = DrawProperty(property);
 

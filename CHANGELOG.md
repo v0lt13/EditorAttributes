@@ -1,3 +1,20 @@
+EditorAttributes v2.4.0 Changelog:
+- Added Validation system
+- Added Validate Attribute
+- Added DrawHandle Attribute
+- Added SimpleTransform struct
+- Added ValueButtons Attribute (only on Unity 6 and above)
+- Added lineThickness parameter to the Title and Line Attribute
+- Added paramters to the Required Attribute to include it in validation or not
+- Added repetable button support to the button attributes
+- Added VectorUtils class
+- Fixed alpha not applying on the Line Attribute when using hex colors
+- Fixed vectors not drawing properly in data tables
+- Fixed the PropertyDropdown Attribute not refreshing when part of a group
+- Fixed obsolete error thrown from the SelectionButtons drawer in Unity 6
+- Renamed the ColorUtility class to ColorUtils to avoid conflicts with UnityEngine.ColorUtility
+- Added the posibility to show static fields in the inspector but it's experimental and must be manualy enabled from code
+
 EditorAttributes v2.3.0 Changelog:
 - Added HideProperty Attribute
 - Added button parameter support for uint, long and ulong

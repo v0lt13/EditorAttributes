@@ -9,7 +9,10 @@ using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(SelectionButtonsAttribute))]
+#if UNITY_6000_0_OR_NEWER
+	[Obsolete]
+#endif
+	[CustomPropertyDrawer(typeof(SelectionButtonsAttribute))]
 	public class SelectionButtonsDrawer : PropertyDrawerBase
 	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -98,7 +101,7 @@ namespace EditorAttributes.Editor
 
 				toolbar.Add(label);
 			}
-
+			
 			for (int i = 0; i < valueLabels.Length; i++)
 			{
 				string label = valueLabels[i];
