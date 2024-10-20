@@ -13,7 +13,7 @@ EditorAttributes v2.4.0 Changelog:
 - Fixed the PropertyDropdown Attribute not refreshing when part of a group
 - Fixed obsolete error thrown from the SelectionButtons drawer in Unity 6
 - Renamed the ColorUtility class to ColorUtils to avoid conflicts with UnityEngine.ColorUtility
-- Added the posibility to show static fields in the inspector but it's experimental and must be manualy enabled from code
+- Added the possibility to show static fields in the inspector but it’s experimental and must be manually enabled from code
 
 EditorAttributes v2.3.0 Changelog:
 - Added HideProperty Attribute
