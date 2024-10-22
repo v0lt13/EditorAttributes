@@ -44,12 +44,21 @@ namespace EditorAttributes.Editor
 		{
 			int failedValidations = 0;
 			int successfulValidations = 0;
+			int ignoredValidations = 0;
 
 			string[] sceneGuids = AssetDatabase.FindAssets("t:Scene");
 
 			foreach (var sceneGuid in sceneGuids)
 			{
 				string scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
+
+				bool isReadOnly = scenePath.StartsWith("Packages/");
+				if (isReadOnly)
+				{
+					Debug.Log($"Scene at {scenePath} is read only, skipping");
+					ignoredValidations++;
+					continue;
+				}
 				var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
 
 				ValidateScene(scene, ref failedValidations, ref successfulValidations);
@@ -58,7 +67,7 @@ namespace EditorAttributes.Editor
 					EditorSceneManager.CloseScene(scene, true);
 			}
 
-			Debug.Log($"Scenes Validated: <b>(Falied: {failedValidations}, Succeeded: {successfulValidations}, Total: {failedValidations + successfulValidations})</b>");
+			Debug.Log($"Scenes Validated: <b>(Failed: {failedValidations}, Succeeded: {successfulValidations}, Ignored: {ignoredValidations}, Total: {failedValidations + successfulValidations + ignoredValidations})</b>");
 		}
 
 		/// <summary>
@@ -90,7 +99,7 @@ namespace EditorAttributes.Editor
 				Validate(scriptableObject, ref failedValidations, ref successfulValidations);
 			}
 
-			Debug.Log($"Assets Validated: <b>(Falied: {failedValidations}, Succeeded: {successfulValidations}, Total: {failedValidations + successfulValidations})</b>");
+			Debug.Log($"Assets Validated: <b>(Failed: {failedValidations}, Succeeded: {successfulValidations}, Total: {failedValidations + successfulValidations})</b>");
 		}
 
 		/// <summary>
