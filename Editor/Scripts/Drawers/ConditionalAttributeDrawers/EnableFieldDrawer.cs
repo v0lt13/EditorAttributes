@@ -17,7 +17,7 @@ namespace EditorAttributes.Editor
 
 			var propertyField = DrawProperty(property);
 
-			UpdateVisualElement(() =>
+			UpdateVisualElement(root, () =>
 			{
 				propertyField.SetEnabled(GetConditionValue(conditionalProperty, enableAttribute, property, errorBox));
 

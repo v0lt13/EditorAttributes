@@ -15,7 +15,7 @@ namespace EditorAttributes.Editor
 			var image = new Image();
 			var errorBox = new HelpBox();
 
-			UpdateVisualElement(() =>
+			UpdateVisualElement(root, () =>
 			{
 				var imagePath = GetDynamicString(imageAttribute.ImagePath, property, imageAttribute, errorBox);
 				var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(imagePath);

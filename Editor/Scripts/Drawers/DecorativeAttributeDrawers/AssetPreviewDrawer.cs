@@ -20,7 +20,7 @@ namespace EditorAttributes.Editor
             {
 				var image = new Image();
 
-				UpdateVisualElement(() =>
+				UpdateVisualElement(root, () =>
                 {
 					try
 					{

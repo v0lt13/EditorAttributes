@@ -29,7 +29,7 @@ namespace EditorAttributes.Editor
 
 			var buttonIcon = new Image() { image = EditorGUIUtility.IconContent("d_Folder Icon").image };
 
-			UpdateVisualElement(() =>
+			UpdateVisualElement(root, () =>
 			{
 				if (filePathAttribute.GetRelativePath && !string.IsNullOrEmpty(filePath) && Path.IsPathFullyQualified(filePath))
 				{

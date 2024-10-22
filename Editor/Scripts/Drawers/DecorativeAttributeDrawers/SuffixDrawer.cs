@@ -33,7 +33,7 @@ namespace EditorAttributes.Editor
 
 			root.Add(propertyField);
 
-			UpdateVisualElement(() =>
+			UpdateVisualElement(root, () =>
 			{
 				suffixLabel.text = GetDynamicString(suffixAttribute.Suffix, property, suffixAttribute, errorBox);
 				DisplayErrorBox(root, errorBox);

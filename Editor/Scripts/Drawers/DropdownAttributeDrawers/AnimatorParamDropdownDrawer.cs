@@ -48,7 +48,7 @@ namespace EditorAttributes.Editor
 					}
 				}
 
-				UpdateVisualElement(() =>
+				UpdateVisualElement(root, () =>
 				{
 					var animatorParams = GetAnimatorParams(animatorParamAttribute, property, errorBox);
 

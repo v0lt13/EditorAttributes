@@ -22,7 +22,7 @@ namespace EditorAttributes.Editor
 				messageBox.style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
 			}
 
-			UpdateVisualElement(() =>
+			UpdateVisualElement(root, () =>
 			{
 				if (GetConditionValue(conditionalProperty, messageBoxAttribute, property, errorBox))
 				{

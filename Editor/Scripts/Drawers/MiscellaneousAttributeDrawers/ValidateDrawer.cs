@@ -27,7 +27,7 @@ namespace EditorAttributes.Editor
 				helpBox.style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
 			}
 
-			UpdateVisualElement(() =>
+			UpdateVisualElement(root, () =>
 			{
 				if (GetConditionValue(conditionalProperty, validateAttribute, property, errorBox))
 				{

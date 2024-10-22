@@ -44,7 +44,7 @@ namespace EditorAttributes.Editor
 				}
 			}
 
-			UpdateVisualElement(() =>
+			UpdateVisualElement(root, () =>
 			{
 				var dropdownValues = ConvertCollectionValuesToStrings(dropdownAttribute.CollectionName, property, memberInfo, errorBox);
 

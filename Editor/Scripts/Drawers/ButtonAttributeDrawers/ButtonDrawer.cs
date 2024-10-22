@@ -9,7 +9,6 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Collections.Generic;
 using EditorAttributes.Editor.Utility;
-using ColorUtils = EditorAttributes.Editor.Utility.ColorUtils;
 
 namespace EditorAttributes.Editor
 {

@@ -17,7 +17,7 @@ namespace EditorAttributes.Editor
 
 			var errorBox = new HelpBox();
 
-			UpdateVisualElement(() =>
+			UpdateVisualElement(root, () =>
 			{
 				var canDrawProperty = CanDrawProperty(conditionalAttribute, conditionalAttribute.BooleanNames, property, errorBox);
 

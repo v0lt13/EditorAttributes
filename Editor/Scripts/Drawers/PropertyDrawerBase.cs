@@ -196,8 +196,9 @@ namespace EditorAttributes.Editor
 		/// <summary>
 		/// Update logic for a visual element
 		/// </summary>
+		/// <param name="visualElement">The element to update</param>
 		/// <param name="logicToUpdate">The logic to update</param>
-		protected void UpdateVisualElement(Action logicToUpdate) => EditorExtension.AddToUpdateLoop(logicToUpdate);
+		protected void UpdateVisualElement(VisualElement visualElement, Action logicToUpdate) => visualElement.schedule.Execute(() => EditorExtension.AddToUpdateLoop(logicToUpdate)).ExecuteLater(1);
 
 		/// <summary>
 		/// Updates a visual element at a set interval

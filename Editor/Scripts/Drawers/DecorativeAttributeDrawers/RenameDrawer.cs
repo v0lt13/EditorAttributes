@@ -13,7 +13,7 @@ namespace EditorAttributes.Editor
 			var errorBox = new HelpBox();
 			var propertyField = DrawProperty(property, new Label(property.displayName));
 
-			UpdateVisualElement(() =>
+			UpdateVisualElement(root, () =>
 			{
 				propertyField.Q<Label>().text = GetNewName(property, errorBox);
 				DisplayErrorBox(root, errorBox);

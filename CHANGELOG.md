@@ -1,3 +1,9 @@
+EditorAttributes v2.4.1 Changelog:
+- The validation system will no longer check for assets inside the Packages folder
+- The PropertyDropdown Attribute will now save the state of the foldouts
+- Fixed an issue with property dropdowns throwing "This Visual Element is not my child" errors
+- Fixed an issue where visual elements don't update inside a property dropdown
+
 EditorAttributes v2.4.0 Changelog:
 - Added Validation system
 - Added Validate Attribute

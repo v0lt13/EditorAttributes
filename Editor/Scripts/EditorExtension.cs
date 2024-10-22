@@ -127,7 +127,7 @@ namespace EditorAttributes.Editor
 
 				foreach (var action in updateExecutionList)
 					action.Invoke();
-			}).Every(50);				
+			}).Every(50);
 		}
 
 		/// <summary>

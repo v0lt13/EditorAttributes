@@ -30,7 +30,7 @@ namespace EditorAttributes.Editor
 			prefixLabel.style.color = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR : Color.gray;
 			root.Add(propertyField);
 
-			UpdateVisualElement(() =>
+			UpdateVisualElement(root, () =>
 			{
 				prefixLabel.text = GetDynamicString(prefixAttribute.Prefix, property, prefixAttribute, errorBox);		
 				DisplayErrorBox(root, errorBox);

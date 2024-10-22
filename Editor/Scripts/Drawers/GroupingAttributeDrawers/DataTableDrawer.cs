@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
-using ColorUtils = EditorAttributes.Editor.Utility.ColorUtils;
 
 namespace EditorAttributes.Editor
 {
@@ -81,7 +80,7 @@ namespace EditorAttributes.Editor
 			}
 
 			// When there are other attributes on the dataTable field they would recreate the label of the property field so we make sure it will never be there
-			UpdateVisualElement(() =>
+			UpdateVisualElement(root, () =>
 			{
 				var labels = root.Query<Label>(className: "unity-base-field__label").ToList();
 

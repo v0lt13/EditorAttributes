@@ -25,7 +25,17 @@ namespace EditorAttributes.Editor
 
 			if (property.propertyType == SerializedPropertyType.ObjectReference)
 			{
-				propertyField.RegisterCallback<SerializedPropertyChangeEvent>((callback) => InitializeFoldoutDrawer(root, property, fieldType, errorBox));
+				// Register the callback later to skip any initialization calls
+				root.schedule.Execute(() =>
+				{
+					propertyField.RegisterCallback<SerializedPropertyChangeEvent>((callback) =>
+					{
+						if (root.childCount > 1 && root.ElementAt(1) != null)
+							root.RemoveAt(1);
+
+						InitializeFoldoutDrawer(root, property, fieldType, errorBox);
+					});
+				}).ExecuteLater(1);
 
 				InitializeFoldoutDrawer(root, property, fieldType, errorBox);
 			}
@@ -39,15 +49,6 @@ namespace EditorAttributes.Editor
 
 		private void InitializeFoldoutDrawer(VisualElement root, SerializedProperty property, Type fieldType, HelpBox errorBox)
 		{
-			root.schedule.Execute(() =>
-			{
-				var foldouts = root.Query<Foldout>().ToList();
-
-				// The SerializedPropertyChangeEvent may be called multiple times and draw the foldout more then once so we remove the extras
-				for (int i = 1; i < foldouts.Count; i++) 
-					root.Remove(foldouts[i]);
-			}).ExecuteLater(1);
-
 			if (property.objectReferenceValue == null)
 			{
 				var foldout = root.Q<Foldout>();
@@ -62,13 +63,13 @@ namespace EditorAttributes.Editor
 			{
 				var component = property.objectReferenceValue as Component;
 
-				root.Add(CreatePropertyFoldout(new SerializedObject(component)));
+				root.Add(CreatePropertyFoldout(new SerializedObject(component), property));
 			}
 			else if (fieldType.IsSubclassOf(typeof(ScriptableObject)) || fieldType == typeof(ScriptableObject))
 			{
 				var scriptableObject = property.objectReferenceValue as ScriptableObject;
 
-				root.Add(CreatePropertyFoldout(new SerializedObject(scriptableObject)));
+				root.Add(CreatePropertyFoldout(new SerializedObject(scriptableObject), property));
 			}
 			else
 			{
@@ -76,12 +77,14 @@ namespace EditorAttributes.Editor
 			}
 		}
 
-		private Foldout CreatePropertyFoldout(SerializedObject serializedObject)
+		private Foldout CreatePropertyFoldout(SerializedObject serializedObject, SerializedProperty serilizedProperty)
         {
+			var isFoldedSaveKey = $"{serilizedProperty.serializedObject.targetObject}_{serilizedProperty.propertyPath}_IsFolded";
+
 			var foldout = new Foldout 
 			{
 				text = "Properties",
-				value = false
+				value = EditorPrefs.GetBool(isFoldedSaveKey)
 			};
 
 			ApplyBoxStyle(foldout);
@@ -109,6 +112,8 @@ namespace EditorAttributes.Editor
 			}
 
 			serializedObject.ApplyModifiedProperties();
+
+			foldout.RegisterValueChangedCallback((callback) => EditorPrefs.SetBool(isFoldedSaveKey, callback.newValue));
 
 			return foldout;
 		}

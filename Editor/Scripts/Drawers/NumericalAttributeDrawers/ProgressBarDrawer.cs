@@ -28,7 +28,7 @@ namespace EditorAttributes.Editor
 						progressBar.Q(className: "unity-progress-bar__progress").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
 				}).ExecuteLater(1);
 
-				UpdateVisualElement(() =>
+				UpdateVisualElement(root, () =>
 				{
 					var propertyValue = GetPropertyValue(property);
 

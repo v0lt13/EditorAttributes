@@ -30,7 +30,7 @@ namespace EditorAttributes.Editor
 					ApplyPropertyValue(property, dropdownField);
 				}
 
-				UpdateVisualElement(() =>
+				UpdateVisualElement(root, () =>
 				{
 					var sceneNames = GetSceneNames(errorBox);
 

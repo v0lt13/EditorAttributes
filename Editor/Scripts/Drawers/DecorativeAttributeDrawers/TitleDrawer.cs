@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using ColorUtils = EditorAttributes.Editor.Utility.ColorUtils;
+using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
@@ -16,7 +16,7 @@ namespace EditorAttributes.Editor
 			var errorBox = new HelpBox();
 			var title = new Label();
 
-			UpdateVisualElement(() =>
+			UpdateVisualElement(root, () =>
 			{
 				title.text = GetDynamicString(titleAttribute.Title, property, titleAttribute, errorBox);
 				DisplayErrorBox(root, errorBox);

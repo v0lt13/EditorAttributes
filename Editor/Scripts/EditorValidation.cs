@@ -12,7 +12,7 @@ namespace EditorAttributes.Editor
 	[InitializeOnLoad]
 	public class EditorValidation : IPreprocessBuildWithReport
 	{
-		public static int BUILD_KILLERS;
+		private static int BUILD_KILLERS;
 		public int callbackOrder => 0;
 
 		static EditorValidation() { }
@@ -44,21 +44,16 @@ namespace EditorAttributes.Editor
 		{
 			int failedValidations = 0;
 			int successfulValidations = 0;
-			int ignoredValidations = 0;
 
-			string[] sceneGuids = AssetDatabase.FindAssets("t:Scene");
+			var sceneGuids = AssetDatabase.FindAssets("t:Scene");
 
 			foreach (var sceneGuid in sceneGuids)
 			{
 				string scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
 
-				bool isReadOnly = scenePath.StartsWith("Packages/");
-				if (isReadOnly)
-				{
-					Debug.Log($"Scene at {scenePath} is read only, skipping");
-					ignoredValidations++;
+				if (IsPackageAsset(scenePath))
 					continue;
-				}
+
 				var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
 
 				ValidateScene(scene, ref failedValidations, ref successfulValidations);
@@ -67,7 +62,7 @@ namespace EditorAttributes.Editor
 					EditorSceneManager.CloseScene(scene, true);
 			}
 
-			Debug.Log($"Scenes Validated: <b>(Failed: {failedValidations}, Succeeded: {successfulValidations}, Ignored: {ignoredValidations}, Total: {failedValidations + successfulValidations + ignoredValidations})</b>");
+			Debug.Log($"Scenes Validated: <b>(Failed: {failedValidations}, Succeeded: {successfulValidations}, Total: {failedValidations + successfulValidations})</b>");
 		}
 
 		/// <summary>
@@ -79,21 +74,29 @@ namespace EditorAttributes.Editor
 			int failedValidations = 0;
 			int successfulValidations = 0;
 
-			string[] prefabGuids = AssetDatabase.FindAssets("t:Prefab");
+			var prefabGuids = AssetDatabase.FindAssets("t:Prefab");
 
 			foreach (var prefabGuid in prefabGuids)
 			{
 				string prefabPath = AssetDatabase.GUIDToAssetPath(prefabGuid);
+
+				if (IsPackageAsset(prefabPath))
+					continue;
+
 				var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
 
 				ValidateComponents(prefab.GetComponentsInChildren<Component>(true), ref failedValidations, ref successfulValidations);
 			}
 
-			string[] scriptableObjectGuids = AssetDatabase.FindAssets("t:ScriptableObject");
+			var scriptableObjectGuids = AssetDatabase.FindAssets("t:ScriptableObject");
 
 			foreach (var scriptableObjectGuid in scriptableObjectGuids)
 			{
 				string scriptableObjectPath = AssetDatabase.GUIDToAssetPath(scriptableObjectGuid);
+
+				if (IsPackageAsset(scriptableObjectPath))
+					continue;
+
 				var scriptableObject = AssetDatabase.LoadAssetAtPath<ScriptableObject>(scriptableObjectPath);
 
 				Validate(scriptableObject, ref failedValidations, ref successfulValidations);
@@ -179,6 +182,13 @@ namespace EditorAttributes.Editor
 				}
 			}
 		}
+
+		/// <summary>
+		/// Checks to see if an asset is inside the Packages folder
+		/// </summary>
+		/// <param name="assetPath">The path of the asset</param>
+		/// <returns>True if the asset is inside the packages folder</returns>
+		public static bool IsPackageAsset(string assetPath) => assetPath.StartsWith("Packages/");
 
 		private static void ValidateScene(Scene scene, ref int failedValidations, ref int successfulValidations)
 		{
