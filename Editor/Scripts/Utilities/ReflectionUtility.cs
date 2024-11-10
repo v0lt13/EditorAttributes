@@ -15,7 +15,7 @@ namespace EditorAttributes.Editor.Utility
 	    /// Gets object containing this SerializedProperty.
 	    /// </summary>
 	    /// <param name="property">SerializedProperty contained withing an instance.</param>
-	    /// <returns>Objects that contains given SerializedProperty.</returns>
+	    /// <returns>Object that contains given SerializedProperty.</returns>
 		public static object? GetContainingObject(this SerializedProperty property) {
 			var pathParts = property.propertyPath.Split(".").SkipLast(1);
 			object currentObject = property.serializedObject.targetObject;
