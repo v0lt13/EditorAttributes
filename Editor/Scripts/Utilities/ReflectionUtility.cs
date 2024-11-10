@@ -10,6 +10,27 @@ namespace EditorAttributes.Editor.Utility
     {
 		public const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
+		#nullable  enable
+	    /// <summary>
+	    /// Gets object containing this SerializedProperty.
+	    /// </summary>
+	    /// <param name="property">SerializedProperty contained withing an instance.</param>
+	    /// <returns>Objects that contains given SerializedProperty.</returns>
+		public static object GetContainingObject(this SerializedProperty property) {
+			var pathParts = property.propertyPath.Split(".").SkipLast(1);
+			object currentObject = property.serializedObject.targetObject;
+
+			foreach (var part in pathParts) {
+				var field = currentObject
+					.GetType()
+					.GetField(part, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+				currentObject = field.GetValue(currentObject);
+			}
+
+			return currentObject;
+		}
+		#nullable disable
+		
 		/// <summary>
 		/// Finds a field inside a serialized object
 		/// </summary>
