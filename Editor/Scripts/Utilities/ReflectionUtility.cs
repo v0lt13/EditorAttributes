@@ -16,7 +16,7 @@ namespace EditorAttributes.Editor.Utility
 	    /// </summary>
 	    /// <param name="property">SerializedProperty contained withing an instance.</param>
 	    /// <returns>Objects that contains given SerializedProperty.</returns>
-		public static object GetContainingObject(this SerializedProperty property) {
+		public static object? GetContainingObject(this SerializedProperty property) {
 			var pathParts = property.propertyPath.Split(".").SkipLast(1);
 			object currentObject = property.serializedObject.targetObject;
 
@@ -24,6 +24,9 @@ namespace EditorAttributes.Editor.Utility
 				var field = currentObject
 					.GetType()
 					.GetField(part, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+				if (field == null) return null;
+				
 				currentObject = field.GetValue(currentObject);
 			}
 
