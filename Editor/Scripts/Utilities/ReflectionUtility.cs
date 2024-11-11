@@ -9,30 +9,6 @@ namespace EditorAttributes.Editor.Utility
 	public static class ReflectionUtility
     {
 		public const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
-		#nullable  enable
-	    /// <summary>
-	    /// Gets object containing this SerializedProperty.
-	    /// </summary>
-	    /// <param name="property">SerializedProperty contained withing an instance.</param>
-	    /// <returns>Object that contains given SerializedProperty.</returns>
-		public static object? GetContainingObject(this SerializedProperty property) {
-			var pathParts = property.propertyPath.Split(".").SkipLast(1);
-			object currentObject = property.serializedObject.targetObject;
-
-			foreach (var part in pathParts) {
-				var field = currentObject
-					.GetType()
-					.GetField(part, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-				if (field == null) return null;
-				
-				currentObject = field.GetValue(currentObject);
-			}
-
-			return currentObject;
-		}
-		#nullable disable
 		
 		/// <summary>
 		/// Finds a field inside a serialized object
@@ -92,7 +68,8 @@ namespace EditorAttributes.Editor.Utility
 		{
 			MethodInfo methodInfo;
 
-			methodInfo = FindFunction(functionName, property.GetContainingObject());
+			GetNestedObjectType(property, out object target);
+			methodInfo = FindFunction(functionName, target);
 
 			// If the method is null we try to see if its inside a serialized object
 			if (methodInfo == null)
