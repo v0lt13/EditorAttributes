@@ -67,7 +67,7 @@ namespace EditorAttributes.Editor.Utility
 		public static MethodInfo FindFunction(string functionName, SerializedProperty property)
 		{
 			MethodInfo methodInfo;
-			
+
 			methodInfo = FindFunction(functionName, property.serializedObject.targetObject);
 
 			// If the method is null we try to see if its inside a serialized object
