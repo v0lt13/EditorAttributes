@@ -9,7 +9,7 @@ namespace EditorAttributes.Editor.Utility
 	public static class ReflectionUtility
     {
 		public const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-		
+
 		/// <summary>
 		/// Finds a field inside a serialized object
 		/// </summary>
@@ -67,9 +67,8 @@ namespace EditorAttributes.Editor.Utility
 		public static MethodInfo FindFunction(string functionName, SerializedProperty property)
 		{
 			MethodInfo methodInfo;
-
-			GetNestedObjectType(property, out object target);
-			methodInfo = FindFunction(functionName, target);
+			
+			methodInfo = FindFunction(functionName, property.serializedObject.targetObject);
 
 			// If the method is null we try to see if its inside a serialized object
 			if (methodInfo == null)
