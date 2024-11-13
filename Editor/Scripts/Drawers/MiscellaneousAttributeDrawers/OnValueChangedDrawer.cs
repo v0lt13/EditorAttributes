@@ -11,7 +11,7 @@ namespace EditorAttributes.Editor
     	public override VisualElement CreatePropertyGUI(SerializedProperty property)
     	{
 			var onValueChangedAttribute = attribute as OnValueChangedAttribute;
-			var target = property.serializedObject.targetObject;
+			ReflectionUtility.GetNestedObjectType(property, out object target);
 
     		var root = new VisualElement();
 		    var propertyField = DrawProperty(property);
