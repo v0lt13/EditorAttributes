@@ -8,6 +8,8 @@ AssetStore Page: https://assetstore.unity.com/packages/tools/gui/editorattribute
 
 Discord Server: https://discord.gg/jKXvXyTzYn
 
+Support Me: https://buymeacoffee.com/v0lt
+
 # Features
 The asset adds over 50 Attributes that:
 - Show/Hide or Enable/Disable fields based on one or more conditions
