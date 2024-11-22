@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
+using System.Linq;
 using System.Reflection;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -16,14 +17,18 @@ namespace EditorAttributes.Editor
 	{
 		public static readonly Color DEFAULT_GLOBAL_COLOR = new(0.8f, 0.8f, 0.8f, 1.0f);
 		public static Color GLOBAL_COLOR = DEFAULT_GLOBAL_COLOR;
-		
+
+		private const string MENU_ITEM_PATH = "CONTEXT/Object/Show Static Fields";
+		private static bool ENABLE_STATIC_FIELDS;
+
+		private static List<Action> UPDATE_EXECUTION_LIST = new();
+
 		private string buttonParamsDataFilePath;
 
 		private Dictionary<MethodInfo, bool> buttonFoldouts = new();
 		private Dictionary<MethodInfo, object[]> buttonParameterValues = new();
 
 		private MethodInfo[] functions;
-		private static List<Action> updateExecutionList = new();
 
 		protected virtual void OnEnable()
 		{
@@ -39,6 +44,8 @@ namespace EditorAttributes.Editor
 			{
 				return;
 			}
+
+			ENABLE_STATIC_FIELDS = Menu.GetChecked(MENU_ITEM_PATH);
 		}
 
 		protected virtual void OnDisable()
@@ -46,7 +53,7 @@ namespace EditorAttributes.Editor
 			if (target == null)
 				ButtonDrawer.DeleteParamsData(buttonParamsDataFilePath);
 
-			updateExecutionList.Clear();
+			UPDATE_EXECUTION_LIST.Clear();
 			EditorHandles.handleProperties.Clear();
 			EditorHandles.boundsHandleList.Clear();
 		}
@@ -58,14 +65,26 @@ namespace EditorAttributes.Editor
 			// Reset the global color per component GUI so it doesnt leak from other components
 			GLOBAL_COLOR = DEFAULT_GLOBAL_COLOR;
 
-			var root = new VisualElement();
+			var root = new VisualElement();			
 
 			var defaultInspector = DrawDefaultInspector();
-			//var staticFields = DrawStaticFields();
+			var staticFields = DrawStaticFields();
 			var buttons = DrawButtons();
 
 			root.Add(defaultInspector);
-			//root.Add(staticFields);
+
+			AddToUpdateLoop(() =>
+			{
+				if (ENABLE_STATIC_FIELDS)
+				{
+					PropertyDrawerBase.AddElement(root, staticFields);
+				}
+				else
+				{
+					PropertyDrawerBase.RemoveElement(root, staticFields);
+				}
+			});
+			
 			root.Add(buttons);
 
 			RunUpdateLoop(root);
@@ -76,6 +95,7 @@ namespace EditorAttributes.Editor
 		protected virtual new VisualElement DrawDefaultInspector()
 		{
 			var root = new VisualElement();
+			var propertyList = new Dictionary<string, PropertyField>();
 
 			using (var property = serializedObject.GetIterator())
 			{
@@ -86,9 +106,12 @@ namespace EditorAttributes.Editor
 					do
 					{
 						var propertyField = new PropertyField(property);
-		
+
 						if (property.name == "m_Script")
+						{
 							propertyField.SetEnabled(false);
+							root.Add(propertyField);
+						}
 
 						var field = ReflectionUtility.FindField(property.name, target);
 
@@ -107,35 +130,61 @@ namespace EditorAttributes.Editor
 							GUIColorDrawer.ColorField(propertyField, prevColor);
 						}
 
-						root.Add(propertyField);
+						if (property.name != "m_Script")
+							propertyList.Add(property.name, propertyField);
 					}
 					while (property.NextVisible(false));
 				}
 			}
 
+			var orderedProperties = propertyList.OrderBy((property) =>
+			{
+				var field = ReflectionUtility.FindField(property.Key, target);
+
+				var propertyOrderAttribute = field?.GetCustomAttribute<PropertyOrderAttribute>();
+
+				if (propertyOrderAttribute != null)
+					return propertyOrderAttribute.PropertyOrder;
+
+				return 0;
+			});
+
+			foreach (var property in orderedProperties)
+				root.Add(property.Value);
+
             return root;
 		}
 
-		internal static void AddToUpdateLoop(Action action) => updateExecutionList.Add(action);
-
-		private void RunUpdateLoop(VisualElement root)
+		[MenuItem(MENU_ITEM_PATH, priority = 0)]
+		private static void ToggleStaticFields()
 		{
-			root.schedule.Execute(() => 
+			ENABLE_STATIC_FIELDS = !ENABLE_STATIC_FIELDS;
+
+			Menu.SetChecked(MENU_ITEM_PATH, ENABLE_STATIC_FIELDS);
+		}
+
+		internal static void AddToUpdateLoop(Action action) => UPDATE_EXECUTION_LIST.Add(action);
+
+		/// <summary>
+		/// Runs the update loop on elements that use the <see cref="PropertyDrawerBase.UpdateVisualElement(VisualElement, Action)"/> function.
+		/// Call this function in the CreateGUI function to have conditional attributes and dynamic string attributes work in custom editor windows.
+		/// </summary>
+		/// <param name="root">The root element of the editor</param>
+		public static void RunUpdateLoop(VisualElement root)
+		{
+			root.schedule.Execute(() =>
 			{
-				if (!PropertyDrawerBase.IsCollectionValid(updateExecutionList))
+				if (!PropertyDrawerBase.IsCollectionValid(UPDATE_EXECUTION_LIST))
 					return;
 
-				foreach (var action in updateExecutionList)
+				foreach (var action in UPDATE_EXECUTION_LIST)
 					action.Invoke();
 			}).Every(50);
 		}
 
 		/// <summary>
-		/// Draws all the static and const field marked as public or with SerializeField
+		/// Draws all the static and const fields
 		/// </summary>
-		/// <remarks> 
-		/// THIS FUNCTION IS EXPERIMENTAL! To enable drawing of static variables uncomment the lines of code at 60 and 64 in the CreateInspectorGUI() function
-		/// </remarks>
 		/// <returns>A visual element containing all static and const fields</returns>
 		protected VisualElement DrawStaticFields()
 		{
@@ -144,7 +193,7 @@ namespace EditorAttributes.Editor
 
 			foreach (var staticField in staticFields)
 			{
-				if (staticField.IsPrivate && staticField.GetCustomAttribute<SerializeField>() == null)
+				if (staticField.GetCustomAttribute<HideInInspector>() != null)
 					continue;
 				
 				var propertyField = ButtonDrawer.DrawParameterField(staticField.FieldType, ObjectNames.NicifyVariableName(staticField.Name), staticField.GetValue(target));

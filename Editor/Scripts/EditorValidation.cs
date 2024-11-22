@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using System.Linq;
 using System.Reflection;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -29,7 +30,7 @@ namespace EditorAttributes.Editor
 		/// <summary>
 		/// Validates every asset and scene in the project
 		/// </summary>
-		[MenuItem("EditorValidation/Validate All")]
+		[MenuItem("EditorValidation/Validate All", priority = 0)]
 		public static void ValidateAll()
 		{
 			ValidateAllAssets();
@@ -37,9 +38,9 @@ namespace EditorAttributes.Editor
 		}
 
 		/// <summary>
-		/// Validates all scenes in the project
+		/// Validates all scenes in the build
 		/// </summary>
-		[MenuItem("EditorValidation/Validate Scenes")]
+		[MenuItem("EditorValidation/Validate Scenes", priority = 2)]
 		public static void ValidateAllScenes()
 		{
 			int failedValidations = 0;
@@ -47,20 +48,37 @@ namespace EditorAttributes.Editor
 
 			var sceneGuids = AssetDatabase.FindAssets("t:Scene");
 
+			var previouslyOpenedScenes = GetAllOpenedScenes();
+
 			foreach (var sceneGuid in sceneGuids)
 			{
 				string scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
 
-				if (IsPackageAsset(scenePath))
+				if (IsPackageAsset(scenePath) || SceneUtility.GetBuildIndexByScenePath(scenePath) == -1)
 					continue;
 
-				var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+				var openedScene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
 
-				ValidateScene(scene, ref failedValidations, ref successfulValidations);
+				ValidateScene(openedScene, ref failedValidations, ref successfulValidations);
 
-				if (scene != SceneManager.GetActiveScene())
-					EditorSceneManager.CloseScene(scene, true);
+				if (previouslyOpenedScenes.All((scene) => scene.path != scenePath))
+					EditorSceneManager.CloseScene(openedScene, true);
 			}
+
+			Debug.Log($"Scenes Validated: <b>(Failed: {failedValidations}, Succeeded: {successfulValidations}, Total: {failedValidations + successfulValidations})</b>");
+		}
+
+		/// <summary>
+		/// Validates all scenes currently open
+		/// </summary>
+		[MenuItem("EditorValidation/Validate Open Scenes", priority = 3)]
+		public static void ValidateOpenScenes()
+		{
+			int failedValidations = 0;
+			int successfulValidations = 0;
+
+			foreach (var openedScene in GetAllOpenedScenes())
+				ValidateScene(openedScene, ref failedValidations, ref successfulValidations);
 
 			Debug.Log($"Scenes Validated: <b>(Failed: {failedValidations}, Succeeded: {successfulValidations}, Total: {failedValidations + successfulValidations})</b>");
 		}
@@ -68,7 +86,7 @@ namespace EditorAttributes.Editor
 		/// <summary>
 		/// Validates all assets in the project
 		/// </summary>
-		[MenuItem("EditorValidation/Validate Assets")]
+		[MenuItem("EditorValidation/Validate Assets", priority = 1)]
 		public static void ValidateAllAssets()
 		{
 			int failedValidations = 0;
@@ -189,6 +207,20 @@ namespace EditorAttributes.Editor
 		/// <param name="assetPath">The path of the asset</param>
 		/// <returns>True if the asset is inside the packages folder</returns>
 		public static bool IsPackageAsset(string assetPath) => assetPath.StartsWith("Packages/");
+
+		/// <summary>
+		/// Returns an array of all the Scenes currently open in the hierarchy
+		/// </summary>
+		/// <returns>Array of Scenes in the Hierarchy</returns>
+		public static Scene[] GetAllOpenedScenes()
+		{
+			var array = new Scene[SceneManager.sceneCount];
+
+			for (int i = 0; i < SceneManager.sceneCount; i++)
+				array[i] = SceneManager.GetSceneAt(i);
+
+			return array;
+		}
 
 		private static void ValidateScene(Scene scene, ref int failedValidations, ref int successfulValidations)
 		{

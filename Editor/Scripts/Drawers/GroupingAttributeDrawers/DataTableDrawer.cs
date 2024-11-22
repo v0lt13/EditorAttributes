@@ -95,9 +95,9 @@ namespace EditorAttributes.Editor
 		{
 			if (ReflectionUtility.IsPropertyCollection(property))
 			{
-				var splitName = property.displayName.Split(" ");
+				var splitName = property.propertyPath.Split(".");
 
-				return splitName[^1] == "0";
+				return splitName[^1] == "data[0]";
 			}
 
 			return true;

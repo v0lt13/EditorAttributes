@@ -1,3 +1,12 @@
+EditorAttributes v2.5.0 Changelog:
+- Added PropertyOrder Attribute
+- Added Validate Open Scenes to the validation system
+- You can now toggle the visibility of static fields in the inspector trough a component context menu
+- The EditorExtension.RunUpdateLoop function is now public so you can call it from custom editor windows to make certain attributes work
+- Fixed DataTable Attribute not displaying the labels in an array
+- The validation system should no longer close any additive loaded scenes
+- Validate Scenes will no longer validate scenes that are not part of the build
+
 EditorAttributes v2.4.1 Changelog:
 - The validation system will no longer check for assets inside the Packages folder
 - The PropertyDropdown Attribute will now save the state of the foldouts
