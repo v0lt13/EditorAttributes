@@ -44,7 +44,7 @@ namespace EditorAttributesSamples
 		[DataTable(true)] public EnemyData[] enemies;
 
 		[Title("Level Settings")]
-#if UNITY_6000_OR_NEWER
+#if UNITY_6000_0_OR_NEWER
 		[EnumButtons]
 #else
 		[SelectionButtons]

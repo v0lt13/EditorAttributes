@@ -53,7 +53,6 @@ namespace EditorAttributes.Editor
 			if (target == null)
 				ButtonDrawer.DeleteParamsData(buttonParamsDataFilePath);
 
-			UPDATE_EXECUTION_LIST.Clear();
 			EditorHandles.handleProperties.Clear();
 			EditorHandles.boundsHandleList.Clear();
 		}
@@ -177,8 +176,28 @@ namespace EditorAttributes.Editor
 				if (!PropertyDrawerBase.IsCollectionValid(UPDATE_EXECUTION_LIST))
 					return;
 
-				foreach (var action in UPDATE_EXECUTION_LIST)
-					action.Invoke();
+				var executionList = UPDATE_EXECUTION_LIST.ToArray(); // Execute the iteration on a separate array so is not affected by removing any null target actions
+
+				foreach (var action in executionList)
+				{
+					try
+					{
+						action?.Invoke();
+					}
+#if UNITY_6000_0_OR_NEWER
+					catch (NullReferenceException)
+					{
+						UPDATE_EXECUTION_LIST.Remove(action);
+						continue;
+					}
+#else
+					catch (ArgumentNullException)
+					{
+						UPDATE_EXECUTION_LIST.Remove(action);
+						continue;
+					}
+#endif
+				}
 			}).Every(50);
 		}
 

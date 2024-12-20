@@ -171,7 +171,7 @@ namespace EditorAttributes.Editor
 		{
 			var memberInfo = ReflectionUtility.GetValidMemberInfo(propertyName, property);
 
-			return memberInfo is PropertyInfo ? $"<{propertyName}>k_BackingField" : propertyName;
+			return memberInfo is PropertyInfo ? $"<{propertyName}>k__BackingField" : propertyName;
 		}
 
 		/// <summary>

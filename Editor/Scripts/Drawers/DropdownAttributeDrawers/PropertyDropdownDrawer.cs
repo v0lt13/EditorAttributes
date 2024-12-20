@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEditor;
+using System.Reflection;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using EditorAttributes.Editor.Utility;
@@ -99,7 +100,12 @@ namespace EditorAttributes.Editor
 					do
 					{
 						if (property.name.Equals("m_Script", StringComparison.Ordinal)) // Exclude the field containing the script reference
-							continue; 
+							continue;
+
+						var field = ReflectionUtility.FindField(property.name, property.serializedObject.targetObject);
+
+						if (field?.GetCustomAttribute<HidePropertyAttribute>() != null) // Skip fields with the HideProperty attribute
+							continue;
 
 						var propertyField = DrawProperty(property);
 

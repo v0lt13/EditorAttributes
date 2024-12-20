@@ -59,7 +59,13 @@ namespace EditorAttributes.Editor
 						propertyField.style.marginLeft = 10f;
 
 					propertyField.style.unityFontStyleAndWeight = FontStyle.Normal;
-					propertyField.schedule.Execute(() => propertyField.Q<Label>().style.marginRight = toggleGroup.WidthOffset).ExecuteLater(1);
+					propertyField.schedule.Execute(() =>
+					{
+						var label = propertyField.Q<Label>();
+
+						if (label != null)
+							label.style.marginRight = toggleGroup.WidthOffset;
+					}).ExecuteLater(1);
 
 					foldout.Add(propertyField);
 				}

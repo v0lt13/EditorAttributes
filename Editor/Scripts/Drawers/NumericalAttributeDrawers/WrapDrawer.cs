@@ -81,6 +81,8 @@ namespace EditorAttributes.Editor
 						root.Add(helpBox);
 						return;
 				}
+
+				property.serializedObject.ApplyModifiedProperties();
 			});
 
 			root.Add(propertyField);
