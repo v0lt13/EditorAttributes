@@ -1,3 +1,13 @@
+EditorAttributes v2.5.2 Changelog:
+- Added optional parameter to the HideInChildren Attribute to specify in which children to hide the field
+- Added option to draw help boxes above the attached field
+- Added dynamic string support to help boxes
+- The HelpBox Attribute will now draw the helpbox under the field by default
+- Fixed tooltips not being displayed on some attributes
+- Fixed Rename Attribute not working on fields inside a horizontal group
+- Fixed asset preivews not displaying when assigning new assets
+- Removed the global update scheduler due invoked events generating a ton of garbage and tanking performance, all atrtibutes will now use their own scheduler
+
 EditorAttributes v2.5.1 Changelog:
 - Fixed attributes not finding properties
 - Fixed overridden function mismatch warning in the UnityTypeConverter class
