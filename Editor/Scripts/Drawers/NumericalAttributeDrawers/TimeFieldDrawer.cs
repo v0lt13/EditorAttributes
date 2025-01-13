@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(TimeFieldAttribute))]
+	[CustomPropertyDrawer(typeof(TimeFieldAttribute))]
     public class TimeFieldDrawer : PropertyDrawerBase
     {
     	public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -22,10 +22,11 @@ namespace EditorAttributes.Editor
             {
 				var timeField = new Vector3Field(property.displayName)
 				{
-					value = new Vector3(EditorPrefs.GetFloat(timeVectorSaveKeyX), EditorPrefs.GetFloat(timeVectorSaveKeyY), EditorPrefs.GetFloat(timeVectorSaveKeyZ))
+					value = new Vector3(EditorPrefs.GetFloat(timeVectorSaveKeyX), EditorPrefs.GetFloat(timeVectorSaveKeyY), EditorPrefs.GetFloat(timeVectorSaveKeyZ)),
+					tooltip = property.tooltip
 				};
 
-                root.schedule.Execute(() =>
+				root.schedule.Execute(() =>
                 {
                     var labels = timeField.Query<Label>(className: "unity-base-text-field__label").ToList();
 

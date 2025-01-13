@@ -5,7 +5,7 @@ using UnityEditor.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(TagDropdownAttribute))]
+	[CustomPropertyDrawer(typeof(TagDropdownAttribute))]
     public class TagDropdownDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -14,7 +14,11 @@ namespace EditorAttributes.Editor
 
             if (property.propertyType == SerializedPropertyType.String)
             {
-                var tagField = new TagField(property.displayName, DoesStringValueContainTag(property.stringValue) ? property.stringValue : "Untagged") { showMixedValue = property.hasMultipleDifferentValues };
+                var tagField = new TagField(property.displayName, DoesStringValueContainTag(property.stringValue) ? property.stringValue : "Untagged") 
+                {
+                    showMixedValue = property.hasMultipleDifferentValues, 
+                    tooltip = property.tooltip
+                };
 
                 root.schedule.Execute(() => tagField.Q(className: "unity-base-popup-field__input").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f).ExecuteLater(1);
 
@@ -40,7 +44,8 @@ namespace EditorAttributes.Editor
         {
             foreach (var tag in InternalEditorUtility.tags)
             {
-                if (stringValue == tag) return true;
+                if (stringValue == tag) 
+                    return true;
             }
 
             return false;

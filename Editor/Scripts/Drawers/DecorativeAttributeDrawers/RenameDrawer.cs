@@ -9,13 +9,15 @@ namespace EditorAttributes.Editor
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
+			var renameAttribute = attribute as RenameAttribute;
+
 			var root = new VisualElement();
 			var errorBox = new HelpBox();
 			var propertyField = DrawProperty(property, new Label(property.displayName));
 
 			UpdateVisualElement(root, () =>
 			{
-				propertyField.Q<Label>().text = GetNewName(property, errorBox);
+				propertyField.Q<Label>().text = GetNewName(renameAttribute, property, errorBox);
 				DisplayErrorBox(root, errorBox);
 			});
 
@@ -24,9 +26,8 @@ namespace EditorAttributes.Editor
 			return root;
 		}
 
-        private string GetNewName(SerializedProperty property, HelpBox errorBox)
+        internal static string GetNewName(RenameAttribute renameAttribute, SerializedProperty property, HelpBox errorBox)
         {
-			var renameAttribute = attribute as RenameAttribute;
 			var newName = GetDynamicString(renameAttribute.Name, property, renameAttribute, errorBox);
 
 			switch (renameAttribute.CaseType)
@@ -71,7 +72,7 @@ namespace EditorAttributes.Editor
 			return newName;
 		}
 
-        private void FormatString(ref string stringToFormat)
+        private static void FormatString(ref string stringToFormat)
         {
 			while (stringToFormat.Contains(" "))
 			{

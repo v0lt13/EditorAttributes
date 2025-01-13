@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public enum CaseType
+	public enum CaseType
     {
         Unity,
         Pascal,

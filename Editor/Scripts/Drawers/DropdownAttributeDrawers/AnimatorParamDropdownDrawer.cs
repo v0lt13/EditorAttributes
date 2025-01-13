@@ -26,6 +26,7 @@ namespace EditorAttributes.Editor
 
 				root.schedule.Execute(() => dropdownField.Q(className: "unity-base-popup-field__input").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f).ExecuteLater(1);
 
+				dropdownField.tooltip = property.tooltip;
 				dropdownField.AddToClassList("unity-base-field__aligned");
 
 				dropdownField.RegisterValueChangedCallback(callback =>

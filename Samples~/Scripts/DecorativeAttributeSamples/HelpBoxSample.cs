@@ -18,5 +18,8 @@ namespace EditorAttributesSamples
 
 		[HelpBox("This is an <color=#FF0000>error</color> box", MessageMode.Error)]
 		[SerializeField] private int errorBox;
+
+		[HelpBox(nameof(dynamicHelpbox), MessageMode.Log, StringInputMode.Dynamic)]
+		[SerializeField] private string dynamicHelpbox;
 	}
 }

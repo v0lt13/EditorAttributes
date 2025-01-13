@@ -3,20 +3,32 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(HelpBoxAttribute))]
-    public class HelpBoxDrawer : DecoratorDrawer
+	[CustomPropertyDrawer(typeof(HelpBoxAttribute))]
+    public class HelpBoxDrawer : PropertyDrawerBase
     {
-		public override VisualElement CreatePropertyGUI()
+		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
-			var helpbox = attribute as HelpBoxAttribute;
+			var helpBoxAttribute = attribute as HelpBoxAttribute;
+			var propertyField = DrawProperty(property);
 			
 			var root = new VisualElement();
-			var helpBox = new HelpBox(helpbox.Message, (HelpBoxMessageType)helpbox.MessageType);
+			var errorBox = new HelpBox();
+			var helpBox = new HelpBox(string.Empty, (HelpBoxMessageType)helpBoxAttribute.MessageType);
 
 			if (EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR)
 				helpBox.style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
 
+			UpdateVisualElement(root, () =>
+			{
+				helpBox.text = GetDynamicString(helpBoxAttribute.Message, property, helpBoxAttribute, errorBox);
+				DisplayErrorBox(root, errorBox);
+			});
+
+			root.Add(propertyField);
 			root.Add(helpBox);
+
+			if (helpBoxAttribute.DrawAbove)
+				helpBox.PlaceBehind(propertyField);
 
 			return root;
 		}

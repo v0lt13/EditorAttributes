@@ -18,6 +18,7 @@ namespace EditorAttributes.Editor
 			{
 				style = { unityFontStyleAndWeight = FontStyle.Bold },
 				text = foldoutGroup.GroupName,
+				tooltip = property.tooltip,
 				value = EditorPrefs.GetBool(isFoldedSaveKey)
 			};
 

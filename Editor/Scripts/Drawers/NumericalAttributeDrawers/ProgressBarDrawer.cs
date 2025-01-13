@@ -14,7 +14,7 @@ namespace EditorAttributes.Editor
 			{
 				var progressBarAttribute = attribute as ProgressBarAttribute;
 
-				var progressBar = new ProgressBar { highValue = progressBarAttribute.MaxValue };
+				var progressBar = new ProgressBar { highValue = progressBarAttribute.MaxValue, tooltip = property.tooltip };
 
 				// Make the visual elements in the progress bar grow
 				progressBar.ElementAt(0).style.flexGrow = 1f;

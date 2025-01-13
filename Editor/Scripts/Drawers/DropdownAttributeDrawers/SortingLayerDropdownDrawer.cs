@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(SortingLayerDropdownAttribute))]
+	[CustomPropertyDrawer(typeof(SortingLayerDropdownAttribute))]
     public class SortingLayerDropdownDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -15,7 +15,11 @@ namespace EditorAttributes.Editor
 
 			if (property.propertyType == SerializedPropertyType.Integer)
 			{
-				var maskField = new MaskField(property.displayName, GetSortingLayerNames(), property.intValue) { showMixedValue = property.hasMultipleDifferentValues };
+				var maskField = new MaskField(property.displayName, GetSortingLayerNames(), property.intValue) 
+				{ 
+					showMixedValue = property.hasMultipleDifferentValues,
+					tooltip = property.tooltip
+				};
 
 				root.schedule.Execute(() => maskField.Q(className: "unity-base-popup-field__input").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f).ExecuteLater(1);
 

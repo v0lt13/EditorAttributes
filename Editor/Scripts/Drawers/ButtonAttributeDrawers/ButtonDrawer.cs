@@ -104,10 +104,19 @@ namespace EditorAttributes.Editor
 		private static VisualElement MakeButton(MethodInfo function, ButtonAttribute buttonAttribute, Action buttonLogic)
 		{
 			var buttonLabel = string.IsNullOrWhiteSpace(buttonAttribute.ButtonLabel) ? function.Name : buttonAttribute.ButtonLabel;
+			var tooltipAttribute = function?.GetCustomAttribute<TooltipAttribute>();
+			string buttonTooltip = string.Empty;
+
+			if (tooltipAttribute != null)
+				buttonTooltip = tooltipAttribute.tooltip;
 
 			if (buttonAttribute.IsRepetable)
 			{
-				var repeatButton = new RepeatButton(buttonLogic, buttonAttribute.PressDelay, buttonAttribute.RepetitionInterval) { text = buttonLabel };
+				var repeatButton = new RepeatButton(buttonLogic, buttonAttribute.PressDelay, buttonAttribute.RepetitionInterval) 
+				{ 
+					text = buttonLabel, 
+					tooltip = buttonTooltip 
+				};
 
 				repeatButton.style.height = buttonAttribute.ButtonHeight;
 				repeatButton.AddToClassList("unity-button");
@@ -116,7 +125,11 @@ namespace EditorAttributes.Editor
 			}
 			else
 			{
-				var button = new Button(buttonLogic) { text = buttonLabel };
+				var button = new Button(buttonLogic)
+				{
+					text = buttonLabel, 
+					tooltip = buttonTooltip 
+				};
 
 				button.style.height = buttonAttribute.ButtonHeight;
 

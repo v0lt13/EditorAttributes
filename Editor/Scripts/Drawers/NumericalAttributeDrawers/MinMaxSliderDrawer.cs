@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(MinMaxSliderAttribute))]
+	[CustomPropertyDrawer(typeof(MinMaxSliderAttribute))]
     public class MinMaxSliderDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -19,7 +19,7 @@ namespace EditorAttributes.Editor
 				float minValue = isIntVector ? property.vector2IntValue.x : property.vector2Value.x;
 				float maxValue = isIntVector ? property.vector2IntValue.y : property.vector2Value.y;
 
-				var label = new Label(property.displayName);
+				var label = new Label(property.displayName) { tooltip = property.tooltip };
 				var minMaxSlider = new MinMaxSlider(minValue, maxValue, minMaxSliderAttribute.MinRange, minMaxSliderAttribute.MaxRange) 
 				{
 					style = {

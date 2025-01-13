@@ -176,29 +176,20 @@ namespace EditorAttributes.Editor
 				if (!PropertyDrawerBase.IsCollectionValid(UPDATE_EXECUTION_LIST))
 					return;
 
-				var executionList = UPDATE_EXECUTION_LIST.ToArray(); // Execute the iteration on a separate array so is not affected by removing any null target actions
-
-				foreach (var action in executionList)
+				for (int i = UPDATE_EXECUTION_LIST.Count - 1; i >= 0; i--)
 				{
+					var action = UPDATE_EXECUTION_LIST[i];
+
 					try
 					{
 						action?.Invoke();
 					}
-#if UNITY_6000_0_OR_NEWER
-					catch (NullReferenceException)
+					catch (Exception ex) when (ex is NullReferenceException or ArgumentNullException)
 					{
-						UPDATE_EXECUTION_LIST.Remove(action);
-						continue;
+						UPDATE_EXECUTION_LIST.RemoveAt(i); // Remove invalid actions
 					}
-#else
-					catch (ArgumentNullException)
-					{
-						UPDATE_EXECUTION_LIST.Remove(action);
-						continue;
-					}
-#endif
 				}
-			}).Every(50);
+			}).Every(5);
 		}
 
 		/// <summary>

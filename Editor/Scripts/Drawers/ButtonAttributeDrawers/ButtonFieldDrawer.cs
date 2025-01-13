@@ -37,7 +37,11 @@ namespace EditorAttributes.Editor
 			{
 				if (buttonFieldAttribute.IsRepetable)
 				{
-					var repeatButton = new RepeatButton(() => function.Invoke(ownerObject, null), buttonFieldAttribute.PressDelay, buttonFieldAttribute.RepetitionInterval) { text = buttonLabel };
+					var repeatButton = new RepeatButton(() => function.Invoke(ownerObject, null), buttonFieldAttribute.PressDelay, buttonFieldAttribute.RepetitionInterval) 
+					{
+						text = buttonLabel, 
+						tooltip = property.tooltip 
+					};
 
 					repeatButton.style.height = buttonFieldAttribute.ButtonHeight;
 					repeatButton.AddToClassList("unity-button");
@@ -46,7 +50,11 @@ namespace EditorAttributes.Editor
 				}
 				else
 				{
-					var button = new Button(() => function.Invoke(ownerObject, null)) { text = buttonLabel };
+					var button = new Button(() => function.Invoke(ownerObject, null)) 
+					{ 
+						text = buttonLabel, 
+						tooltip = property.tooltip 
+					};
 
 					button.style.height = buttonFieldAttribute.ButtonHeight;
 

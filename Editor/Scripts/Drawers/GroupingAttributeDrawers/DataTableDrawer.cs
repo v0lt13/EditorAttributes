@@ -29,6 +29,7 @@ namespace EditorAttributes.Editor
 
 			var label = new Label(property.displayName) 
 			{
+				tooltip = property.tooltip,
 				style = {
 					unityFontStyleAndWeight = FontStyle.Bold,
 					marginRight = 50f,

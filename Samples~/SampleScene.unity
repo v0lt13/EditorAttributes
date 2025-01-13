@@ -430,6 +430,7 @@ MonoBehaviour:
   logBox: 0
   warningBox: 0
   errorBox: 0
+  dynamicHelpbox: TypeHere
 --- !u!1 &312228596
 GameObject:
   m_ObjectHideFlags: 0

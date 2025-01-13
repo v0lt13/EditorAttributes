@@ -18,6 +18,7 @@ namespace EditorAttributes.Editor
 			var foldout = new Foldout
 			{
 				text = toggleGroup.GroupName,
+				tooltip = property.tooltip,
 				style = { unityFontStyleAndWeight = FontStyle.Bold },
 				value = EditorPrefs.GetBool(isFoldedSaveKey)
 			};

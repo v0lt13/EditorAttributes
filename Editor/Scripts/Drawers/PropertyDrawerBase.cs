@@ -185,7 +185,7 @@ namespace EditorAttributes.Editor
 
 			if (!string.IsNullOrEmpty(errorBox.text))
 			{
-				root.Add(errorBox);
+				AddElement(root, errorBox);
 			}
 			else
 			{
@@ -198,7 +198,10 @@ namespace EditorAttributes.Editor
 		/// </summary>
 		/// <param name="visualElement">The element to update</param>
 		/// <param name="logicToUpdate">The logic to update</param>
-		protected void UpdateVisualElement(VisualElement visualElement, Action logicToUpdate) => visualElement.schedule.Execute(() => EditorExtension.AddToUpdateLoop(logicToUpdate)).ExecuteLater(1);
+		protected void UpdateVisualElement(VisualElement visualElement, Action logicToUpdate)
+		{
+			visualElement.schedule.Execute(() => EditorExtension.AddToUpdateLoop(logicToUpdate)).ExecuteLater(1);
+		}
 
 		/// <summary>
 		/// Updates a visual element at a set interval

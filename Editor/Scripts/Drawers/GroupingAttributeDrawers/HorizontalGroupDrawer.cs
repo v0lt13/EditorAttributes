@@ -1,8 +1,10 @@
 using System;
 using UnityEditor;
-using UnityEditor.UIElements;
+using System.Reflection;
 using UnityEditorInternal;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
@@ -25,6 +27,7 @@ namespace EditorAttributes.Editor
 
 				if (variableProperty != null)
 				{
+					var errorBox = new HelpBox();
 					var groupBox = new VisualElement() 
 					{
 						style = {
@@ -35,8 +38,14 @@ namespace EditorAttributes.Editor
 						}
 					};
 
-					var label = new Label(variableProperty.displayName)
+					var fieldInfo = ReflectionUtility.GetValidMemberInfo(variableProperty.name, property) as FieldInfo;
+					var renameAttribute = fieldInfo?.GetCustomAttribute<RenameAttribute>();
+
+					string labelText = renameAttribute == null ? variableProperty.displayName : RenameDrawer.GetNewName(renameAttribute, variableProperty, errorBox);
+
+					var label = new Label(labelText)
 					{
+						tooltip = variableProperty.tooltip,
 						style = {
 							flexGrow = 1f,
 							flexBasis = 0.1f,
@@ -50,8 +59,17 @@ namespace EditorAttributes.Editor
 					propertyField.style.flexBasis = 0.1f;
 					groupBox.style.paddingLeft = 20f;
 
-					if (variableProperty.propertyType != SerializedPropertyType.Generic) 
-						groupBox.Add(label); // Do not add labels to serialized objects else it will show twice
+					if (variableProperty.propertyType != SerializedPropertyType.Generic) // Do not add labels to serialized objects else it will show twice
+						groupBox.Add(label);
+
+					if (renameAttribute != null)
+					{
+						UpdateVisualElement(root, () =>
+						{
+							label.text = RenameDrawer.GetNewName(renameAttribute, property, errorBox);
+							DisplayErrorBox(propertyField, errorBox);
+						});
+					}
 
 					groupBox.Add(propertyField);
 					root.Add(groupBox);
@@ -82,9 +100,19 @@ namespace EditorAttributes.Editor
 			}
 			catch (NullReferenceException)
 			{
-				var propertyField = new PropertyField(property, "");
+				var propertyField = new PropertyField(property);
 
 				propertyField.BindProperty(property);
+
+				if (property.propertyType != SerializedPropertyType.Generic)
+				{
+					propertyField.schedule.Execute(() =>
+					{
+						var propertyLabel = propertyField.Q<Label>();
+
+						propertyLabel?.RemoveFromHierarchy();
+					}).ExecuteLater(1);
+				}
 
 				return propertyField;
 			}
