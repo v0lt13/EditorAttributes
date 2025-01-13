@@ -20,10 +20,8 @@ namespace EditorAttributes.Editor
 			var dropdownField = IsCollectionValid(collectionValues) ? new DropdownField(property.displayName, collectionValues, GetDropdownDefaultValue(collectionValues, property)) 
 				: new DropdownField(property.displayName, new List<string>() { "NULL" }, 0);
 
-			root.schedule.Execute(() => dropdownField.Q(className: "unity-base-popup-field__input").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f).ExecuteLater(1);
-
 			dropdownField.tooltip = property.tooltip;
-			dropdownField.AddToClassList("unity-base-field__aligned");
+			dropdownField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
 
 			dropdownField.RegisterValueChangedCallback(callback => 
 			{
@@ -45,7 +43,11 @@ namespace EditorAttributes.Editor
 				}
 			}
 
-			UpdateVisualElement(root, () =>
+			root.Add(dropdownField);
+
+			ExecuteLater(dropdownField, () => dropdownField.Q(className: DropdownField.inputUssClassName).style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f);
+
+			UpdateVisualElement(dropdownField, () =>
 			{
 				var dropdownValues = ConvertCollectionValuesToStrings(dropdownAttribute.CollectionName, property, memberInfo, errorBox);
 
@@ -57,8 +59,6 @@ namespace EditorAttributes.Editor
 
 				DisplayErrorBox(root, errorBox);
 			});
-
-			root.Add(dropdownField);
 
 			return root;
 		}

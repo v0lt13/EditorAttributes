@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(TypeFilterAttribute))]
+	[CustomPropertyDrawer(typeof(TypeFilterAttribute))]
     public class TypeFilterDrawer : PropertyDrawerBase
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -19,8 +19,9 @@ namespace EditorAttributes.Editor
 			{
 				var propertyField = DrawProperty(property);
 
-				// Query the object field and regiser the callback 1ms later so the visual tree is properly initialized else the query will fail and the object field will be null
-				propertyField.schedule.Execute(() =>
+				root.Add(propertyField);
+
+				ExecuteLater(propertyField, () =>
 				{
 					var objectField = propertyField.Q<ObjectField>();
 
@@ -52,9 +53,7 @@ namespace EditorAttributes.Editor
 								objectField.objectType = acceptedDraggedType;
 						}
 					});
-				}).ExecuteLater(30);
-
-				root.Add(propertyField);
+				}, 30);
 			}
 			else
 			{

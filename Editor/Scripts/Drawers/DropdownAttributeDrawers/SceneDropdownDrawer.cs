@@ -20,10 +20,8 @@ namespace EditorAttributes.Editor
 				var dropdownField = IsCollectionValid(sceneNames) ? new DropdownField(property.displayName, sceneNames, GetDropdownDefaultValue(sceneNames, property)) 
 					: new DropdownField(property.displayName, new List<string>() { "NULL" }, 0);
 
-				root.schedule.Execute(() => dropdownField.Q(className: "unity-base-popup-field__input").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f).ExecuteLater(1);
-
 				dropdownField.tooltip = property.tooltip;
-				dropdownField.AddToClassList("unity-base-field__aligned");
+				dropdownField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
 				dropdownField.RegisterValueChangedCallback(callback => ApplyPropertyValue(property, dropdownField));
 
 				if (dropdownField.value != "NULL")
@@ -32,7 +30,12 @@ namespace EditorAttributes.Editor
 					ApplyPropertyValue(property, dropdownField);
 				}
 
-				UpdateVisualElement(root, () =>
+				root.Add(dropdownField);
+				DisplayErrorBox(root, errorBox);
+
+				ExecuteLater(dropdownField, () => dropdownField.Q(className: DropdownField.inputUssClassName).style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f);
+
+				UpdateVisualElement(dropdownField, () =>
 				{
 					var sceneNames = GetSceneNames(errorBox);
 
@@ -40,8 +43,6 @@ namespace EditorAttributes.Editor
 						dropdownField.choices = sceneNames;
 				});
 
-				root.Add(dropdownField);
-				DisplayErrorBox(root, errorBox);
 				return root;
 			}
 			else

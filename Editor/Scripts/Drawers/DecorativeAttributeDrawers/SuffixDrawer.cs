@@ -32,14 +32,13 @@ namespace EditorAttributes.Editor
 			suffixLabel.style.color = suffixLabel.style.color = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR : Color.gray;
 
 			root.Add(propertyField);
+			root.Add(suffixLabel);
 
-			UpdateVisualElement(root, () =>
+			UpdateVisualElement(suffixLabel, () =>
 			{
 				suffixLabel.text = GetDynamicString(suffixAttribute.Suffix, property, suffixAttribute, errorBox);
 				DisplayErrorBox(root, errorBox);
 			});
-
-			root.Add(suffixLabel);
 
 			return root;
 		}

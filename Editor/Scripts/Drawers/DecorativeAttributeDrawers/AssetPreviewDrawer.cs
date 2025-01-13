@@ -1,6 +1,8 @@
-using System;
+using UnityEngine;
 using UnityEditor;
+using System.Threading;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace EditorAttributes.Editor
 {
@@ -20,25 +22,33 @@ namespace EditorAttributes.Editor
             {
 				var image = new Image();
 
-				UpdateVisualElement(root, () =>
-                {
-					try
+				root.Add(image);
+
+				// Register the callback later else arrays have a stroke
+				ExecuteLater(root, () =>
+				{
+					(propertyField as PropertyField).RegisterValueChangeCallback((changeEvent) =>
 					{
 						if (property.objectReferenceValue == null)
 						{
-							if (root.Contains(image))
-								root.Remove(image);
-
+							RemoveElement(root, image);
 							return;
 						}
 
-						var texture = AssetPreview.GetAssetPreview(property.objectReferenceValue);
+						int attempts = 0; // Safety measure to prevent an infinite loop if the texture cant be loaded
+						Texture2D texture = null;
+
+						while (texture == null && attempts < 3)
+						{
+							attempts++;
+							texture = AssetPreview.GetAssetPreview(property.objectReferenceValue);
+
+							Thread.Sleep(20); // Suspend the main thread for a bit to give time for the asset preview to load since is doing it asynchronously
+						}
 
 						if (texture == null)
 						{
-							if (root.Contains(image))
-								root.Remove(image);
-
+							RemoveElement(root, image);
 							return;
 						}
 
@@ -50,14 +60,8 @@ namespace EditorAttributes.Editor
 						image.style.height = imageHeight;
 
 						root.Add(image);
-					}
-					catch (InvalidOperationException) // Catch issues when removing from array
-					{
-						return;
-					}
+					});
 				});
-
-				root.Add(image);
 			}
             else
             {

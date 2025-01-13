@@ -35,17 +35,6 @@ namespace EditorAttributes.Editor
 			if (toggleGroup.DrawInBox)
 				ApplyBoxStyle(foldout.contentContainer);
 
-			foldout.schedule.Execute(() =>
-			{
-				var toggle = foldout.Q<Toggle>();
-
-				toggle.style.backgroundColor = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR / 3f : new Color(0.1f, 0.1f, 0.1f, 0.2f);
-
-				var parentElement = foldout.Q<Label>().parent;
-
-				parentElement.Insert(1, toggleBox);
-			}).ExecuteLater(1);
-
 			root.Add(toggleBox);
 
 			foreach (string variableName in toggleGroup.FieldsToGroup)
@@ -60,15 +49,16 @@ namespace EditorAttributes.Editor
 						propertyField.style.marginLeft = 10f;
 
 					propertyField.style.unityFontStyleAndWeight = FontStyle.Normal;
-					propertyField.schedule.Execute(() =>
+
+					foldout.Add(propertyField);
+
+					ExecuteLater(propertyField, () =>
 					{
 						var label = propertyField.Q<Label>();
 
 						if (label != null)
 							label.style.marginRight = toggleGroup.WidthOffset;
-					}).ExecuteLater(1);
-
-					foldout.Add(propertyField);
+					});
 				}
 				else
 				{
@@ -93,6 +83,17 @@ namespace EditorAttributes.Editor
 			});
 
 			root.Add(foldout);
+
+			ExecuteLater(foldout, () =>
+			{
+				var toggle = foldout.Q<Toggle>();
+
+				toggle.style.backgroundColor = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR / 3f : new Color(0.1f, 0.1f, 0.1f, 0.2f);
+
+				var parentElement = foldout.Q<Label>().parent;
+
+				parentElement.Insert(1, toggleBox);
+			});
 
 			return root;
 		}

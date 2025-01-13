@@ -15,7 +15,10 @@ namespace EditorAttributes.Editor
 			var image = new Image();
 			var errorBox = new HelpBox();
 
-			UpdateVisualElement(root, () =>
+			root.Add(image);
+			root.Add(DrawProperty(property));
+
+			UpdateVisualElement(image, () =>
 			{
 				var imagePath = GetDynamicString(imageAttribute.ImagePath, property, imageAttribute, errorBox);
 				var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(imagePath);
@@ -37,9 +40,6 @@ namespace EditorAttributes.Editor
 
 				DisplayErrorBox(root, errorBox);
 			});
-
-			root.Add(image);
-			root.Add(DrawProperty(property));
 
 			return root;
 		}

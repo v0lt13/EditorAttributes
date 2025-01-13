@@ -24,10 +24,8 @@ namespace EditorAttributes.Editor
 				var dropdownField = IsCollectionValid(animatorParameters) ? new DropdownField(property.displayName, animatorParameters, GetDropdownDefaultValue(animatorParameters, property)) 
 					: new DropdownField(property.displayName, new List<string>() { "NULL" }, 0);
 
-				root.schedule.Execute(() => dropdownField.Q(className: "unity-base-popup-field__input").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f).ExecuteLater(1);
-
 				dropdownField.tooltip = property.tooltip;
-				dropdownField.AddToClassList("unity-base-field__aligned");
+				dropdownField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
 
 				dropdownField.RegisterValueChangedCallback(callback =>
 				{
@@ -49,15 +47,17 @@ namespace EditorAttributes.Editor
 					}
 				}
 
-				UpdateVisualElement(root, () =>
+				root.Add(dropdownField);
+
+				ExecuteLater(dropdownField, () => dropdownField.Q(className: DropdownField.inputUssClassName).style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f);
+
+				UpdateVisualElement(dropdownField, () =>
 				{
 					var animatorParams = GetAnimatorParams(animatorParamAttribute, property, errorBox);
 
 					if (IsCollectionValid(animatorParams))
 						dropdownField.choices = animatorParams;
 				});
-
-				root.Add(dropdownField);
 			}
 			else
 			{

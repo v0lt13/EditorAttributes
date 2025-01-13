@@ -17,6 +17,8 @@ namespace EditorAttributes.Editor
 
 			var propertyField = DrawProperty(property);
 
+			root.Add(propertyField);
+
 			UpdateVisualElement(root, () =>
 			{
 				if (GetConditionValue(conditionalProperty, showAttribute, property, errorBox))
@@ -30,8 +32,6 @@ namespace EditorAttributes.Editor
 
 				DisplayErrorBox(root, errorBox);
 			});
-
-			root.Add(propertyField);
 
 			return root;
 		}

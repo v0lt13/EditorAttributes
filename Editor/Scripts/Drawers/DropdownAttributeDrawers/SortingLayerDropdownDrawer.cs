@@ -21,9 +21,7 @@ namespace EditorAttributes.Editor
 					tooltip = property.tooltip
 				};
 
-				root.schedule.Execute(() => maskField.Q(className: "unity-base-popup-field__input").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f).ExecuteLater(1);
-
-				maskField.AddToClassList("unity-base-field__aligned");
+				maskField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
 
 				maskField.RegisterValueChangedCallback(callback =>
 				{
@@ -32,6 +30,8 @@ namespace EditorAttributes.Editor
 				});
 
 				root.Add(maskField);
+
+				ExecuteLater(maskField, () => maskField.Q(className: MaskField.inputUssClassName).style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f);
 			}
 			else
 			{

@@ -44,7 +44,7 @@ namespace EditorAttributes.Editor
 					};
 
 					repeatButton.style.height = buttonFieldAttribute.ButtonHeight;
-					repeatButton.AddToClassList("unity-button");
+					repeatButton.AddToClassList(Button.ussClassName);
 
 					root.Add(repeatButton);
 				}

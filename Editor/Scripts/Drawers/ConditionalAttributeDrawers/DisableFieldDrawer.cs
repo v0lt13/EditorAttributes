@@ -17,14 +17,14 @@ namespace EditorAttributes.Editor
 
 			var propertyField = DrawProperty(property);
 
+			root.Add(propertyField);
+
 			UpdateVisualElement(root, () => 
 			{
 				propertyField.SetEnabled(!GetConditionValue(conditionalProperty, disableAttribute, property, errorBox));
 
 				DisplayErrorBox(root, errorBox);
 			});
-
-			root.Add(propertyField);
 
 			return root;
 		}

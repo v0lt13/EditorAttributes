@@ -32,28 +32,10 @@ namespace EditorAttributes.Editor
 				root.style.flexDirection = FlexDirection.Row;
 				label.style.minWidth = 150f;
 
-				if (CanApplyGlobalColor)
-				{
-					root.schedule.Execute(() =>
-					{
-						minMaxSlider.Q("unity-dragger").style.unityBackgroundImageTintColor = EditorExtension.GLOBAL_COLOR;
-						minMaxSlider.Q("unity-tracker").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
-					}).ExecuteLater(1);
-				}
-
 				if (minMaxSliderAttribute.ShowValues)
 				{
 					var minField = new FloatField(5) { showMixedValue = property.hasMultipleDifferentValues, style = { maxWidth = 50f, minWidth = 50f } };
 					var maxField = new FloatField(5) { showMixedValue = property.hasMultipleDifferentValues, style = { maxWidth = 50f, minWidth = 50f } };
-
-					if (CanApplyGlobalColor)
-					{
-						root.schedule.Execute(() =>
-						{
-							minField.Q("unity-text-input").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
-							maxField.Q("unity-text-input").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
-						}).ExecuteLater(1);
-					}
 
 					// Initialize the fields
 					minField.SetValueWithoutNotify(minValue);
@@ -91,6 +73,15 @@ namespace EditorAttributes.Editor
 					root.Add(minField);
 					root.Add(minMaxSlider);
 					root.Add(maxField);
+
+					if (CanApplyGlobalColor)
+					{
+						ExecuteLater(root, () =>
+						{
+							minField.Q("unity-text-input").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
+							maxField.Q("unity-text-input").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
+						});
+					}
 				}
 				else
 				{
@@ -98,6 +89,15 @@ namespace EditorAttributes.Editor
 
 					root.Add(label);
 					root.Add(minMaxSlider);
+				}
+
+				if (CanApplyGlobalColor)
+				{
+					ExecuteLater(minMaxSlider, () =>
+					{
+						minMaxSlider.Q("unity-dragger").style.unityBackgroundImageTintColor = EditorExtension.GLOBAL_COLOR;
+						minMaxSlider.Q("unity-tracker").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
+					});
 				}
 			}
 			else

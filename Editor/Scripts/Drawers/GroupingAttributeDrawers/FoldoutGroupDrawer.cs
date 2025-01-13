@@ -25,13 +25,6 @@ namespace EditorAttributes.Editor
 			if (foldoutGroup.DrawInBox)
 				ApplyBoxStyle(foldout.contentContainer);
 
-			foldout.schedule.Execute(() =>
-			{
-				var toggle = foldout.Q<Toggle>();
-
-				toggle.style.backgroundColor = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR / 3f : new Color(0.1f, 0.1f, 0.1f, 0.2f);
-			}).ExecuteLater(1);
-
 			foreach (string variableName in foldoutGroup.FieldsToGroup)
 			{
 				var variableProperty = FindNestedProperty(property, GetSerializedPropertyName(variableName, property));
@@ -44,15 +37,16 @@ namespace EditorAttributes.Editor
 						propertyField.style.marginLeft = 10f;
 
 					propertyField.style.unityFontStyleAndWeight = FontStyle.Normal;
-					propertyField.schedule.Execute(() =>
+
+					foldout.Add(propertyField);
+
+					ExecuteLater(propertyField, () =>
 					{
 						var label = propertyField.Q<Label>();
 
 						if (label != null)
 							label.style.marginRight = foldoutGroup.WidthOffset;
-					}).ExecuteLater(30);
-
-					foldout.Add(propertyField);
+					});
 				}
 				else
 				{
@@ -63,6 +57,13 @@ namespace EditorAttributes.Editor
 
 			foldout.RegisterValueChangedCallback((callback) => EditorPrefs.SetBool(isFoldedSaveKey, callback.newValue));
 			root.Add(foldout);
+
+			ExecuteLater(foldout, () =>
+			{
+				var toggle = foldout.Q<Toggle>();
+
+				toggle.style.backgroundColor = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR / 3f : new Color(0.1f, 0.1f, 0.1f, 0.2f);
+			});
 
 			return root;
 		}

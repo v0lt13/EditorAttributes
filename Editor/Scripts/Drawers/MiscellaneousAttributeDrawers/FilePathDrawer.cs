@@ -22,14 +22,24 @@ namespace EditorAttributes.Editor
 			var filePath = property.stringValue;
 
 			var propertyField = DrawProperty(property);
-			var button = new Button(() => 
-			{
-				filePath = EditorUtility.OpenFilePanel("Select file", "Assets", filePathAttribute.Filters);
-			});
+			var button = new Button(() => filePath = EditorUtility.OpenFilePanel("Select file", "Assets", filePathAttribute.Filters));
 
 			var buttonIcon = new Image() { image = EditorGUIUtility.IconContent("d_Folder Icon").image };
 
-			UpdateVisualElement(root, () =>
+			button.style.width = 40f;
+			button.style.height = 20f;
+			propertyField.style.flexGrow = 1f;
+			root.style.flexDirection = FlexDirection.Row;
+
+			button.Add(buttonIcon);
+			root.Add(propertyField);
+			root.Add(button);
+
+			var textField = new TextField();
+
+			ExecuteLater(propertyField, () => textField = propertyField.Q<TextField>());
+
+			UpdateVisualElement(propertyField, () =>
 			{
 				if (filePathAttribute.GetRelativePath && !string.IsNullOrEmpty(filePath) && Path.IsPathFullyQualified(filePath))
 				{
@@ -41,19 +51,10 @@ namespace EditorAttributes.Editor
 				if (property.hasMultipleDifferentValues)
 					return;
 
+				textField.value = filePath;
 				property.stringValue = filePath;
-				propertyField.Q<TextField>().value = filePath;
 				property.serializedObject.ApplyModifiedProperties();
 			});
-
-			button.style.width = 40f;
-			button.style.height = 20f;
-			propertyField.style.flexGrow = 1f;
-			root.style.flexDirection = FlexDirection.Row;
-
-			button.Add(buttonIcon);
-			root.Add(propertyField);
-			root.Add(button);
 
 			return root;
 		}

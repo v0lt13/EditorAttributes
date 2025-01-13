@@ -16,12 +16,6 @@ namespace EditorAttributes.Editor
 			var errorBox = new HelpBox();
 			var title = new Label();
 
-			UpdateVisualElement(root, () =>
-			{
-				title.text = GetDynamicString(titleAttribute.Title, property, titleAttribute, errorBox);
-				DisplayErrorBox(root, errorBox);
-			});
-
 			title.style.fontSize = titleAttribute.TitleSize;
 			title.style.unityTextAlign = titleAttribute.Alignment;
 			title.style.marginBottom = titleAttribute.TitleSpace;
@@ -40,6 +34,12 @@ namespace EditorAttributes.Editor
 
 			root.Add(title);
 			root.Add(DrawProperty(property));
+
+			UpdateVisualElement(title, () =>
+			{
+				title.text = GetDynamicString(titleAttribute.Title, property, titleAttribute, errorBox);
+				DisplayErrorBox(root, errorBox);
+			});
 
 			return root;
 		}

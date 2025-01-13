@@ -25,7 +25,9 @@ namespace EditorAttributes.Editor
 				messageBox.style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
 			}
 
-			UpdateVisualElement(root, () =>
+			root.Add(propertyField);
+
+			UpdateVisualElement(messageBox, () =>
 			{
 				if (GetConditionValue(conditionalProperty, messageBoxAttribute, property, errorBox))
 				{
@@ -43,8 +45,6 @@ namespace EditorAttributes.Editor
 			
 				DisplayErrorBox(root, errorBox);
 			});
-
-			root.Add(propertyField);
 
 			return root;
 		}

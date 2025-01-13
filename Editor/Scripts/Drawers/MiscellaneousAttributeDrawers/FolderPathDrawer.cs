@@ -22,14 +22,24 @@ namespace EditorAttributes.Editor
 			var folderPath = property.stringValue;
 
 			var propertyField = DrawProperty(property);
-			var button = new Button(() =>
-			{
-				folderPath = EditorUtility.OpenFolderPanel("Select folder", "Assets", "");
-			});
+			var button = new Button(() => folderPath = EditorUtility.OpenFolderPanel("Select folder", "Assets", ""));
 
 			var buttonIcon = new Image() { image = EditorGUIUtility.IconContent("d_Folder Icon").image };
 
-			UpdateVisualElement(root, () =>
+			button.style.width = 40f;
+			button.style.height = 20f;
+			propertyField.style.flexGrow = 1f;
+			root.style.flexDirection = FlexDirection.Row;
+
+			button.Add(buttonIcon);
+			root.Add(propertyField);
+			root.Add(button);
+
+			var textField = new TextField();
+
+			ExecuteLater(propertyField, () => textField = propertyField.Q<TextField>());
+
+			UpdateVisualElement(propertyField, () =>
 			{
 				if (folderPathAttribute.GetRelativePath && !string.IsNullOrEmpty(folderPath))
 				{
@@ -41,19 +51,10 @@ namespace EditorAttributes.Editor
 				if (property.hasMultipleDifferentValues)
 					return;
 
+				textField.value = folderPath;
 				property.stringValue = folderPath;
-				propertyField.Q<TextField>().value = folderPath;
 				property.serializedObject.ApplyModifiedProperties();
 			});
-
-			button.style.width = 40f;
-			button.style.height = 20f;
-			propertyField.style.flexGrow = 1f;
-			root.style.flexDirection = FlexDirection.Row;
-
-			button.Add(buttonIcon);
-			root.Add(propertyField);
-			root.Add(button);
 
 			return root;
 		}

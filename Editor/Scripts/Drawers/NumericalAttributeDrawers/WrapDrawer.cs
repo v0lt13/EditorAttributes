@@ -136,9 +136,11 @@ namespace EditorAttributes.Editor
 
 		private float Wrap(float value, float min, float max)
 		{
-			if (value > max) value = min;
+			if (value > max) 
+				value = min;
 
-			if (value < min) value = max;
+			if (value < min)
+				value = max;
 
 			return value;
 		}

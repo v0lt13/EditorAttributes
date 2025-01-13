@@ -33,7 +33,7 @@ namespace EditorAttributes.Editor
 				var repeatButton = new RepeatButton(() => methodInfo.Invoke(property.serializedObject.targetObject, null), inlineButtonAttribute.PressDelay, inlineButtonAttribute.RepetitionInterval) { text = buttonLabel };
 
 				repeatButton.style.width = inlineButtonAttribute.ButtonWidth;
-				repeatButton.AddToClassList("unity-button");
+				repeatButton.AddToClassList(Button.ussClassName);
 
 				root.Add(repeatButton);
 			}

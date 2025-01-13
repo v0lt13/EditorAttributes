@@ -22,21 +22,21 @@ namespace EditorAttributes.Editor
 				
 				progressBar.style.height = progressBarAttribute.BarHeight;
 
-				progressBar.schedule.Execute(() =>
+				root.Add(progressBar);
+
+				ExecuteLater(progressBar, () =>
 				{
 					if (CanApplyGlobalColor)
-						progressBar.Q(className: "unity-progress-bar__progress").style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
-				}).ExecuteLater(1);
+						progressBar.Q(className: AbstractProgressBar.progressUssClassName).style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
+				});
 
-				UpdateVisualElement(root, () =>
+				UpdateVisualElement(progressBar, () =>
 				{
 					var propertyValue = GetPropertyValue(property);
 
 					progressBar.value = propertyValue;
 					progressBar.title = $"{property.displayName}: {propertyValue}/{progressBarAttribute.MaxValue}";
-				});
-
-				root.Add(progressBar);
+				}, 30);
 			}
 			else
 			{

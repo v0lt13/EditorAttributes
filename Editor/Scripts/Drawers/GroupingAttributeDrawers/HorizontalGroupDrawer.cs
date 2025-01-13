@@ -62,17 +62,17 @@ namespace EditorAttributes.Editor
 					if (variableProperty.propertyType != SerializedPropertyType.Generic) // Do not add labels to serialized objects else it will show twice
 						groupBox.Add(label);
 
+					groupBox.Add(propertyField);
+					root.Add(groupBox);
+
 					if (renameAttribute != null)
 					{
-						UpdateVisualElement(root, () =>
+						UpdateVisualElement(label, () =>
 						{
 							label.text = RenameDrawer.GetNewName(renameAttribute, property, errorBox);
 							DisplayErrorBox(propertyField, errorBox);
 						});
 					}
-
-					groupBox.Add(propertyField);
-					root.Add(groupBox);
 				}
 				else
 				{
@@ -106,12 +106,12 @@ namespace EditorAttributes.Editor
 
 				if (property.propertyType != SerializedPropertyType.Generic)
 				{
-					propertyField.schedule.Execute(() =>
+					ExecuteLater(propertyField, () =>
 					{
 						var propertyLabel = propertyField.Q<Label>();
 
 						propertyLabel?.RemoveFromHierarchy();
-					}).ExecuteLater(1);
+					});
 				}
 
 				return propertyField;

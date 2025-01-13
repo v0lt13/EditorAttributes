@@ -26,8 +26,10 @@ namespace EditorAttributes.Editor
 
 			if (property.propertyType == SerializedPropertyType.ObjectReference)
 			{
+				InitializeFoldoutDrawer(root, property, fieldType, errorBox);
+
 				// Register the callback later to skip any initialization calls
-				root.schedule.Execute(() =>
+				ExecuteLater(propertyField, () =>
 				{
 					propertyField.RegisterCallback<SerializedPropertyChangeEvent>((callback) =>
 					{
@@ -36,9 +38,7 @@ namespace EditorAttributes.Editor
 
 						InitializeFoldoutDrawer(root, property, fieldType, errorBox);
 					});
-				}).ExecuteLater(1);
-
-				InitializeFoldoutDrawer(root, property, fieldType, errorBox);
+				});
 			}
 			else
 			{

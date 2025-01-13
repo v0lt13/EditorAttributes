@@ -93,7 +93,7 @@ namespace EditorAttributes.Editor
 			{
 				var label = new Label(preferredLabel);
 
-				label.AddToClassList("unity-base-field__label");
+				label.AddToClassList(BaseField<Void>.labelUssClassName);
 
 				label.style.flexGrow = 1f;
 				label.style.paddingLeft = 4f;

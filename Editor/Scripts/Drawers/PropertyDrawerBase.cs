@@ -194,22 +194,25 @@ namespace EditorAttributes.Editor
 		}
 
 		/// <summary>
-		/// Update logic for a visual element
+		/// Schedules an action to update
 		/// </summary>
-		/// <param name="visualElement">The element to update</param>
-		/// <param name="logicToUpdate">The logic to update</param>
-		protected void UpdateVisualElement(VisualElement visualElement, Action logicToUpdate)
+		/// <param name="visualElement">The visual element to schedule the update</param>
+		/// <param name="logicToUpdate">The logic to execute on the specified element</param>
+		/// <param name="intervalMs">The update interval in milliseconds</param>
+		public static void UpdateVisualElement(VisualElement visualElement, Action logicToUpdate, long intervalMs = 60)
 		{
-			visualElement.schedule.Execute(() => EditorExtension.AddToUpdateLoop(logicToUpdate)).ExecuteLater(1);
+			logicToUpdate.Invoke(); // Execute the logic once so we don't have to wait for the first execution of the scheduler
+
+			visualElement.schedule.Execute(logicToUpdate).Every(intervalMs);
 		}
 
 		/// <summary>
-		/// Updates a visual element at a set interval
+		/// Schedules an action to execute after a delay
 		/// </summary>
-		/// <param name="visualElement">The visual element to update</param>
-		/// <param name="logicToUpdate">The logic to execute on the specified element</param>
-		/// <param name="intervalMs">The update interval in milliseconds</param>
-		public static void UpdateVisualElementAtInterval(VisualElement visualElement, Action logicToUpdate, long intervalMs = 60) => visualElement.schedule.Execute(logicToUpdate).Every(intervalMs);
+		/// <param name="visualElement">The visual element to schedule the execution</param>
+		/// <param name="logicToExecute">The logic to execute on the specified element</param>
+		/// <param name="delayMs">The execution delay in milliseconds</param>
+		public static void ExecuteLater(VisualElement visualElement, Action logicToExecute, long delayMs = 1) => visualElement.schedule.Execute(logicToExecute).StartingIn(delayMs);
 
 		/// <summary>
 		/// Add an element from another visual element if it doesn't exist

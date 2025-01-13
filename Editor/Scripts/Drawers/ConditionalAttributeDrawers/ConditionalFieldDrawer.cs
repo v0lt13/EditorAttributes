@@ -17,6 +17,8 @@ namespace EditorAttributes.Editor
 
 			var errorBox = new HelpBox();
 
+			root.Add(propertyField);
+
 			UpdateVisualElement(root, () =>
 			{
 				var canDrawProperty = CanDrawProperty(conditionalAttribute, conditionalAttribute.BooleanNames, property, errorBox);
@@ -41,8 +43,6 @@ namespace EditorAttributes.Editor
 
 				DisplayErrorBox(root, errorBox);
 			});
-
-			root.Add(propertyField);
 
 			return root;
 		}

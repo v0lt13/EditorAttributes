@@ -13,15 +13,16 @@ namespace EditorAttributes.Editor
 
 			var root = new VisualElement();
 			var errorBox = new HelpBox();
-			var propertyField = DrawProperty(property, new Label(property.displayName));
-
-			UpdateVisualElement(root, () =>
-			{
-				propertyField.Q<Label>().text = GetNewName(renameAttribute, property, errorBox);
-				DisplayErrorBox(root, errorBox);
-			});
+			var label = new Label(preferredLabel);
+			var propertyField = DrawProperty(property, label);
 
 			root.Add(propertyField);
+
+			UpdateVisualElement(label, () =>
+			{
+				label.text = GetNewName(renameAttribute, property, errorBox);
+				DisplayErrorBox(root, errorBox);
+			});
 
 			return root;
 		}

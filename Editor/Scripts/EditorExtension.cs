@@ -21,8 +21,6 @@ namespace EditorAttributes.Editor
 		private const string MENU_ITEM_PATH = "CONTEXT/Object/Show Static Fields";
 		private static bool ENABLE_STATIC_FIELDS;
 
-		private static List<Action> UPDATE_EXECUTION_LIST = new();
-
 		private string buttonParamsDataFilePath;
 
 		private Dictionary<MethodInfo, bool> buttonFoldouts = new();
@@ -72,7 +70,7 @@ namespace EditorAttributes.Editor
 
 			root.Add(defaultInspector);
 
-			AddToUpdateLoop(() =>
+			PropertyDrawerBase.UpdateVisualElement(root, () =>
 			{
 				if (ENABLE_STATIC_FIELDS)
 				{
@@ -85,8 +83,6 @@ namespace EditorAttributes.Editor
 			});
 			
 			root.Add(buttons);
-
-			RunUpdateLoop(root);
 
 			return root;
 		}
@@ -162,36 +158,6 @@ namespace EditorAttributes.Editor
 			Menu.SetChecked(MENU_ITEM_PATH, ENABLE_STATIC_FIELDS);
 		}
 
-		internal static void AddToUpdateLoop(Action action) => UPDATE_EXECUTION_LIST.Add(action);
-
-		/// <summary>
-		/// Runs the update loop on elements that use the <see cref="PropertyDrawerBase.UpdateVisualElement(VisualElement, Action)"/> function.
-		/// Call this function in the CreateGUI function to have conditional attributes and dynamic string attributes work in custom editor windows.
-		/// </summary>
-		/// <param name="root">The root element of the editor</param>
-		public static void RunUpdateLoop(VisualElement root)
-		{
-			root.schedule.Execute(() =>
-			{
-				if (!PropertyDrawerBase.IsCollectionValid(UPDATE_EXECUTION_LIST))
-					return;
-
-				for (int i = UPDATE_EXECUTION_LIST.Count - 1; i >= 0; i--)
-				{
-					var action = UPDATE_EXECUTION_LIST[i];
-
-					try
-					{
-						action?.Invoke();
-					}
-					catch (Exception ex) when (ex is NullReferenceException or ArgumentNullException)
-					{
-						UPDATE_EXECUTION_LIST.RemoveAt(i); // Remove invalid actions
-					}
-				}
-			}).Every(5);
-		}
-
 		/// <summary>
 		/// Draws all the static and const fields
 		/// </summary>
@@ -208,7 +174,7 @@ namespace EditorAttributes.Editor
 				
 				var propertyField = ButtonDrawer.DrawParameterField(staticField.FieldType, ObjectNames.NicifyVariableName(staticField.Name), staticField.GetValue(target));
 
-				propertyField.AddToClassList("unity-base-field__aligned");
+				propertyField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
 				propertyField.SetEnabled(false);
 
 				root.Add(propertyField);
@@ -254,7 +220,7 @@ namespace EditorAttributes.Editor
 
 				if (conditionalProperty != null)
 				{
-					AddToUpdateLoop(() =>
+					PropertyDrawerBase.UpdateVisualElement(root, () =>
 					{
 						var conditionValue = PropertyDrawerBase.GetConditionValue(conditionalProperty, buttonAttribute, target, errorBox);
 

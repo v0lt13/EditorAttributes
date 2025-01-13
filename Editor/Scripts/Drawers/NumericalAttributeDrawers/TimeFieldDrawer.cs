@@ -26,15 +26,7 @@ namespace EditorAttributes.Editor
 					tooltip = property.tooltip
 				};
 
-				root.schedule.Execute(() =>
-                {
-                    var labels = timeField.Query<Label>(className: "unity-base-text-field__label").ToList();
-
-                    foreach (var label in labels)
-                        label.text = GetFormatInitial(labels.IndexOf(label), timeFieldAttribute);
-                }).ExecuteLater(1);
-
-				timeField.AddToClassList("unity-base-field__aligned");
+				timeField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
 
                 timeField.RegisterValueChangedCallback((callback) =>
                 {
@@ -56,8 +48,16 @@ namespace EditorAttributes.Editor
                 });
 
 				root.Add(timeField);
-            }
-            else
+
+				ExecuteLater(timeField, () =>
+				{
+					var labels = timeField.Query<Label>(className: "unity-base-text-field__label").ToList();
+
+					foreach (var label in labels)
+						label.text = GetFormatInitial(labels.IndexOf(label), timeFieldAttribute);
+				});
+			}
+			else
             {
                 errorBox.text = "The TimeField Attribute can only be attached to Integers or Floats";
             }
