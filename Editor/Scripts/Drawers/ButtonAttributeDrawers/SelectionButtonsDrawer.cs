@@ -64,9 +64,7 @@ namespace EditorAttributes.Editor
 				root.Add(DrawButtons(buttonsValue, displayNames, property, selectionButtonsAttribute, (value) =>
 				{
 					if (value >= 0 && value < displayNames.Length)
-						SetProperyValueFromString(displayNames[value], ref property, errorBox);
-
-					property.serializedObject.ApplyModifiedProperties();
+						SetPropertyValueFromString(displayNames[value], property);
 				}));
 			}
 			else

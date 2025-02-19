@@ -27,39 +27,11 @@ namespace EditorAttributes.Editor
 				// Register the callback later else arrays have a stroke
 				ExecuteLater(root, () =>
 				{
+					GetAssetPreview(property, assetPreviewAttribute, root, image);
+
 					(propertyField as PropertyField).RegisterValueChangeCallback((changeEvent) =>
 					{
-						if (property.objectReferenceValue == null)
-						{
-							RemoveElement(root, image);
-							return;
-						}
-
-						int attempts = 0; // Safety measure to prevent an infinite loop if the texture cant be loaded
-						Texture2D texture = null;
-
-						while (texture == null && attempts < 3)
-						{
-							attempts++;
-							texture = AssetPreview.GetAssetPreview(property.objectReferenceValue);
-
-							Thread.Sleep(20); // Suspend the main thread for a bit to give time for the asset preview to load since is doing it asynchronously
-						}
-
-						if (texture == null)
-						{
-							RemoveElement(root, image);
-							return;
-						}
-
-						var imageWidth = assetPreviewAttribute.PreviewWidth == 0f ? GetTextureSize(texture).x : assetPreviewAttribute.PreviewWidth;
-						var imageHeight = assetPreviewAttribute.PreviewHeight == 0f ? GetTextureSize(texture).y : assetPreviewAttribute.PreviewHeight;
-
-						image.image = texture;
-						image.style.width = imageWidth;
-						image.style.height = imageHeight;
-
-						root.Add(image);
+						GetAssetPreview(property, assetPreviewAttribute, root, image);
 					});
 				});
 			}
@@ -69,6 +41,41 @@ namespace EditorAttributes.Editor
             }
 
 			return root;
+		}
+
+		private void GetAssetPreview(SerializedProperty property, AssetPreviewAttribute assetPreviewAttribute, VisualElement root, Image image)
+		{
+			if (property.objectReferenceValue == null)
+			{
+				RemoveElement(root, image);
+				return;
+			}
+
+			int attempts = 0; // Safety measure to prevent an infinite loop if the texture cant be loaded
+			Texture2D texture = null;
+
+			while (texture == null && attempts < 3)
+			{
+				attempts++;
+				texture = AssetPreview.GetAssetPreview(property.objectReferenceValue);
+
+				Thread.Sleep(20); // Suspend the main thread for a bit to give time for the asset preview to load since is doing it asynchronously
+			}
+
+			if (texture == null)
+			{
+				RemoveElement(root, image);
+				return;
+			}
+
+			var imageWidth = assetPreviewAttribute.PreviewWidth == 0f ? GetTextureSize(texture).x : assetPreviewAttribute.PreviewWidth;
+			var imageHeight = assetPreviewAttribute.PreviewHeight == 0f ? GetTextureSize(texture).y : assetPreviewAttribute.PreviewHeight;
+
+			image.image = texture;
+			image.style.width = imageWidth;
+			image.style.height = imageHeight;
+
+			root.Add(image);
 		}
 	}
 }

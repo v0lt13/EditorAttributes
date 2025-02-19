@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine.UIElements;
@@ -21,6 +22,7 @@ namespace EditorAttributes.Editor
                 };
 
 				tagField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
+                AddPropertyContextMenu(tagField, property);
 
 				tagField.RegisterValueChangedCallback(callback =>
                 {
@@ -40,7 +42,22 @@ namespace EditorAttributes.Editor
             return root;
 		}
 
-        private bool DoesStringValueContainTag(string stringValue)
+		protected override void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue)
+		{
+			var dropdown = element as TagField;
+
+			if (dropdown.choices.Contains(clipboardValue))
+			{
+				base.PasteValue(element, property, clipboardValue);
+				dropdown.SetValueWithoutNotify(clipboardValue);
+			}
+			else
+			{
+				Debug.LogWarning($"Could not paste value \"{clipboardValue}\" since is not availiable as an option in the dropdown");
+			}
+		}
+
+		private bool DoesStringValueContainTag(string stringValue)
         {
             foreach (var tag in InternalEditorUtility.tags)
             {

@@ -51,20 +51,26 @@ namespace EditorAttributes
 
 		public static implicit operator SimpleTransform(Transform transform) => new(transform);
 
-		public override readonly string ToString() => $"{position}, {rotation}, {scale}";
+		public override readonly string ToString() => $"Position: {position}, Rotation: {rotation}, Scale: {scale}";
 
 		/// <summary>
-		/// Puts the SimpleTransform values to into a Transform
+		/// Puts the SimpleTransform values to into a Transform in world space
 		/// </summary>
 		/// <param name="transform">The transform to put the values into</param>
-		/// <returns>The transform with the new values</returns>
-		public readonly Transform ToTransform(Transform transform)
-		{		
-			transform.position = position;
-			transform.eulerAngles = rotation;
+		public readonly void ToTransform(Transform transform)
+		{
+			transform.SetPositionAndRotation(position, QuaternionRotation);
 			transform.localScale = scale;
+		}
 
-			return transform;
+		/// <summary>
+		/// Puts the SimpleTransform values to into a Transform in local space
+		/// </summary>
+		/// <param name="transform">The transform to put the values into</param>
+		public readonly void ToLocalTransform(Transform transform)
+		{
+			transform.SetLocalPositionAndRotation(position, QuaternionRotation);
+			transform.localScale = scale;
 		}
 	}
 }

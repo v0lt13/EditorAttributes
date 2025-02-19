@@ -23,7 +23,7 @@ namespace EditorAttributes.Editor
 			{
 				if (!GetConditionValue(conditionalProperty, hideAttribute, property, errorBox))
 				{
-					root.Add(propertyField);
+					AddElement(root, propertyField);
 				}
 				else
 				{

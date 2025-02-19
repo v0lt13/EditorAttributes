@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace EditorAttributes.Editor
 				dropdownField.tooltip = property.tooltip;
 				dropdownField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
 				dropdownField.RegisterValueChangedCallback(callback => ApplyPropertyValue(property, dropdownField));
+
+				AddPropertyContextMenu(dropdownField, property);
 
 				if (dropdownField.value != "NULL")
 				{
@@ -54,7 +57,32 @@ namespace EditorAttributes.Editor
 			}
 		}
 
-        private List<string> GetSceneNames(HelpBox errorBox)
+		protected override void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue)
+		{
+			var dropdown = element as DropdownField;
+
+			string sceneName;
+
+			if (int.TryParse(clipboardValue, out int sceneIndex))
+			{
+				sceneName = SceneNameFromIndex(sceneIndex);
+			}
+			else
+			{
+				sceneName = clipboardValue;
+			}
+
+			if (dropdown.choices.Contains(sceneName))
+			{
+				dropdown.value = sceneName;
+			}
+			else
+			{
+				Debug.LogWarning($"Could not paste value \"{clipboardValue}\" since is not availiable as an option in the dropdown");
+			}
+		}
+
+		private List<string> GetSceneNames(HelpBox errorBox)
         {
 			var sceneList = new List<string>();
             var activeSceneList = EditorBuildSettingsScene.GetActiveSceneList(EditorBuildSettings.scenes);

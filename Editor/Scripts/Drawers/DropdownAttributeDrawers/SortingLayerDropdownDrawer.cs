@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
@@ -22,6 +23,7 @@ namespace EditorAttributes.Editor
 				};
 
 				maskField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
+				AddPropertyContextMenu(maskField, property);
 
 				maskField.RegisterValueChangedCallback(callback =>
 				{
@@ -41,7 +43,23 @@ namespace EditorAttributes.Editor
 			return root;
 		}
 
-        private List<string> GetSortingLayerNames()
+		protected override void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue)
+		{
+			var dropdown = element as MaskField;
+
+			base.PasteValue(element, property, clipboardValue);
+
+			try
+			{
+				dropdown.SetValueWithoutNotify(int.Parse(clipboardValue));
+			}
+			catch (FormatException)
+			{
+				// Ignore, error will already be thrown by the base function
+			}
+		}
+
+		private List<string> GetSortingLayerNames()
         {
             var layerList = new List<string>();
 

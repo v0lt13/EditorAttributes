@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
@@ -23,13 +24,12 @@ namespace EditorAttributes.Editor
 			dropdownField.tooltip = property.tooltip;
 			dropdownField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
 
+			AddPropertyContextMenu(dropdownField, property);
+
 			dropdownField.RegisterValueChangedCallback(callback => 
 			{
 				if (!property.hasMultipleDifferentValues)
-				{
-					SetProperyValueFromString(callback.newValue, ref property, errorBox);
-					property.serializedObject.ApplyModifiedProperties();
-				}
+					SetPropertyValueFromString(callback.newValue, property);
 			});
 
 			if (dropdownField.value != "NULL")
@@ -37,10 +37,7 @@ namespace EditorAttributes.Editor
 				dropdownField.showMixedValue = property.hasMultipleDifferentValues;
 
 				if (!property.hasMultipleDifferentValues)
-				{
-					SetProperyValueFromString(dropdownField.value, ref property, errorBox);
-					property.serializedObject.ApplyModifiedProperties();
-				}
+					SetPropertyValueFromString(dropdownField.value, property);
 			}
 
 			root.Add(dropdownField);
@@ -59,8 +56,23 @@ namespace EditorAttributes.Editor
 
 				DisplayErrorBox(root, errorBox);
 			});
-
+			
 			return root;
+		}
+
+		protected override void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue)
+		{
+			var dropdown = element as DropdownField;
+
+			if (dropdown.choices.Contains(clipboardValue))
+			{
+				base.PasteValue(element, property, clipboardValue);
+				dropdown.SetValueWithoutNotify(clipboardValue);
+			}
+			else
+			{
+				Debug.LogWarning($"Could not paste value \"{clipboardValue}\" since is not availiable as an option in the dropdown");
+			}
 		}
 
 		private string GetDropdownDefaultValue(List<string> collectionValues, SerializedProperty property)

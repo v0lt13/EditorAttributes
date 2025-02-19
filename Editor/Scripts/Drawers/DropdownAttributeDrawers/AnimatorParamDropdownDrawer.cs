@@ -27,6 +27,8 @@ namespace EditorAttributes.Editor
 				dropdownField.tooltip = property.tooltip;
 				dropdownField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
 
+				AddPropertyContextMenu(dropdownField, property);
+
 				dropdownField.RegisterValueChangedCallback(callback =>
 				{
 					if (!property.hasMultipleDifferentValues)
@@ -101,6 +103,21 @@ namespace EditorAttributes.Editor
 			}
 
 			return paramList;
+		}
+
+		protected override void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue)
+		{
+			var dropdown = element as DropdownField;
+
+			if (dropdown.choices.Contains(clipboardValue))
+			{
+				base.PasteValue(element, property, clipboardValue);
+				dropdown.SetValueWithoutNotify(clipboardValue);
+			}
+			else
+			{
+				Debug.LogWarning($"Could not paste value \"{clipboardValue}\" since is not availiable as an option in the dropdown");
+			}
 		}
 
 		private string GetDropdownDefaultValue(List<string> collectionValues, SerializedProperty property)

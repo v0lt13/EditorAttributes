@@ -28,7 +28,7 @@ namespace EditorAttributes.Editor
 					case ConditionResult.ShowHide:
 						if (canDrawProperty)
 						{
-							root.Add(propertyField);
+							AddElement(root, propertyField);
 						}
 						else
 						{

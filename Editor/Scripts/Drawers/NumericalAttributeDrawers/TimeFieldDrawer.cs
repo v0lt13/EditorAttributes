@@ -27,8 +27,9 @@ namespace EditorAttributes.Editor
 				};
 
 				timeField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
+				AddPropertyContextMenu(timeField, property);
 
-                timeField.RegisterValueChangedCallback((callback) =>
+				timeField.RegisterValueChangedCallback((callback) =>
                 {
 					switch (property.propertyType)
 					{
@@ -67,7 +68,21 @@ namespace EditorAttributes.Editor
             return root;
     	}
 
-        private string GetFormatInitial(int index, TimeFieldAttribute timeFieldAttribute)
+		protected override string CopyValue(VisualElement element, SerializedProperty property)
+		{
+			var vector3field = element as Vector3Field;
+
+			return $"Vector3{vector3field.value}";
+		}
+
+		protected override void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue)
+		{
+			var vector3field = element as Vector3Field;
+
+			vector3field.value = VectorUtils.ParseVector3(clipboardValue.Replace("Vector3", ""));
+		}
+
+		private string GetFormatInitial(int index, TimeFieldAttribute timeFieldAttribute)
         {
 			return timeFieldAttribute.TimeFormat switch
 			{

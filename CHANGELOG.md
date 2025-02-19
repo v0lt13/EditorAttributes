@@ -1,3 +1,13 @@
+EditorAttributes v2.5.3 Changelog:
+- Added vector and char support to Dropdown Attribute
+- Added option to disable build validation
+- Added property context menus to non property fields
+- Added ToLocalTransform function to the SimpleTransform
+- Updated the ToTransform function inside SimpleTransform
+- Realigned label on MinMaxSlider
+- Fixed Hide, Show and ConditionalField attributes flickering inside arrays
+- Fixed asset previews not loading when the inspector is selected
+
 EditorAttributes v2.5.2 Changelog:
 - Added optional parameter to the HideInChildren Attribute to specify in which children to hide the field
 - Added option to draw help boxes above the attached field

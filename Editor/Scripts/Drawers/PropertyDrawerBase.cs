@@ -8,6 +8,7 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using EditorAttributes.Editor.Utility;
+using UnityEditor.Search;
 
 namespace EditorAttributes.Editor
 {
@@ -51,12 +52,27 @@ namespace EditorAttributes.Editor
 		}
 
 		/// <summary>
+		/// Override this function to customize the copied value from an element with using <see cref="AddPropertyContextMenu(VisualElement, SerializedProperty)"/>
+		/// </summary>
+		/// <param name="element">The element on which the context menu was added</param>
+		/// <param name="property">The attached serialized property</param>
+		/// <returns>The string that will be copied into the clipboard</returns>
+		protected virtual string CopyValue(VisualElement element, SerializedProperty property) => GetCopyPropertyValue(property);
+
+		/// <summary>
+		/// Override this function to customize the paste behaivour for an element with using <see cref="AddPropertyContextMenu(VisualElement, SerializedProperty)"/>
+		/// </summary>
+		/// <param name="element">The element on which the context menu was added</param>
+		/// <param name="property">The attached serialized property</param>
+		/// <param name="clipboardValue">The current clipboard value</param>
+		protected virtual void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue) => SetPropertyValueFromString(clipboardValue, property);
+
+		/// <summary>
 		/// Sets the value of a property from a string
 		/// </summary>
 		/// <param name="value">The string value to convert</param>
-		/// <param name="property">The serialized property reference to assign the value to</param>
-		/// <param name="errorBox">The error box to display any errors to</param>
-		protected static void SetProperyValueFromString(string value, ref SerializedProperty property, HelpBox errorBox)
+		/// <param name="property">The serialized property to assign the value to</param>
+		protected void SetPropertyValueFromString(string value, SerializedProperty property)
 		{
 			try
 			{
@@ -78,15 +94,44 @@ namespace EditorAttributes.Editor
 						property.stringValue = value;
 						break;
 
+					case SerializedPropertyType.Character:
+						property.intValue = Convert.ToChar(value);
+						break;
+
+					case SerializedPropertyType.Color:
+						property.colorValue = ColorUtility.TryParseHtmlString(value, out Color color) ? color : Color.white;
+						break;
+
+					case SerializedPropertyType.Vector2:
+						property.vector2Value = VectorUtils.ParseVector2(value);
+						break;
+
+					case SerializedPropertyType.Vector3:
+						property.vector3Value = VectorUtils.ParseVector3(value);
+						break;
+
+					case SerializedPropertyType.Vector4:
+						property.vector4Value = VectorUtils.ParseVector4(value);
+						break;
+
+					case SerializedPropertyType.Vector2Int:
+						property.vector2IntValue = VectorUtils.ParseVector2Int(value);
+						break;
+
+					case SerializedPropertyType.Vector3Int:
+						property.vector3IntValue = VectorUtils.ParseVector3Int(value);
+						break;
+
 					default:
-						errorBox.text = $"The type {property.propertyType} is not supported";
-						errorBox.messageType = HelpBoxMessageType.Warning;
+						Debug.LogWarning($"The type {property.propertyType} is not supported", property.serializedObject.targetObject);
 						break;
 				}
+
+				property.serializedObject.ApplyModifiedProperties();
 			}
 			catch (FormatException)
 			{
-				errorBox.text = $"Could not convert the value \"{value}\" to {property.propertyType}";
+				Debug.LogError($"Could not convert the value \"{value}\" to {property.propertyType}", property.serializedObject.targetObject);
 			}
 		}
 
@@ -95,14 +140,34 @@ namespace EditorAttributes.Editor
 		/// </summary>
 		/// <param name="property">The serialized property to get the value from</param>
 		/// <returns>The serialized property value as a string</returns>
-		protected static string GetPropertyValueAsString(SerializedProperty property)
+		protected string GetPropertyValueAsString(SerializedProperty property)
 		{
 			return property.propertyType switch
 			{
-				SerializedPropertyType.Integer => property.intValue.ToString(),
+				SerializedPropertyType.String => property.stringValue,
+				SerializedPropertyType.Integer or SerializedPropertyType.LayerMask or SerializedPropertyType.Character => property.intValue.ToString(),
+				SerializedPropertyType.Enum => IsPropertyEnumFlag() ? property.enumValueFlag.ToString() : property.enumDisplayNames[property.enumValueIndex],
 				SerializedPropertyType.Float => property.floatValue.ToString(),
 				SerializedPropertyType.Boolean => property.boolValue.ToString(),
-				SerializedPropertyType.String => property.stringValue,
+				SerializedPropertyType.Vector2 => property.vector2Value.ToString(),
+				SerializedPropertyType.Vector3 => property.vector3Value.ToString(),
+				SerializedPropertyType.Vector4 => property.vector4Value.ToString(),
+				SerializedPropertyType.Rect => property.vector4Value.ToString(),
+				SerializedPropertyType.Bounds => property.boundsValue.ToString(),
+				SerializedPropertyType.Color => property.colorValue.ToString(),
+				SerializedPropertyType.Gradient => property.gradientValue.ToString(),
+				SerializedPropertyType.AnimationCurve => property.animationCurveValue.ToString(),
+				SerializedPropertyType.Quaternion => property.quaternionValue.ToString(),
+				SerializedPropertyType.Vector2Int => property.vector2IntValue.ToString(),
+				SerializedPropertyType.Vector3Int => property.vector3IntValue.ToString(),
+				SerializedPropertyType.RectInt => property.rectIntValue.ToString(),
+				SerializedPropertyType.BoundsInt => property.boundsIntValue.ToString(),
+				SerializedPropertyType.Hash128 => property.hash128Value.ToString(),
+				SerializedPropertyType.ArraySize => property.arraySize.ToString(),
+				SerializedPropertyType.FixedBufferSize => property.fixedBufferSize.ToString(),
+				SerializedPropertyType.ObjectReference => property.objectReferenceValue.ToString(),
+				SerializedPropertyType.ExposedReference => property.exposedReferenceValue.ToString(),
+				SerializedPropertyType.ManagedReference => property.managedReferenceValue.ToString(),
 				_ => string.Empty
 			};
 		}
@@ -173,6 +238,12 @@ namespace EditorAttributes.Editor
 
 			return memberInfo is PropertyInfo ? $"<{propertyName}>k__BackingField" : propertyName;
 		}
+
+		/// <summary>
+		/// Checks to see if the serialized property is a flagged enum
+		/// </summary>
+		/// <returns>True if the serialized property type is a flagged enum</returns>
+		protected bool IsPropertyEnumFlag() => fieldInfo.FieldType.IsDefined(typeof(FlagsAttribute), false);
 
 		/// <summary>
 		/// Displays an error box in the inspector
@@ -339,6 +410,61 @@ namespace EditorAttributes.Editor
 					return inputText;
 			}
 		}
+
+		/// <summary>
+		/// Adds the property context menu to a non property element
+		/// </summary>
+		/// <param name="element">The element to add the context menu to</param>
+		/// <param name="property">The serialized property</param>
+		protected void AddPropertyContextMenu(VisualElement element, SerializedProperty property)
+		{
+			if (element is PropertyField)
+				Debug.LogError("Can't add the property context menu to a property field since it already has one by default.");
+
+			element.AddManipulator(new ContextualMenuManipulator((@event) =>
+			{
+				string searchText = $"h:#{property.serializedObject.targetObject.GetType().Name}.{property.propertyPath}={GetPropertyValueAsString(property).Replace(" ", "")}";
+
+				@event.menu.AppendAction("Copy Property Path", (action) => EditorGUIUtility.systemCopyBuffer = property.propertyPath);
+				@event.menu.AppendAction("Search Same Property Value", (action) => SearchService.ShowWindow().SetSearchText(searchText));
+
+				@event.menu.AppendSeparator();
+
+				@event.menu.AppendAction("Copy", (action) => EditorGUIUtility.systemCopyBuffer = CopyValue(element, property));
+				@event.menu.AppendAction("Paste", (action) => PasteValue(element, property, ParsePropertyClipboardValue(property, EditorGUIUtility.systemCopyBuffer)));
+
+				@event.menu.AppendSeparator();
+			}));
+		}
+
+		private string GetCopyPropertyValue(SerializedProperty property)
+		{
+			string propertyValue = GetPropertyValueAsString(property);
+
+			return property.propertyType switch
+			{
+				SerializedPropertyType.Vector2 or SerializedPropertyType.Vector2Int => $"Vector2{propertyValue}",
+				SerializedPropertyType.Vector3 or SerializedPropertyType.Vector3Int => $"Vector3{propertyValue}",
+				SerializedPropertyType.Rect or SerializedPropertyType.RectInt => $"Rect{propertyValue}",
+				SerializedPropertyType.Bounds or SerializedPropertyType.BoundsInt => $"Bounds{propertyValue}",
+				SerializedPropertyType.Vector4 or SerializedPropertyType.Quaternion => property.type + propertyValue,
+				SerializedPropertyType.LayerMask => $"LayerMask({propertyValue})",
+				SerializedPropertyType.Enum => $"Enum:{(IsPropertyEnumFlag() ? Convert.ToString(property.enumValueFlag, 2) : propertyValue)}",
+				_ => propertyValue
+			};
+		}
+
+		private string ParsePropertyClipboardValue(SerializedProperty property, string clipboardValue) => property.propertyType switch
+		{
+			SerializedPropertyType.Vector2 or SerializedPropertyType.Vector2Int => clipboardValue.Replace("Vector2", ""),
+			SerializedPropertyType.Vector3 or SerializedPropertyType.Vector3Int => clipboardValue.Replace("Vector3", ""),
+			SerializedPropertyType.Rect or SerializedPropertyType.RectInt => clipboardValue.Replace("Rect", ""),
+			SerializedPropertyType.Bounds or SerializedPropertyType.BoundsInt => clipboardValue.Replace("Bounds", ""),
+			SerializedPropertyType.Vector4 or SerializedPropertyType.Quaternion => clipboardValue.Replace(property.type, ""),
+			SerializedPropertyType.LayerMask => clipboardValue.Replace("LayerMask", ""),
+			SerializedPropertyType.Enum => clipboardValue.Replace("Enum:", ""),
+			_ => clipboardValue
+		};
 
 		/// <summary>
 		/// Applies the help box style to a visual element

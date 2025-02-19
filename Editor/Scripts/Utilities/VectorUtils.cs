@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace EditorAttributes.Editor
@@ -47,5 +48,98 @@ namespace EditorAttributes.Editor
 		/// <param name="vector3">The Vector3 to convert</param>
 		/// <returns>The converted Vector3Int</returns>
 		public static Vector3Int Vector3ToVector3Int(Vector3 vector3) => new((int)vector3.x, (int)vector3.y, (int)vector3.z);
+
+		/// <summary>
+		/// Converts a Bounds to a BoundsInt
+		/// </summary>
+		/// <param name="bounds">The bounds to convert</param>
+		/// <returns>The converted BoundsInt</returns>
+		public static BoundsInt BoundsToBoundsInt(Bounds bounds) => new(Vector3ToVector3Int(bounds.center), Vector3ToVector3Int(bounds.extents));
+
+		/// <summary>
+		/// Parses a string to a Vector2
+		/// </summary>
+		/// <param name="vectorString">The string representing the vector</param>
+		/// <returns>The vector value from the string</returns>
+		public static Vector2 ParseVector2(string vectorString)
+		{
+			var vector = new Vector2();
+			var vectorValues = vectorString.Split(',');
+
+			try
+			{
+				vector.x = float.Parse(vectorValues[0].Replace("(", ""));
+				vector.y = float.Parse(vectorValues[1].Replace(")", ""));
+			}
+			catch (Exception)
+			{
+				Debug.LogError($"Failed to parse Vector2 from string: \"{vectorString}\"");
+			}
+
+			return vector;
+		}
+
+		/// <summary>
+		/// Parses a string to a Vector2Int
+		/// </summary>
+		/// <param name="vectorString">The string representing the vector</param>
+		/// <returns>The vector value from the string</returns>
+		public static Vector2Int ParseVector2Int(string vectorString) => Vector2ToVector2Int(ParseVector2(vectorString));
+
+		/// <summary>
+		/// Parses a string to a Vector3
+		/// </summary>
+		/// <param name="vectorString">The string representing the vector</param>
+		/// <returns>The vector value from the string</returns>
+		public static Vector3 ParseVector3(string vectorString)
+		{
+			var vector = new Vector3();
+			var vectorValues = vectorString.Split(',');
+
+			try
+			{
+				vector.x = float.Parse(vectorValues[0].Replace("(", ""));
+				vector.y = float.Parse(vectorValues[1]);
+				vector.z = float.Parse(vectorValues[2].Replace(")", ""));
+			}
+			catch (Exception)
+			{
+				Debug.LogError($"Failed to parse Vector3 from string: \"{vectorString}\"");
+			}
+
+			return vector;
+		}
+
+		/// <summary>
+		/// Parses a string to a Vector3Int
+		/// </summary>
+		/// <param name="vectorString">The string representing the vector</param>
+		/// <returns>The vector value from the string</returns>
+		public static Vector3Int ParseVector3Int(string vectorString) => Vector3ToVector3Int(ParseVector3(vectorString));
+
+		/// <summary>
+		/// Parses a string to a Vector4
+		/// </summary>
+		/// <param name="vectorString">The string representing the vector</param>
+		/// <returns>The vector value from the string</returns>
+		public static Vector4 ParseVector4(string vectorString)
+		{
+			var vector = new Vector4();
+			var vectorValues = vectorString.Split(',');
+
+			try
+			{
+				vector.x = float.Parse(vectorValues[0].Replace("(", ""));
+				vector.y = float.Parse(vectorValues[1]);
+				vector.z = float.Parse(vectorValues[2]);
+				vector.w = float.Parse(vectorValues[3].Replace(")", ""));
+			}
+			catch (Exception)
+			{
+				Debug.LogError($"Failed to parse Vector4 from string: \"{vectorString}\"");
+			}
+
+			return vector;
+		}
 	}
 }

@@ -14,17 +14,32 @@ namespace EditorAttributes.Editor
 	public class EditorValidation : IPreprocessBuildWithReport
 	{
 		private static int BUILD_KILLERS;
+		private static bool DISABLE_BUILD_VALIDATION;
+
+		private const string MENU_ITEM_PATH = "EditorValidation/Disable Build Validation";
+
 		public int callbackOrder => 0;
 
-		static EditorValidation() { }
+		static EditorValidation() => DISABLE_BUILD_VALIDATION = Menu.GetChecked(MENU_ITEM_PATH);
 
 		public void OnPreprocessBuild(BuildReport report)
 		{
 			BUILD_KILLERS = 0;
-			ValidateAll();
+
+			if (!DISABLE_BUILD_VALIDATION)
+				ValidateAll();
 
 			if (BUILD_KILLERS != 0)
 				throw new BuildFailedException("Validation Failed");
+		}
+
+		[MenuItem(MENU_ITEM_PATH, priority = 4)]
+		private static void ToggleBuildValidation()
+		{
+			DISABLE_BUILD_VALIDATION = !DISABLE_BUILD_VALIDATION;
+
+			Menu.SetChecked(MENU_ITEM_PATH, DISABLE_BUILD_VALIDATION);
+			EditorPrefs.SetBool(MENU_ITEM_PATH, DISABLE_BUILD_VALIDATION);
 		}
 
 		/// <summary>
