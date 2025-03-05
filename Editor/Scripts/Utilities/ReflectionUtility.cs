@@ -32,7 +32,7 @@ namespace EditorAttributes.Editor.Utility
 			return fieldInfo;
 		}
 
-		internal static FieldInfo FindField(string fieldName, object targetObject) => FindMember(fieldName, targetObject.GetType(), BINDING_FLAGS, MemberTypes.Field) as FieldInfo;
+		internal static FieldInfo FindField(string fieldName, object targetObject) => FindMember(fieldName, targetObject?.GetType(), BINDING_FLAGS, MemberTypes.Field) as FieldInfo;
 
 		/// <summary>
 		/// Finds a property inside a serialized object
@@ -56,7 +56,7 @@ namespace EditorAttributes.Editor.Utility
 			return propertyInfo;
 		}
 
-		internal static PropertyInfo FindProperty(string propertyName, object targetObject) => FindMember(propertyName, targetObject.GetType(), BINDING_FLAGS, MemberTypes.Property) as PropertyInfo;
+		internal static PropertyInfo FindProperty(string propertyName, object targetObject) => FindMember(propertyName, targetObject?.GetType(), BINDING_FLAGS, MemberTypes.Property) as PropertyInfo;
 
 		/// <summary>
 		/// Finds a funciton inside a serialized object
@@ -101,11 +101,11 @@ namespace EditorAttributes.Editor.Utility
 		{
 			try
 			{
-				return FindMember(functionName, targetObject.GetType(), BINDING_FLAGS, MemberTypes.Method) as MethodInfo;
+				return FindMember(functionName, targetObject?.GetType(), BINDING_FLAGS, MemberTypes.Method) as MethodInfo;
 			}
 			catch (AmbiguousMatchException)
 			{
-				var functions = targetObject.GetType().GetMethods();
+				var functions = targetObject?.GetType().GetMethods();
 
 				foreach (var function in functions)
 				{

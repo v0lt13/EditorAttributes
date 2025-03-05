@@ -17,7 +17,7 @@ namespace EditorAttributes.Editor
 			var fieldType = ReflectionUtility.GetMemberInfoType(currentField);
 
 			var root = new VisualElement();
-			var propertyField = DrawProperty(property);
+			var propertyField = new PropertyField(property);
 			var errorBox = new HelpBox("The PropertyDropdown Attribute can only be attached to objects deriving from Component or ScriptableObject", HelpBoxMessageType.Error);
 
 			ApplyBoxStyle(root);
@@ -107,7 +107,9 @@ namespace EditorAttributes.Editor
 						if (field?.GetCustomAttribute<HidePropertyAttribute>() != null) // Skip fields with the HideProperty attribute
 							continue;
 
-						var propertyField = DrawProperty(property);
+						var propertyField = new PropertyField(property);
+
+						propertyField.BindProperty(property);
 
 						propertyField.style.unityFontStyleAndWeight = FontStyle.Normal;
 

@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
 
@@ -17,7 +18,7 @@ namespace EditorAttributes.Editor
 			var messageBox = new HelpBox(string.Empty, (HelpBoxMessageType)messageBoxAttribute.MessageType);
 			var errorBox = new HelpBox();
 
-			var propertyField = DrawProperty(property);
+			var propertyField = new PropertyField(property);
 
 			if (CanApplyGlobalColor)
 			{
@@ -27,13 +28,13 @@ namespace EditorAttributes.Editor
 
 			root.Add(propertyField);
 
-			UpdateVisualElement(messageBox, () =>
+			UpdateVisualElement(propertyField, () =>
 			{
 				if (GetConditionValue(conditionalProperty, messageBoxAttribute, property, errorBox))
 				{
 					messageBox.text = GetDynamicString(messageBoxAttribute.Message, property, messageBoxAttribute, errorBox);
 			
-					root.Add(messageBox);
+					AddElement(root, messageBox);
 			
 					if (messageBoxAttribute.DrawAbove)
 						messageBox.PlaceBehind(propertyField);

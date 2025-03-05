@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
@@ -8,7 +9,7 @@ namespace EditorAttributes.Editor
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
-			var propertyField = DrawProperty(property);
+			var propertyField = new PropertyField(property);
 
 			propertyField.SetEnabled(false);
 

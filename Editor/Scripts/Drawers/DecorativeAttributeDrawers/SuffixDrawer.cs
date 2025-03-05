@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace EditorAttributes.Editor
 {
@@ -13,7 +14,7 @@ namespace EditorAttributes.Editor
 			
 			var root = new VisualElement();
 			var errorBox = new HelpBox();
-			var propertyField = DrawProperty(property);
+			var propertyField = new PropertyField(property);
 
 			var suffixLabel = new Label() 
 			{

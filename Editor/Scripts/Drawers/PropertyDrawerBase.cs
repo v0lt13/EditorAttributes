@@ -3,53 +3,19 @@ using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 using System.Collections;
-using UnityEditorInternal;
+using UnityEditor.Search;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using EditorAttributes.Editor.Utility;
-using UnityEditor.Search;
 
 namespace EditorAttributes.Editor
 {
 	public class PropertyDrawerBase : PropertyDrawer
     {
-		private protected UnityEventDrawer eventDrawer;
-
 		protected bool CanApplyGlobalColor => EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR;				
 
-		public override VisualElement CreatePropertyGUI(SerializedProperty property) => DrawProperty(property);	
-
-		/// <summary>
-		/// Draws a property field also accounting for Unity Events
-		/// </summary>
-		/// <param name="property">The serialized property to draw</param>
-		/// <param name="label">Add a custom label to the property</param>
-		/// <returns>The property visual element</returns>
-		protected virtual VisualElement DrawProperty(SerializedProperty property, Label label = null)
-		{
-			eventDrawer ??= new UnityEventDrawer();
-
-			try
-			{
-				var eventContainer = eventDrawer.CreatePropertyGUI(property);
-				var eventLabel = eventContainer.Q<Label>();
-
-				eventLabel.text = label == null ? eventLabel.text : "";
-
-				return eventContainer;
-			}
-			catch (NullReferenceException)
-			{
-				label ??= new Label(property.displayName);
-
-				var propertyField = new PropertyField(property, label.text);
-				
-				propertyField.BindProperty(property);
-
-				return propertyField;
-			}
-		}
+		public override VisualElement CreatePropertyGUI(SerializedProperty property) => new PropertyField(property);
 
 		/// <summary>
 		/// Override this function to customize the copied value from an element with using <see cref="AddPropertyContextMenu(VisualElement, SerializedProperty)"/>
@@ -270,11 +236,12 @@ namespace EditorAttributes.Editor
 		/// <param name="visualElement">The visual element to schedule the update</param>
 		/// <param name="logicToUpdate">The logic to execute on the specified element</param>
 		/// <param name="intervalMs">The update interval in milliseconds</param>
-		public static void UpdateVisualElement(VisualElement visualElement, Action logicToUpdate, long intervalMs = 60)
+		/// <returns>The scheduled visual element item</returns>
+		public static IVisualElementScheduledItem UpdateVisualElement(VisualElement visualElement, Action logicToUpdate, long intervalMs = 60)
 		{
 			logicToUpdate.Invoke(); // Execute the logic once so we don't have to wait for the first execution of the scheduler
 
-			visualElement.schedule.Execute(logicToUpdate).Every(intervalMs);
+			return visualElement.schedule.Execute(logicToUpdate).Every(intervalMs);
 		}
 
 		/// <summary>
@@ -283,7 +250,8 @@ namespace EditorAttributes.Editor
 		/// <param name="visualElement">The visual element to schedule the execution</param>
 		/// <param name="logicToExecute">The logic to execute on the specified element</param>
 		/// <param name="delayMs">The execution delay in milliseconds</param>
-		public static void ExecuteLater(VisualElement visualElement, Action logicToExecute, long delayMs = 1) => visualElement.schedule.Execute(logicToExecute).StartingIn(delayMs);
+		/// <returns>The scheduled visual element item</returns>
+		public static IVisualElementScheduledItem ExecuteLater(VisualElement visualElement, Action logicToExecute, long delayMs = 1) => visualElement.schedule.Execute(logicToExecute).StartingIn(delayMs);
 
 		/// <summary>
 		/// Add an element from another visual element if it doesn't exist
@@ -393,7 +361,7 @@ namespace EditorAttributes.Editor
 
 					if (memberInfo == null)
 					{
-						errorBox.text = $"The member {inputText} could not be found";
+						errorBox.text = $"The member <b>{inputText}</b> could not be found";
 						return inputText;
 					}
 
@@ -406,7 +374,7 @@ namespace EditorAttributes.Editor
 					if (memberType == typeof(string))
 						return memberValue.ToString();
 
-					errorBox.text = $"The member {inputText} needs to return a string";
+					errorBox.text = $"The member <b>{inputText}</b> needs to return a string";
 					return inputText;
 			}
 		}
@@ -506,7 +474,7 @@ namespace EditorAttributes.Editor
 		/// A short handy version of Debug.Log
 		/// </summary>
 		/// <param name="message">The message to print</param>
-		protected void Print(object message) => Debug.Log(message);
+		protected static void Print(object message) => Debug.Log(message);
 
 		/// <summary>
 		/// Checks if a collection is null or has no members

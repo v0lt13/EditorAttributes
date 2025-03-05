@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
@@ -15,8 +16,10 @@ namespace EditorAttributes.Editor
 			var root = new VisualElement();
 			var errorBox = new HelpBox();
 
-			var memberInfo = ReflectionUtility.GetValidMemberInfo(dropdownAttribute.CollectionName, property);
-			var collectionValues = ConvertCollectionValuesToStrings(dropdownAttribute.CollectionName, property, memberInfo, errorBox);
+			var memberInfo = ReflectionUtility.GetValidMemberInfo(dropdownAttribute.ValueCollectionName, property);
+			var propertyValues = ConvertCollectionValuesToStrings(dropdownAttribute.ValueCollectionName, property, memberInfo, errorBox);
+
+			var collectionValues = dropdownAttribute.DisplayNames == null ? propertyValues : dropdownAttribute.DisplayNames.ToList();
 
 			var dropdownField = IsCollectionValid(collectionValues) ? new DropdownField(property.displayName, collectionValues, GetDropdownDefaultValue(collectionValues, property)) 
 				: new DropdownField(property.displayName, new List<string>() { "NULL" }, 0);
@@ -26,10 +29,18 @@ namespace EditorAttributes.Editor
 
 			AddPropertyContextMenu(dropdownField, property);
 
-			dropdownField.RegisterValueChangedCallback(callback => 
+			if (propertyValues.Count != collectionValues.Count)
+			{
+				errorBox.text = "The value collection item count and display names count do not match";
+				DisplayErrorBox(root, errorBox);
+
+				return root;
+			}
+
+			dropdownField.RegisterValueChangedCallback((callback) =>
 			{
 				if (!property.hasMultipleDifferentValues)
-					SetPropertyValueFromString(callback.newValue, property);
+					SetPropertyValue(property, callback.newValue, dropdownAttribute, propertyValues, dropdownField);
 			});
 
 			if (dropdownField.value != "NULL")
@@ -37,7 +48,7 @@ namespace EditorAttributes.Editor
 				dropdownField.showMixedValue = property.hasMultipleDifferentValues;
 
 				if (!property.hasMultipleDifferentValues)
-					SetPropertyValueFromString(dropdownField.value, property);
+					SetPropertyValue(property, dropdownField.value, dropdownAttribute, propertyValues, dropdownField);
 			}
 
 			root.Add(dropdownField);
@@ -46,12 +57,15 @@ namespace EditorAttributes.Editor
 
 			UpdateVisualElement(dropdownField, () =>
 			{
-				var dropdownValues = ConvertCollectionValuesToStrings(dropdownAttribute.CollectionName, property, memberInfo, errorBox);
+				var currentPropertyValues = ConvertCollectionValuesToStrings(dropdownAttribute.ValueCollectionName, property, memberInfo, errorBox);
+				var currentCollectionValues = dropdownAttribute.DisplayNames == null ? propertyValues : dropdownAttribute.DisplayNames.ToList();
 
-				if (IsCollectionValid(dropdownValues))
+				if (IsCollectionValid(currentPropertyValues))
 				{
 					errorBox.text = string.Empty;
-					dropdownField.choices = dropdownValues;
+					dropdownField.choices = currentCollectionValues;
+
+					propertyValues = currentPropertyValues;
 				}
 
 				DisplayErrorBox(root, errorBox);
@@ -60,18 +74,46 @@ namespace EditorAttributes.Editor
 			return root;
 		}
 
+		protected override string CopyValue(VisualElement element, SerializedProperty property)
+		{
+			var dropdown = element as DropdownField;
+			var dropdownAttribute = attribute as DropdownAttribute;
+
+			return dropdownAttribute.DisplayNames != null ? dropdown.value : base.CopyValue(element, property);
+		}
+
 		protected override void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue)
 		{
 			var dropdown = element as DropdownField;
+			var dropdownAttribute = attribute as DropdownAttribute;
 
 			if (dropdown.choices.Contains(clipboardValue))
 			{
-				base.PasteValue(element, property, clipboardValue);
-				dropdown.SetValueWithoutNotify(clipboardValue);
+				if (dropdownAttribute.DisplayNames != null)
+				{
+					dropdown.value = clipboardValue;
+				}
+				else
+				{
+					base.PasteValue(element, property, clipboardValue);
+					dropdown.SetValueWithoutNotify(clipboardValue);
+				}
 			}
 			else
 			{
 				Debug.LogWarning($"Could not paste value \"{clipboardValue}\" since is not availiable as an option in the dropdown");
+			}
+		}
+
+		private void SetPropertyValue(SerializedProperty property, string value, DropdownAttribute dropdownAttribute, List<string> propertyValues, DropdownField dropdownField)
+		{
+			if (dropdownAttribute.DisplayNames != null)
+			{
+				SetPropertyValueFromString(propertyValues[dropdownField.index], property);
+			}
+			else
+			{
+				SetPropertyValueFromString(value, property);
 			}
 		}
 

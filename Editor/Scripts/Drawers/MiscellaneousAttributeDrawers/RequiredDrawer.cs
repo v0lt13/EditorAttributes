@@ -12,7 +12,7 @@ namespace EditorAttributes.Editor
 			var root = new VisualElement();
 			var requiredAttribute = attribute as RequiredAttribute;
 
-			var propertyField = DrawProperty(property);
+			var propertyField = new PropertyField(property);
 
 			root.Add(propertyField);
 

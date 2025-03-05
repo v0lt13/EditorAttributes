@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
@@ -11,7 +12,7 @@ namespace EditorAttributes.Editor
 			var indentPropertyAttribute = attribute as IndentPropertyAttribute;
             
             var root = new VisualElement();
-            var propertyField = DrawProperty(property);
+            var propertyField = new PropertyField(property);
 
             propertyField.style.marginLeft = indentPropertyAttribute.IndentLevel;
 

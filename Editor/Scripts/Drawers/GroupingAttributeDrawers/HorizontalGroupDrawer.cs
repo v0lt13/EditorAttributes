@@ -1,7 +1,5 @@
-using System;
 using UnityEditor;
 using System.Reflection;
-using UnityEditorInternal;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
@@ -84,38 +82,21 @@ namespace EditorAttributes.Editor
 			return root;
 		}
 
-		// Had to override this function to remove the label from property fields since they are drawn manualy
-		protected override VisualElement DrawProperty(SerializedProperty property, Label label = null)
+		private VisualElement DrawProperty(SerializedProperty property)
 		{
-			eventDrawer ??= new UnityEventDrawer();
+			var propertyField = new PropertyField(property);
 
-			try
+			if (property.propertyType != SerializedPropertyType.Generic)
 			{
-				var eventContainer = eventDrawer.CreatePropertyGUI(property);
-				var eventLabel = eventContainer.Q<Label>();
-
-				eventLabel.text = label == null ? eventLabel.text : "";
-
-				return eventContainer;
-			}
-			catch (NullReferenceException)
-			{
-				var propertyField = new PropertyField(property);
-
-				propertyField.BindProperty(property);
-
-				if (property.propertyType != SerializedPropertyType.Generic)
+				ExecuteLater(propertyField, () =>
 				{
-					ExecuteLater(propertyField, () =>
-					{
-						var propertyLabel = propertyField.Q<Label>();
+					var propertyLabel = propertyField.Q<Label>();
 
-						propertyLabel?.RemoveFromHierarchy();
-					});
-				}
-
-				return propertyField;
+					propertyLabel?.RemoveFromHierarchy();
+				});
 			}
+
+			return propertyField;
 		}
 	}
 }

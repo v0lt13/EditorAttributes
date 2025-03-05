@@ -4,6 +4,7 @@ namespace EditorAttributes
 {
 	public enum CaseType
     {
+        None,
         Unity,
         Pascal,
         Camel,

@@ -2,6 +2,7 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace EditorAttributes.Editor
 {
@@ -21,7 +22,7 @@ namespace EditorAttributes.Editor
 
 			var folderPath = property.stringValue;
 
-			var propertyField = DrawProperty(property);
+			var propertyField = new PropertyField(property);
 			var button = new Button(() => folderPath = EditorUtility.OpenFolderPanel("Select folder", "Assets", ""));
 
 			var buttonIcon = new Image() { image = EditorGUIUtility.IconContent("d_Folder Icon").image };

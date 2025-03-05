@@ -1,6 +1,7 @@
 using UnityEditor;
 using System.Text;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace EditorAttributes.Editor
 {
@@ -13,16 +14,24 @@ namespace EditorAttributes.Editor
 
 			var root = new VisualElement();
 			var errorBox = new HelpBox();
-			var label = new Label(preferredLabel);
-			var propertyField = DrawProperty(property, label);
+			var propertyField = new PropertyField(property, GetNewName(renameAttribute, property, errorBox));
 
 			root.Add(propertyField);
 
-			UpdateVisualElement(label, () =>
+			if (renameAttribute.StringInputMode == StringInputMode.Dynamic)
 			{
-				label.text = GetNewName(renameAttribute, property, errorBox);
+				Label propertyLabel = null;
+
+				ExecuteLater(propertyField, () => propertyLabel = propertyField.Q<Label>());
+
+				UpdateVisualElement(propertyField, () =>
+				{
+					if (propertyLabel != null)
+						propertyLabel.text = GetNewName(renameAttribute, property, errorBox);
+				});
+
 				DisplayErrorBox(root, errorBox);
-			});
+			}
 
 			return root;
 		}
@@ -33,6 +42,9 @@ namespace EditorAttributes.Editor
 
 			switch (renameAttribute.CaseType)
 			{
+				case CaseType.None:
+					return newName;
+
 				case CaseType.Unity:
 					newName = ObjectNames.NicifyVariableName(newName);
 					break;

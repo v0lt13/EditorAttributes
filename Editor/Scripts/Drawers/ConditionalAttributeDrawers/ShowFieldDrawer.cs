@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
 
@@ -15,7 +16,7 @@ namespace EditorAttributes.Editor
 			var root = new VisualElement();
 			var errorBox = new HelpBox();
 
-			var propertyField = DrawProperty(property);
+			var propertyField = new PropertyField(property);
 
 			root.Add(propertyField);
 

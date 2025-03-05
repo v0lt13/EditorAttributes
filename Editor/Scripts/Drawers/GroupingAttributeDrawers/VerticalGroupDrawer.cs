@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
@@ -37,7 +38,7 @@ namespace EditorAttributes.Editor
 						}
 					};
 
-					var propertyField = DrawProperty(variableProperty, new Label());
+					var propertyField = new PropertyField(variableProperty, string.Empty);
 
 					propertyField.style.flexGrow = 1f;
 					propertyField.style.flexBasis = 0.1f;

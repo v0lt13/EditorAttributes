@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 //using EditorAttributes.Editor.Utility;
 
@@ -13,7 +14,7 @@ namespace EditorAttributes.Editor
 			//var colorFieldAttribute = attribute as ColorFieldAttribute;
 			
 			var root = new VisualElement();
-			var propertyField = DrawProperty(property);
+			var propertyField = new PropertyField(property);
 			
 			/*
 			var errorBox = new HelpBox();

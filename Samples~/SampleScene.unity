@@ -2465,15 +2465,7 @@ MonoBehaviour:
   intDropdown: 2
   stringDropdown: Value01
   floatDropdown: 0.5
-  intValues: 000000000100000002000000
-  stringValues:
-  - Value01
-  - Value02
-  - Value03
-  floatValues:
-  - 0.5
-  - 1.8
-  - 69.42
+  vectorDropdown: {x: 0, y: 0, z: 1}
 --- !u!1 &1697542415
 GameObject:
   m_ObjectHideFlags: 0

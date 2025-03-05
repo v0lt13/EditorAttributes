@@ -1,3 +1,15 @@
+EditorAttributes v2.5.4 Changelog:
+- Added an additional parameter to Dropdown Attribute for displaying custom labels for items
+- Added new CaseType.None to Rename Attribute
+- Long DataTable names should now be clipped
+- Updated how vectors look inside data tables
+- Fixed Rename Attribute not working
+- Fixed UnityEvents not displaying the property name
+- Fixed UnityEvents and collections being indented inside foldout and toggle groups
+- Fixed possible error when deleting an object using the Button Attribute
+- Fixed attributes not applying to UnityEvents when inside a group
+- Fixed message boxes not appearing back when the condition is satisfied in the editor
+
 EditorAttributes v2.5.3 Changelog:
 - Added vector and char support to Dropdown Attribute
 - Added option to disable build validation

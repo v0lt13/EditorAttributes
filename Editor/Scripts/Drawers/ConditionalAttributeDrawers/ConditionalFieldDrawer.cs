@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 using System.Collections.Generic;
 using EditorAttributes.Editor.Utility;
 
@@ -13,7 +14,7 @@ namespace EditorAttributes.Editor
 			var conditionalAttribute = attribute as ConditionalFieldAttribute;
 
 			var root = new VisualElement();
-			var propertyField = DrawProperty(property);
+			var propertyField = new PropertyField(property);
 
 			var errorBox = new HelpBox();
 

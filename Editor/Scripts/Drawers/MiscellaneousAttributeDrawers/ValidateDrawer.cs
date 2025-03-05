@@ -1,7 +1,8 @@
 using UnityEditor;
-using UnityEngine.UIElements;
-using EditorAttributes.Editor.Utility;
 using System.Reflection;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
+using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
@@ -14,7 +15,7 @@ namespace EditorAttributes.Editor
 			var validateAttribute = attribute as ValidateAttribute;
 			var conditionalProperty = ReflectionUtility.GetValidMemberInfo(validateAttribute.ConditionName, property);
 
-			var propertyField = DrawProperty(property);
+			var propertyField = new PropertyField(property);
 
 			root.Add(propertyField);
 
