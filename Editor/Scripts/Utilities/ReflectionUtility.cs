@@ -133,8 +133,8 @@ namespace EditorAttributes.Editor.Utility
 		/// <param name="memberName">The name of the member to look for</param>
 		/// <param name="targetType">The type to get the member from</param>
 		/// <param name="bindingFlags">The binding flags</param>
-		/// <param name="memberType">The type of the member to look for. Only Field, Property and Method are supported</param>
-		/// <returns>The member info of the desired member</returns>
+		/// <param name="memberType">The type of the member to look for. Only Field, Property and Method types are supported</param>
+		/// <returns>The member info of the specified member type</returns>
 		public static MemberInfo FindMember(string memberName, Type targetType, BindingFlags bindingFlags, MemberTypes memberType)
 		{
 			switch (memberType)
@@ -165,11 +165,11 @@ namespace EditorAttributes.Editor.Utility
 		}
 
 		/// <summary>
-		/// Gets a const or static member info from the type specified in the path
+		/// Gets the info of a const or static member from the type specified in the path
 		/// </summary>
 		/// <param name="memberPath">The path on which to locate the member</param>
-		/// <param name="memberTypes">Which type of member to look for. Only supports fields, properties and methods</param>
-		/// <returns>The member info of the specified member type, null if nothing is found</returns>
+		/// <param name="memberTypes">The type of the member to look for. Only Field, Property and Method types are supported</param>
+		/// <returns>The member info of the specified member type</returns>
 		public static MemberInfo GetStaticMemberInfoFromPath(string memberPath, MemberTypes memberTypes)
 		{
 			MemberInfo memberInfo = null;
