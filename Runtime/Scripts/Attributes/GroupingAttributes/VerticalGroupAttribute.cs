@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class VerticalGroupAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to display the specified fields vertically
+	/// </summary>
+	public class VerticalGroupAttribute : PropertyAttribute
     {
 		public float WidthOffset { get; private set; }
 		public bool DrawInBox { get; private set; }
@@ -10,7 +13,7 @@ namespace EditorAttributes
         public string[] FieldsToGroup { get; private set; }
 
 		/// <summary>
-		/// Attribute to display specified fields vertically
+		/// Attribute to display the specified fields vertically
 		/// </summary>
 		/// <param name="fieldsToGroup">The name of the fields to group</param>
 		public VerticalGroupAttribute(params string[] fieldsToGroup)
@@ -20,7 +23,7 @@ namespace EditorAttributes
 		}
 
 		/// <summary>
-		/// Attribute to display specified fields vertically
+		/// Attribute to display the specified fields vertically
 		/// </summary>
 		/// <param name="drawInBox">Draw the group in a nice box</param>
 		/// <param name="fieldsToGroup">The name of the fields to group</param>
@@ -31,7 +34,7 @@ namespace EditorAttributes
 		}
 
 		/// <summary>
-		/// Attribute to display specified fields vertically
+		/// Attribute to display the specified fields vertically
 		/// </summary>
 		/// <param name="widthOffset">By how much to offset the width of the properties in pixels</param>
 		/// <param name="drawInBox">Draw the group in a nice box</param>

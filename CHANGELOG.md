@@ -1,3 +1,13 @@
+EditorAttributes v2.6.0 Changelog:
+- Added Dictionary support for Dropdown Attribute
+- Added attribute search support for static and const members inside other types
+- Added ValidationCheck class for more advanced validation logic
+- Moved EditorValidation menu under the tools tab
+- Fixed DataTable label alignment
+- Fixed Wrap and Clamp Attributes not working with uint, long, ulong and double types
+- Fixed Dropdown Attribute throwing error when collection value is null
+- Fixed Dropdown throwing Index out of range Exception when the value collection changed is dynamically while using a custom display array
+
 EditorAttributes v2.5.4 Changelog:
 - Added an additional parameter to Dropdown Attribute for displaying custom labels for items
 - Added new CaseType.None to Rename Attribute

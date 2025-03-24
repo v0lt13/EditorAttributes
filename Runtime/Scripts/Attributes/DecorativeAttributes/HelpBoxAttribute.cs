@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to display a help box
+	/// </summary>
 	public class HelpBoxAttribute : PropertyAttribute, IDynamicStringAttribute
     {
         public string Message { get; private set; }

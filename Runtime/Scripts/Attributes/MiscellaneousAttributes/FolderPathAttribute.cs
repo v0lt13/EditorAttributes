@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class FolderPathAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to get the path of a folder
+	/// </summary>
+	public class FolderPathAttribute : PropertyAttribute
     {
         public bool GetRelativePath { get; private set; }
 

@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to display a collection of values in toggleble buttons
+	/// </summary>
 	public class ValueButtonsAttribute : PropertyAttribute
     {
 	    public string CollectionName { get; private set; }

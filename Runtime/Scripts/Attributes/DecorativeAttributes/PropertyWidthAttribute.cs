@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class PropertyWidthAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to adjust the width of a property
+	/// </summary>
+	public class PropertyWidthAttribute : PropertyAttribute
     {
 	    public float WidthOffset { get; private set; }
 

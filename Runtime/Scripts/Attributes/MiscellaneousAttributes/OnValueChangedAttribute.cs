@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class OnValueChangedAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to call a function when the value of the attached property changes
+	/// </summary>
+	public class OnValueChangedAttribute : PropertyAttribute
     {
         public string FunctionName { get; private set; }
 

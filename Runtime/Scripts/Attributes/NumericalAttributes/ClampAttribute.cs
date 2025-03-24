@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class ClampAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to clamp a numeric field between two values
+	/// </summary>
+	public class ClampAttribute : PropertyAttribute
     {
 	    public float MinValueX { get; private set; }
 	    public float MaxValueX { get; private set; }

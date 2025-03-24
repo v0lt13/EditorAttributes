@@ -2,6 +2,9 @@ using System;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to change the drawing order of a field
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
 	public class PropertyOrderAttribute : Attribute
     {

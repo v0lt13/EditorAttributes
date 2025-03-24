@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class IndentPropertyAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to indent a property in the inspector
+	/// </summary>
+	public class IndentPropertyAttribute : PropertyAttribute
     {
 	    public float IndentLevel { get; private set; }
 

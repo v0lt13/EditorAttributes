@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to draw an image in the inspector
+	/// </summary>
 	public class ImageAttribute : PropertyAttribute, IDynamicStringAttribute
     {
         public float ImageWidth { get; private set; }

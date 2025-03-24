@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class TabGroupAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to display specified fields in a tabbed group
+	/// </summary>
+	public class TabGroupAttribute : PropertyAttribute
     {
 		public string[] FieldsToGroup { get; private set; }
 

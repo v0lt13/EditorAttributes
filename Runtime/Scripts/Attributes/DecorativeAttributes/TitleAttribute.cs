@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to draw a fully customizable header
+	/// </summary>
 	public class TitleAttribute : PropertyAttribute, IDynamicStringAttribute
     {
 	    public string Title { get; private set; }

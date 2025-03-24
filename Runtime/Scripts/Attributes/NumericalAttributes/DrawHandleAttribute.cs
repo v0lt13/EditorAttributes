@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Draws a handle for the appropriate type
+	/// </summary>
 	public class DrawHandleAttribute : PropertyAttribute, IColorAttribute
     {
 		public float R { get; private set; }

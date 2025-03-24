@@ -36,6 +36,7 @@ namespace EditorAttributes.Editor
 					unityFontStyleAndWeight = FontStyle.Bold,
 					marginRight = 50f,
 					maxWidth = 100f,
+					width = 100f,
 					alignSelf = Align.Center,
 					color = EditorExtension.GLOBAL_COLOR
 				}

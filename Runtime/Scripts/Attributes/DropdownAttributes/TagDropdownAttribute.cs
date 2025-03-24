@@ -2,5 +2,8 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class TagDropdownAttribute : PropertyAttribute { }
+	/// <summary>
+	/// Attribute to make a dropdown of tags
+	/// </summary>
+	public class TagDropdownAttribute : PropertyAttribute { }
 }

@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to add a button in the inspector in place of a field
+	/// </summary>
 	public class ButtonFieldAttribute : PropertyAttribute, IRepetableButton
     {
 		public string FunctionName { get; private set; }

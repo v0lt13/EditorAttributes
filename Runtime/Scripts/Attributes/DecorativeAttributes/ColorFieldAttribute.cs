@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to color a field in the inspector
+	/// </summary>
 	[Obsolete("This attribute has been deprecated use GUIColor instead")]
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
 	public class ColorFieldAttribute : PropertyAttribute, IColorAttribute

@@ -16,7 +16,7 @@ namespace EditorAttributes.Editor
 		private static int BUILD_KILLERS;
 		private static bool DISABLE_BUILD_VALIDATION;
 
-		private const string MENU_ITEM_PATH = "EditorValidation/Disable Build Validation";
+		private const string MENU_ITEM_PATH = "Tools/EditorValidation/Disable Build Validation";
 
 		public int callbackOrder => 0;
 
@@ -45,7 +45,7 @@ namespace EditorAttributes.Editor
 		/// <summary>
 		/// Validates every asset and scene in the project
 		/// </summary>
-		[MenuItem("EditorValidation/Validate All", priority = 0)]
+		[MenuItem("Tools/EditorValidation/Validate All", priority = 0)]
 		public static void ValidateAll()
 		{
 			ValidateAllAssets();
@@ -55,7 +55,7 @@ namespace EditorAttributes.Editor
 		/// <summary>
 		/// Validates all scenes in the build
 		/// </summary>
-		[MenuItem("EditorValidation/Validate Scenes", priority = 2)]
+		[MenuItem("Tools/EditorValidation/Validate Scenes", priority = 2)]
 		public static void ValidateAllScenes()
 		{
 			int failedValidations = 0;
@@ -86,7 +86,7 @@ namespace EditorAttributes.Editor
 		/// <summary>
 		/// Validates all scenes currently open
 		/// </summary>
-		[MenuItem("EditorValidation/Validate Open Scenes", priority = 3)]
+		[MenuItem("Tools/EditorValidation/Validate Open Scenes", priority = 3)]
 		public static void ValidateOpenScenes()
 		{
 			int failedValidations = 0;
@@ -101,7 +101,7 @@ namespace EditorAttributes.Editor
 		/// <summary>
 		/// Validates all assets in the project
 		/// </summary>
-		[MenuItem("EditorValidation/Validate Assets", priority = 1)]
+		[MenuItem("Tools/EditorValidation/Validate Assets", priority = 1)]
 		public static void ValidateAllAssets()
 		{
 			int failedValidations = 0;
@@ -182,27 +182,31 @@ namespace EditorAttributes.Editor
 				{
 					var conditionalMember = ReflectionUtility.GetValidMemberInfo(validateAttribute.ConditionName, targetObject);
 
-					if (EvaluateCondition(conditionalMember, targetObject))
+					if (EvaluateCondition(conditionalMember, targetObject, out ValidationCheck customCheck))
 					{
-						if (validateAttribute.BuildKiller)
+						string customMessage = customCheck == null ? validateAttribute.ValidationMessage : customCheck.ValidationMessage;
+						bool isBuildKiller = customCheck == null ? validateAttribute.BuildKiller : customCheck.KillBuild;
+						var severety = customCheck == null ? validateAttribute.Severety : customCheck.Severety;
+
+						if (isBuildKiller)
 						{
 							BUILD_KILLERS++;
 							validationMessage = "<color=#FF0000><b>(Build Killer)</b></color> " + validationMessage;
 						}
 
-						switch (validateAttribute.Severety)
+						switch (severety)
 						{
 							case MessageMode.None:
 							case MessageMode.Log:
-								Debug.Log(validationMessage + validateAttribute.ValidationMessage, targetObject);
+								Debug.Log(validationMessage + customMessage, targetObject);
 								break;
 
 							case MessageMode.Warning:
-								Debug.LogWarning(validationMessage + validateAttribute.ValidationMessage, targetObject);
+								Debug.LogWarning(validationMessage + customMessage, targetObject);
 								break;
 
 							case MessageMode.Error:
-								Debug.LogError(validationMessage + validateAttribute.ValidationMessage, targetObject);
+								Debug.LogError(validationMessage + customMessage, targetObject);
 								break;
 						}
 
@@ -262,10 +266,12 @@ namespace EditorAttributes.Editor
 			}
 		}
 
-		private static bool EvaluateCondition(MemberInfo memberInfo, object targetObject)
+		private static bool EvaluateCondition(MemberInfo memberInfo, object targetObject, out ValidationCheck customValidationCheck)
 		{
 			var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
 			string errorMessage = $"Couldn't validate condition, check for any error box messages on <b>{targetObject}</b>";
+
+			customValidationCheck = null;
 
 			if (memberInfoType == null)
 			{
@@ -277,7 +283,18 @@ namespace EditorAttributes.Editor
 			{
 				var memberInfoValue = ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject);
 
+				if (memberInfoValue == null)
+					return false;
+
 				return (bool)memberInfoValue;
+			}
+			else if (memberInfoType == typeof(ValidationCheck))
+			{
+				if (ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject) is not ValidationCheck memberInfoValue)
+					return false;
+
+				customValidationCheck = memberInfoValue;
+				return !memberInfoValue.PassedCheck;
 			}
 
 			Debug.LogError(errorMessage, (Object)targetObject);

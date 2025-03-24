@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to enable a field based on a condition
+	/// </summary>
 	public class EnableFieldAttribute : PropertyAttribute, IConditionalAttribute
     {
 		public string ConditionName { get; private set; }

@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class ToggleGroupAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to display the specified fields in a toggleble group
+	/// </summary>
+	public class ToggleGroupAttribute : PropertyAttribute
     {
 		public float WidthOffset { get; private set; }
 		public string GroupName { get; private set; }

@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class AnimatorParamDropdownAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to display a dropdown of animator parameters
+	/// </summary>
+	public class AnimatorParamDropdownAttribute : PropertyAttribute
     {
 		public string AnimatorFieldName { get; private set; }
 

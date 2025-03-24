@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class ReadOnlyAttribute : PropertyAttribute 
+	/// <summary>
+	/// Attribute to make a field readonly in the inspector
+	/// </summary>
+	public class ReadOnlyAttribute : PropertyAttribute 
     {
 		/// <summary>
 		/// Attribute to make a field readonly in the inspector

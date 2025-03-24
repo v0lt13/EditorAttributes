@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to draw a line in the inspector
+	/// </summary>
 	public class LineAttribute : PropertyAttribute, IColorAttribute
     {
         public float R { get; private set; }

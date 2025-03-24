@@ -1,10 +1,12 @@
 using System;
-using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to add a button in the inspector
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-	public class ButtonAttribute : PropertyAttribute, IConditionalAttribute, IRepetableButton
+	public class ButtonAttribute : Attribute, IConditionalAttribute, IRepetableButton
 	{
 		public string ButtonLabel { get; private set; }
 		public float ButtonHeight { get; private set; }

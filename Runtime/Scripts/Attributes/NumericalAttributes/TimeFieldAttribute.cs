@@ -20,7 +20,10 @@ namespace EditorAttributes
         HourMinuteSecond
     }
 
-    public class TimeFieldAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to display a numerical field as a specified time format and convert it to a single value
+	/// </summary>
+	public class TimeFieldAttribute : PropertyAttribute
     {
 		public TimeFormat TimeFormat { get; private set; }
 		public ConvertTo ConvertTo { get; private set; }

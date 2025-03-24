@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class FoldoutGroupAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to display the specified fields in a foldout
+	/// </summary>
+	public class FoldoutGroupAttribute : PropertyAttribute
     {
 		public float WidthOffset { get; private set; }
 		public string GroupName { get; private set; }

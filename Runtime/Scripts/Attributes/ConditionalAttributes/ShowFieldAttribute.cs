@@ -2,13 +2,16 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to show a field based on a condition
+	/// </summary>
 	public class ShowFieldAttribute : PropertyAttribute, IConditionalAttribute
     {
         public string ConditionName { get; private set; }
 		public int EnumValue { get; private set; }
 
         /// <summary>
-        /// Attribute to show fields based on a condition
+        /// Attribute to show a field based on a condition
         /// </summary>
         /// <param name="conditionName">The name of the condition to evaluate</param>
         public ShowFieldAttribute(string conditionName)
@@ -18,7 +21,7 @@ namespace EditorAttributes
 			=> ConditionName = conditionName;
 
 		/// <summary>
-		/// Attribute to show fields based on a condition
+		/// Attribute to show a field based on a condition
 		/// </summary>
 		/// <param name="conditionName">The name of the condition to evaluate</param>
 		/// <param name="enumValue">The value of the enum</param>

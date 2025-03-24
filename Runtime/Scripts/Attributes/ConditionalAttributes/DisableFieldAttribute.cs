@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to disable a field based on a condition
+	/// </summary>
 	public class DisableFieldAttribute : PropertyAttribute, IConditionalAttribute
     {
         public string ConditionName { get; private set; }

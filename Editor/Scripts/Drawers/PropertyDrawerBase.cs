@@ -153,13 +153,18 @@ namespace EditorAttributes.Editor
 
 			if (memberInfoValue is Array array)
 			{
-				foreach (var item in array) 
-					stringList.Add(item.ToString());
+				foreach (var item in array)
+					stringList.Add(item == null ? "NULL" : item.ToString());
 			}
 			else if (memberInfoValue is IList list)
 			{
-				foreach (var item in list) 
-					stringList.Add(item.ToString());
+				foreach (var item in list)
+					stringList.Add(item == null ? "NULL" : item.ToString());
+			}
+			else if (memberInfoValue is IDictionary dictionary)
+			{
+				foreach (DictionaryEntry item in dictionary)
+					stringList.Add(item.Value == null ? "NULL" : item.Value.ToString());
 			}
 			else
 			{

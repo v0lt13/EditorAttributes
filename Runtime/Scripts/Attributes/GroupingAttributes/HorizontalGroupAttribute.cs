@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class HorizontalGroupAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to display specified fields horizontally
+	/// </summary>
+	public class HorizontalGroupAttribute : PropertyAttribute
     {
 		public float WidthOffset { get; private set; }
 		public bool DrawInBox { get; private set; }

@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class MinMaxSliderAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to draw a min max slider
+	/// </summary>
+	public class MinMaxSliderAttribute : PropertyAttribute
     {
         public float MinRange { get; private set; }
         public float MaxRange { get; private set; }

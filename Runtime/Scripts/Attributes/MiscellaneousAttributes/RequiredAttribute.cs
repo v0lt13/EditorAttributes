@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute that validates a null field in the inspector
+	/// </summary>
 	public class RequiredAttribute : PropertyAttribute
     {
         public bool ThrowValidationError { get; private set; }

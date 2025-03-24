@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class ProgressBarAttribute : PropertyAttribute
+	/// <summary>
+	/// Attribute to draw a progress bar
+	/// </summary>
+	public class ProgressBarAttribute : PropertyAttribute
     {
 	    public float MaxValue { get; private set; }
 		public float BarHeight { get; private set; }

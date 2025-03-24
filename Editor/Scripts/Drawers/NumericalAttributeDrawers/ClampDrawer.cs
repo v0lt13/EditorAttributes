@@ -27,13 +27,45 @@ namespace EditorAttributes.Editor
 				switch (property.propertyType)
 				{
 					case SerializedPropertyType.Integer:
-						property.intValue = (int)Mathf.Clamp(property.intValue, minMaxX.MinValueX, minMaxX.MaxValueX);
-						propertyField.Q<IntegerField>().SetValueWithoutNotify(property.intValue);
+
+						switch (property.numericType)
+						{
+							default:
+							case SerializedPropertyNumericType.Int32:
+								property.intValue = (int)Mathf.Clamp(property.intValue, minMaxX.MinValueX, minMaxX.MaxValueX);
+								propertyField.Q<IntegerField>().SetValueWithoutNotify(property.intValue);
+								break;
+
+							case SerializedPropertyNumericType.UInt32:
+								property.uintValue = (uint)Mathf.Clamp(property.uintValue, minMaxX.MinValueX, minMaxX.MaxValueX);
+								propertyField.Q<UnsignedIntegerField>().SetValueWithoutNotify(property.uintValue);
+								break;
+
+							case SerializedPropertyNumericType.Int64:
+								property.longValue = (long)Mathf.Clamp(property.longValue, minMaxX.MinValueX, minMaxX.MaxValueX);
+								propertyField.Q<LongField>().SetValueWithoutNotify(property.longValue);
+								break;
+							
+							case SerializedPropertyNumericType.UInt64:
+								property.ulongValue = (ulong)Mathf.Clamp(property.ulongValue, minMaxX.MinValueX, minMaxX.MaxValueX);
+								propertyField.Q<UnsignedLongField>().SetValueWithoutNotify(property.ulongValue);
+								break;
+						}
 						break;
 
 					case SerializedPropertyType.Float:
-						property.floatValue = Mathf.Clamp(property.floatValue, minMaxX.MinValueX, minMaxX.MaxValueX);
-						propertyField.Q<FloatField>().SetValueWithoutNotify(property.floatValue);
+						switch (property.numericType)
+						{
+							case SerializedPropertyNumericType.Float:
+								property.floatValue = Mathf.Clamp(property.floatValue, minMaxX.MinValueX, minMaxX.MaxValueX);
+								propertyField.Q<FloatField>().SetValueWithoutNotify(property.floatValue);
+								break;
+
+							case SerializedPropertyNumericType.Double:
+								property.doubleValue = Mathf.Clamp((float)property.doubleValue, minMaxX.MinValueX, minMaxX.MaxValueX);
+								propertyField.Q<DoubleField>().SetValueWithoutNotify(property.doubleValue);
+								break;
+						}
 						break;
 
 					case SerializedPropertyType.Vector2:

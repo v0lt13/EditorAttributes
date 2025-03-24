@@ -14,7 +14,10 @@ namespace EditorAttributes
         Lower
     }
 
-    public class RenameAttribute : PropertyAttribute, IDynamicStringAttribute
+	/// <summary>
+	/// Attribute to rename a field in the inspector
+	/// </summary>
+	public class RenameAttribute : PropertyAttribute, IDynamicStringAttribute
     {
 	    public string Name { get; private set; }
 	    public CaseType CaseType { get; private set; }

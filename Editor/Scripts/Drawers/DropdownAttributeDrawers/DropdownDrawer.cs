@@ -1,6 +1,8 @@
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
+using System.Reflection;
+using System.Collections;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using EditorAttributes.Editor.Utility;
@@ -16,12 +18,12 @@ namespace EditorAttributes.Editor
 			var root = new VisualElement();
 			var errorBox = new HelpBox();
 
-			var memberInfo = ReflectionUtility.GetValidMemberInfo(dropdownAttribute.ValueCollectionName, property);
-			var propertyValues = ConvertCollectionValuesToStrings(dropdownAttribute.ValueCollectionName, property, memberInfo, errorBox);
+			var collectionInfo = ReflectionUtility.GetValidMemberInfo(dropdownAttribute.CollectionName, property);
+			var propertyValues = ConvertCollectionValuesToStrings(dropdownAttribute.CollectionName, property, collectionInfo, errorBox);
 
-			var collectionValues = dropdownAttribute.DisplayNames == null ? propertyValues : dropdownAttribute.DisplayNames.ToList();
+			var displayValues = GetDisplayValues(collectionInfo, dropdownAttribute, property, propertyValues);
 
-			var dropdownField = IsCollectionValid(collectionValues) ? new DropdownField(property.displayName, collectionValues, GetDropdownDefaultValue(collectionValues, property)) 
+			var dropdownField = IsCollectionValid(displayValues) ? new DropdownField(property.displayName, displayValues, GetDropdownDefaultValue(displayValues, property))
 				: new DropdownField(property.displayName, new List<string>() { "NULL" }, 0);
 
 			dropdownField.tooltip = property.tooltip;
@@ -29,26 +31,18 @@ namespace EditorAttributes.Editor
 
 			AddPropertyContextMenu(dropdownField, property);
 
-			if (propertyValues.Count != collectionValues.Count)
-			{
-				errorBox.text = "The value collection item count and display names count do not match";
-				DisplayErrorBox(root, errorBox);
-
-				return root;
-			}
-
 			dropdownField.RegisterValueChangedCallback((callback) =>
 			{
 				if (!property.hasMultipleDifferentValues)
-					SetPropertyValue(property, callback.newValue, dropdownAttribute, propertyValues, dropdownField);
+					SetPropertyValue(property, callback.newValue, dropdownAttribute, propertyValues, dropdownField, collectionInfo);
 			});
 
-			if (dropdownField.value != "NULL")
+			if (dropdownField.value != "NULL" && !HasMismatchedDisplayCollectionCounts(dropdownAttribute, propertyValues, displayValues))
 			{
 				dropdownField.showMixedValue = property.hasMultipleDifferentValues;
 
 				if (!property.hasMultipleDifferentValues)
-					SetPropertyValue(property, dropdownField.value, dropdownAttribute, propertyValues, dropdownField);
+					SetPropertyValue(property, dropdownField.value, dropdownAttribute, propertyValues, dropdownField, collectionInfo);
 			}
 
 			root.Add(dropdownField);
@@ -57,20 +51,28 @@ namespace EditorAttributes.Editor
 
 			UpdateVisualElement(dropdownField, () =>
 			{
-				var currentPropertyValues = ConvertCollectionValuesToStrings(dropdownAttribute.ValueCollectionName, property, memberInfo, errorBox);
-				var currentCollectionValues = dropdownAttribute.DisplayNames == null ? propertyValues : dropdownAttribute.DisplayNames.ToList();
+				var currentPropertyValues = ConvertCollectionValuesToStrings(dropdownAttribute.CollectionName, property, collectionInfo, errorBox);
+				var currentDisplayValues = GetDisplayValues(collectionInfo, dropdownAttribute, property, currentPropertyValues);
 
 				if (IsCollectionValid(currentPropertyValues))
 				{
 					errorBox.text = string.Empty;
-					dropdownField.choices = currentCollectionValues;
+					dropdownField.choices = currentDisplayValues;
 
 					propertyValues = currentPropertyValues;
 				}
 
+				if (HasMismatchedDisplayCollectionCounts(dropdownAttribute, propertyValues, displayValues))
+				{
+					errorBox.text = "The value collection item count and display names count do not match";
+					DisplayErrorBox(root, errorBox);
+
+					return;
+				}
+
 				DisplayErrorBox(root, errorBox);
 			});
-			
+
 			return root;
 		}
 
@@ -105,9 +107,11 @@ namespace EditorAttributes.Editor
 			}
 		}
 
-		private void SetPropertyValue(SerializedProperty property, string value, DropdownAttribute dropdownAttribute, List<string> propertyValues, DropdownField dropdownField)
+		private bool HasMismatchedDisplayCollectionCounts(DropdownAttribute dropdownAttribute, List<string> propertyValues, List<string> collectionValues) => dropdownAttribute.DisplayNames != null && propertyValues.Count != collectionValues.Count;
+
+		private void SetPropertyValue(SerializedProperty property, string value, DropdownAttribute dropdownAttribute, List<string> propertyValues, DropdownField dropdownField, MemberInfo collectionInfo)
 		{
-			if (dropdownAttribute.DisplayNames != null)
+			if (dropdownAttribute.DisplayNames != null || IsDictionary(collectionInfo, property, out _))
 			{
 				SetPropertyValueFromString(propertyValues[dropdownField.index], property);
 			}
@@ -117,11 +121,44 @@ namespace EditorAttributes.Editor
 			}
 		}
 
+		private List<string> GetDisplayValues(MemberInfo collectionInfo, DropdownAttribute dropdownAttribute, SerializedProperty serializedProperty, List<string> propertyValues)
+		{
+			var displayStrings = new List<string>();
+
+			if (dropdownAttribute.DisplayNames == null)
+			{
+				if (IsDictionary(collectionInfo, serializedProperty, out IDictionary dictionary))
+				{
+					foreach (DictionaryEntry item in dictionary)
+						displayStrings.Add(item.Key == null ? "NULL" : item.Key.ToString());
+				}
+				else
+				{
+					displayStrings = propertyValues;
+				}
+			}
+			else
+			{
+				displayStrings = dropdownAttribute.DisplayNames.ToList();
+			}
+
+			return displayStrings;
+		}
+
 		private string GetDropdownDefaultValue(List<string> collectionValues, SerializedProperty property)
 		{
 			var propertyStringValue = GetPropertyValueAsString(property);
 
 			return collectionValues.Contains(propertyStringValue) ? propertyStringValue : collectionValues[0];
 		}
+
+		private bool IsDictionary(MemberInfo collectionInfo, SerializedProperty serializedProperty, out IDictionary dictionary)
+		{
+			var collectionValue = ReflectionUtility.GetMemberInfoValue(collectionInfo, serializedProperty);
+
+			dictionary = collectionValue as IDictionary;
+
+			return collectionValue is IDictionary;
+		}		
 	}
 }

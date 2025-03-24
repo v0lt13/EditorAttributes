@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class PrefixAttribute : PropertyAttribute, IDynamicStringAttribute
+	/// <summary>
+	/// Attribute to add a prefix on a field
+	/// </summary>
+	public class PrefixAttribute : PropertyAttribute, IDynamicStringAttribute
     {
 	    public string Prefix { get; private set; }
 		public float Offset { get; private set; }

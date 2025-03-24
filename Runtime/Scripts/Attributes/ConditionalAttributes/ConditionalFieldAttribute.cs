@@ -16,6 +16,9 @@ namespace EditorAttributes
         EnableDisable
     }
 
+	/// <summary>
+	/// Attribute to show/hide or disable/enable a field based on a bunch of conditions
+	/// </summary>
 	public class ConditionalFieldAttribute : PropertyAttribute
     {
         public string[] BooleanNames { get; private set; }

@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// A simple serializable transform struct that can be used with the DrawHandle Attribute or for data serialization
+	/// </summary>
 	[Serializable]
 	public struct SimpleTransform
     {

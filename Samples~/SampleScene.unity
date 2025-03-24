@@ -380,8 +380,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ccb8493e6f3bfa47b50e10e5f465676, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intField: -1
+  intField: 0
   stringField: 
+  floatField: 0
 --- !u!1 &259305638
 GameObject:
   m_ObjectHideFlags: 0

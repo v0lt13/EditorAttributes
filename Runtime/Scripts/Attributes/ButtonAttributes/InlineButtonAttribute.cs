@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to add a button next to a property
+	/// </summary>
 	public class InlineButtonAttribute : PropertyAttribute, IRepetableButton
     {
 	    public string FunctionName { get; private set; }

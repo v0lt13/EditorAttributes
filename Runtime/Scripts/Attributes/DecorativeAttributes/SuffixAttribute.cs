@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class SuffixAttribute : PropertyAttribute, IDynamicStringAttribute
+	/// <summary>
+	/// Attribute to add a suffix on a field
+	/// </summary>
+	public class SuffixAttribute : PropertyAttribute, IDynamicStringAttribute
     {
 	    public string Suffix { get; private set; }
 		public float Offset { get; private set; }

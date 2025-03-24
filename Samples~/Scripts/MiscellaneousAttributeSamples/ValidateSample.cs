@@ -10,7 +10,23 @@ namespace EditorAttributesSamples
 		[SerializeField, Validate("The field must be above zero", nameof(MustBeAboveZero))] private int intField;
 		[SerializeField, Validate("String can't be empty", nameof(CantBeEmpty), MessageMode.Warning)] private string stringField;
 
-		private bool MustBeAboveZero() => intField < 0;
+		[SerializeField, Validate(nameof(AdvancedValidation))] private float floatField;
+
+		private bool MustBeAboveZero() => intField <= 0;
 		private bool CantBeEmpty => stringField == string.Empty;
+
+		private ValidationCheck AdvancedValidation()
+		{
+			if (floatField <= 0)
+			{
+				return ValidationCheck.Fail("The value must be above zero", MessageMode.Error);
+			}
+			else if (floatField >= 100)
+			{
+				return ValidationCheck.Fail("The value must be less than 100", MessageMode.Warning);
+			}
+
+			return ValidationCheck.Pass();
+		}
 	}
 }

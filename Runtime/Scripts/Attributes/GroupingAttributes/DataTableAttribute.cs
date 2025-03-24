@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
-    public class DataTableAttribute : PropertyAttribute 
+	/// <summary>
+	/// Attribute to draw the members of a serialized struct or class in a table instead of a dropdown
+	/// </summary>
+	public class DataTableAttribute : PropertyAttribute 
     {
         public bool DrawInBox { get; private set; }
         public bool ShowLabels { get; private set; }

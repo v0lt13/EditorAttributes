@@ -1,5 +1,6 @@
 using UnityEngine;
 using EditorAttributes;
+using System.Collections.Generic;
 
 namespace EditorAttributesSamples
 {
@@ -23,8 +24,13 @@ namespace EditorAttributesSamples
 
 		private string[] stringValues = new string[] { "Value01", "Value02", "Value03" };
 
-		private float[] floatValues = new float[] { 0.5f, 1.8f, 69.420f };
+		private Dictionary<string, float> floatValues = new()
+		{
+			{ "Value: 0.5", 0.5f },
+			{ "Value: 1.8", 1.8f },
+			{ "Value: 69.420", 69.420f } 
+		};
 
-		private Vector3[] vectorValues = new Vector3[] { Vector3.forward, Vector3.up, Vector3.right, Vector3.one, Vector3.zero };
+		private List<Vector3> vectorValues = new() { Vector3.forward, Vector3.up, Vector3.right, Vector3.one, Vector3.zero };
 	}
 }

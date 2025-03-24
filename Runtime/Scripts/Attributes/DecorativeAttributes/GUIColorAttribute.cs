@@ -22,6 +22,9 @@ namespace EditorAttributes
 		Pink
 	}
 
+	/// <summary>
+	/// Attribute to color the GUI
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
 	public class GUIColorAttribute : PropertyAttribute, IColorAttribute
     {

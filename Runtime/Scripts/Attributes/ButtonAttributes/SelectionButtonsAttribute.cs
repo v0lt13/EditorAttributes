@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace EditorAttributes
 {
+	/// <summary>
+	/// Attribute to display a bunch of values in toggleble buttons
+	/// </summary>
 #if UNITY_6000_0_OR_NEWER
 	[System.Obsolete("This attribute has been deprecated use the EnumButtons Attribute instead")]
 #endif
