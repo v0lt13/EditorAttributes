@@ -80,7 +80,7 @@ namespace EditorAttributes.Editor
 		{
 			var selectedProperty = FindNestedProperty(property, GetSerializedPropertyName(tabGroupAttribute.FieldsToGroup[selectedTab], property));
 
-			var propertyField = new PropertyField(selectedProperty);
+			var propertyField = CreateProperty(selectedProperty);
 
 			propertyField.BindProperty(selectedProperty);
 

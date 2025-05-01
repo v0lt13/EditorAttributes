@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
 
@@ -33,7 +32,7 @@ namespace EditorAttributes.Editor
 
 				if (variableProperty != null)
 				{
-					var propertyField = new PropertyField(variableProperty);
+					var propertyField = CreateProperty(variableProperty);
 
 					// Slightly move foldouts for serialized objects
 					if (variableProperty.propertyType == SerializedPropertyType.Generic && variableProperty.type != "UnityEvent" && !ReflectionUtility.IsPropertyCollection(variableProperty))

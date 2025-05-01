@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEditor;
 using System.Threading;
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 
 namespace EditorAttributes.Editor
 {
@@ -14,7 +13,7 @@ namespace EditorAttributes.Editor
 			var assetPreviewAttribute = attribute as AssetPreviewAttribute;
 			var root = new VisualElement();
 
-            var propertyField = new PropertyField(property);
+			var propertyField = CreateProperty(property);
 
 			root.Add(propertyField);
 
@@ -29,10 +28,7 @@ namespace EditorAttributes.Editor
 				{
 					GetAssetPreview(property, assetPreviewAttribute, root, image);
 
-					(propertyField as PropertyField).RegisterValueChangeCallback((changeEvent) =>
-					{
-						GetAssetPreview(property, assetPreviewAttribute, root, image);
-					});
+					propertyField.RegisterValueChangeCallback((changeEvent) => GetAssetPreview(property, assetPreviewAttribute, root, image));
 				});
 			}
             else
@@ -61,7 +57,7 @@ namespace EditorAttributes.Editor
 
 				Thread.Sleep(20); // Suspend the main thread for a bit to give time for the asset preview to load since is doing it asynchronously
 			}
-
+			
 			if (texture == null)
 			{
 				RemoveElement(root, image);

@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
@@ -12,7 +11,7 @@ namespace EditorAttributes.Editor
 			var propertyWidthAttribute = attribute as PropertyWidthAttribute;
 
 			var root = new VisualElement();
-			var propertyField = new PropertyField(property);
+			var propertyField = CreateProperty(property);
 
 			root.Add(propertyField);
 

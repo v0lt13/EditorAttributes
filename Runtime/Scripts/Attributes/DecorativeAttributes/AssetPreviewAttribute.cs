@@ -20,5 +20,5 @@ namespace EditorAttributes
             PreviewWidth = previewWidth;
             PreviewHeight = previewHeight;
         }
-    }
+	}
 }

@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
 
@@ -18,7 +17,7 @@ namespace EditorAttributes.Editor
 			var messageBox = new HelpBox(string.Empty, (HelpBoxMessageType)messageBoxAttribute.MessageType);
 			var errorBox = new HelpBox();
 
-			var propertyField = new PropertyField(property);
+			var propertyField = CreateProperty(property);
 
 			if (CanApplyGlobalColor)
 			{

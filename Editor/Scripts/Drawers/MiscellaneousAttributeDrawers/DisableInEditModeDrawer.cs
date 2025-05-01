@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
@@ -11,7 +10,7 @@ namespace EditorAttributes.Editor
 		{
 			var root = new VisualElement();
 
-			root.Add(new PropertyField(property));
+			root.Add(CreateProperty(property));
 			root.SetEnabled(EditorApplication.isPlayingOrWillChangePlaymode);
 
 			return root;

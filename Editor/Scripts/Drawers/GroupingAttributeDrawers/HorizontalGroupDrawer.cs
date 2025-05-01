@@ -1,6 +1,5 @@
 using UnityEditor;
 using System.Reflection;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
 
@@ -84,7 +83,7 @@ namespace EditorAttributes.Editor
 
 		private VisualElement DrawProperty(SerializedProperty property)
 		{
-			var propertyField = new PropertyField(property);
+			var propertyField = CreateProperty(property);
 
 			if (property.propertyType != SerializedPropertyType.Generic)
 			{

@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
@@ -14,7 +13,7 @@ namespace EditorAttributes.Editor
 			var root = new VisualElement();
 
 			if (!IsPropertyInherited(property, hideInChildrenAttribute))
-				root.Add(new PropertyField(property));
+				root.Add(CreateProperty(property));
 
 			return root;
 		}

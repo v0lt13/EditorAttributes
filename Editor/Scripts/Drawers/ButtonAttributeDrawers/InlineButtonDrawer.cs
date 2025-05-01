@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
@@ -16,7 +15,7 @@ namespace EditorAttributes.Editor
 			var methodInfo = ReflectionUtility.FindFunction(inlineButtonAttribute.FunctionName, property.serializedObject.targetObject);
 
             var root = new VisualElement();
-            var propertyField = new PropertyField(property);
+            var propertyField = CreateProperty(property);
 
 			if (methodInfo.GetParameters().Length > 0)
 			{

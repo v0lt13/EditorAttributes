@@ -17,7 +17,7 @@ namespace EditorAttributes.Editor
 
 			if (property.propertyType == SerializedPropertyType.ObjectReference)
 			{
-				var propertyField = new PropertyField(property);
+				var propertyField = CreateProperty(property);
 
 				root.Add(propertyField);
 

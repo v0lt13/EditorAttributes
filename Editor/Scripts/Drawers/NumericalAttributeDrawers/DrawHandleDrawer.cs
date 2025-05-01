@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 using UnityEditor.IMGUI.Controls;
 
 namespace EditorAttributes.Editor
@@ -14,7 +13,7 @@ namespace EditorAttributes.Editor
     		var root = new VisualElement();
             var drawHandleAttribute = attribute as DrawHandleAttribute;
 
-			root.Add(new PropertyField(property));
+			root.Add(CreateProperty(property));
 
 			switch (property.propertyType)
             {

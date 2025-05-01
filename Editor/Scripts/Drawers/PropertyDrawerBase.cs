@@ -15,7 +15,7 @@ namespace EditorAttributes.Editor
     {
 		protected bool CanApplyGlobalColor => EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR;				
 
-		public override VisualElement CreatePropertyGUI(SerializedProperty property) => new PropertyField(property);
+		public override VisualElement CreatePropertyGUI(SerializedProperty property) => CreateProperty(property);
 
 		/// <summary>
 		/// Override this function to customize the copied value from an element with using <see cref="AddPropertyContextMenu(VisualElement, SerializedProperty)"/>
@@ -32,6 +32,19 @@ namespace EditorAttributes.Editor
 		/// <param name="property">The attached serialized property</param>
 		/// <param name="clipboardValue">The current clipboard value</param>
 		protected virtual void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue) => SetPropertyValueFromString(clipboardValue, property);
+
+		/// <summary>
+		/// Creates a properly binded property field from a serialized property
+		/// </summary>
+		/// <param name="property">The serialized property</param>
+		/// <returns>The binded property field</returns>
+		public static PropertyField CreateProperty(SerializedProperty property)
+		{
+			var propertyField = new PropertyField(property);
+			propertyField.BindProperty(property.serializedObject);
+
+			return propertyField;
+		}
 
 		/// <summary>
 		/// Sets the value of a property from a string
@@ -168,7 +181,7 @@ namespace EditorAttributes.Editor
 			}
 			else
 			{
-				errorBox.text = $"Could not find the collection {collectionName}";
+				errorBox.text = $"Could not find the collection <b>{collectionName}</b>";
 			}
 
 			return stringList;
@@ -471,6 +484,389 @@ namespace EditorAttributes.Editor
 			visualElement.style.marginBottom = 1f;
 			visualElement.style.marginRight = 3f;
 			visualElement.style.marginLeft = 3f;
+		}
+
+		/// <summary>
+		/// Creates a field for a specific type
+		/// </summary>
+		/// <typeparam name="T"> The type of the field to create</typeparam>
+		/// <param name="fieldName">The name of the field</param>
+		/// <param name="fieldValue">The default value of the field</param>
+		/// <returns>A visual element of the appropriate field</returns>
+		public static VisualElement CreateFieldForType<T>(string fieldName, object fieldValue) => CreateFieldForType(typeof(T), fieldName, fieldValue);
+
+		/// <summary>
+		/// Creates a field for a specific type
+		/// </summary>
+		/// <param name="fieldType">The type of the field to create</param>
+		/// <param name="fieldName">The name of the field</param>
+		/// <param name="fieldValue">The default value of the field</param>
+		/// <returns>A visual element of the appropriate field</returns>
+		public static VisualElement CreateFieldForType(Type fieldType, string fieldName, object fieldValue)
+		{
+			fieldName = ObjectNames.NicifyVariableName(fieldName);
+
+			if (fieldType == typeof(string))
+			{
+				return new TextField(fieldName) { value = (string)fieldValue };
+			}
+			else if (fieldType == typeof(int))
+			{
+				return new IntegerField(fieldName) { value = (int)fieldValue };
+			}
+			else if (fieldType == typeof(uint))
+			{
+				return new UnsignedIntegerField(fieldName) { value = (uint)fieldValue };
+			}
+			else if (fieldType == typeof(long))
+			{
+				return new LongField(fieldName) { value = (long)fieldValue };
+			}
+			else if (fieldType == typeof(ulong))
+			{
+				return new UnsignedLongField(fieldName) { value = (ulong)fieldValue };
+			}
+			else if (fieldType == typeof(float))
+			{
+				return new FloatField(fieldName) { value = (float)fieldValue };
+			}
+			else if (fieldType == typeof(double))
+			{
+				return new DoubleField(fieldName) { value = (double)fieldValue };
+			}
+			else if (fieldType == typeof(bool))
+			{
+				return new Toggle(fieldName) { value = (bool)fieldValue };
+			}
+			else if (fieldType.IsEnum)
+			{
+				return new EnumField(fieldName, (Enum)fieldValue);
+			}
+			else if (fieldType == typeof(Vector2))
+			{
+				return new Vector2Field(fieldName) { value = (Vector2)fieldValue };
+			}
+			else if (fieldType == typeof(Vector2Int))
+			{
+				return new Vector2IntField(fieldName) { value = (Vector2Int)fieldValue };
+			}
+			else if (fieldType == typeof(Vector3))
+			{
+				return new Vector3Field(fieldName) { value = (Vector3)fieldValue };
+			}
+			else if (fieldType == typeof(Vector3Int))
+			{
+				return new Vector3IntField(fieldName) { value = (Vector3Int)fieldValue };
+			}
+			else if (fieldType == typeof(Vector4))
+			{
+				return new Vector4Field(fieldName) { value = (Vector4)fieldValue };
+			}
+			else if (fieldType == typeof(Color))
+			{
+				return new ColorField(fieldName) { value = (Color)fieldValue };
+			}
+			else if (fieldType == typeof(Gradient))
+			{
+				return new GradientField(fieldName) { value = (Gradient)fieldValue };
+			}
+			else if (fieldType == typeof(AnimationCurve))
+			{
+				return new CurveField(fieldName) { value = (AnimationCurve)fieldValue };
+			}
+			else if (fieldType == typeof(LayerMask))
+			{
+				return new LayerMaskField(fieldName, (LayerMask)fieldValue);
+			}
+			else if (fieldType == typeof(Rect))
+			{
+				return new RectField(fieldName) { value = (Rect)fieldValue };
+			}
+			else if (fieldType == typeof(RectInt))
+			{
+				return new RectIntField(fieldName) { value = (RectInt)fieldValue };
+			}
+			else if (fieldType == typeof(Bounds))
+			{
+				return new BoundsField(fieldName) { value = (Bounds)fieldValue };
+			}
+			else if (fieldType == typeof(BoundsInt))
+			{
+				return new BoundsIntField(fieldName) { value = (BoundsInt)fieldValue };
+			}
+			else
+			{
+				return new HelpBox($"The type {fieldType} is not supported", HelpBoxMessageType.Error);
+			}
+		}
+
+		/// <summary>
+		/// Registers a value changed callback for field of a specific type
+		/// </summary>
+		/// <typeparam name="T">The type of the value</typeparam>
+		/// <param name="field">The visual element of the field</param>
+		/// <param name="valueCallback">The callback action</param>
+		public static void RegisterValueChangedCallbackByType<T>(VisualElement field, Action<object> valueCallback) => RegisterValueChangedCallbackByType(typeof(T), field, valueCallback);
+
+		/// <summary>
+		/// Registers a value changed callback for field of a specific type
+		/// </summary>
+		/// <param name="fieldType">The type of the value</param>
+		/// <param name="field">The visual element of the field</param>
+		/// <param name="valueCallback">The callback action</param>
+		public static void RegisterValueChangedCallbackByType(Type fieldType, VisualElement field, Action<object> valueCallback)
+		{
+			if (fieldType == typeof(string))
+			{
+				field.RegisterCallback<ChangeEvent<string>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(int))
+			{
+				field.RegisterCallback<ChangeEvent<int>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(uint))
+			{
+				field.RegisterCallback<ChangeEvent<uint>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(long))
+			{
+				field.RegisterCallback<ChangeEvent<long>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(ulong))
+			{
+				field.RegisterCallback<ChangeEvent<ulong>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(float))
+			{
+				field.RegisterCallback<ChangeEvent<float>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(double))
+			{
+				field.RegisterCallback<ChangeEvent<double>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(bool))
+			{
+				field.RegisterCallback<ChangeEvent<bool>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType.IsEnum)
+			{
+				field.RegisterCallback<ChangeEvent<Enum>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(Vector2))
+			{
+				field.RegisterCallback<ChangeEvent<Vector2>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(Vector2Int))
+			{
+				field.RegisterCallback<ChangeEvent<Vector2Int>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(Vector3))
+			{
+				field.RegisterCallback<ChangeEvent<Vector3>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(Vector3Int))
+			{
+				field.RegisterCallback<ChangeEvent<Vector3Int>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(Vector4))
+			{
+				field.RegisterCallback<ChangeEvent<Vector4>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(Color))
+			{
+				field.RegisterCallback<ChangeEvent<Color>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(Gradient))
+			{
+				field.RegisterCallback<ChangeEvent<Gradient>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(AnimationCurve))
+			{
+				field.RegisterCallback<ChangeEvent<AnimationCurve>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(LayerMask))
+			{
+				field.RegisterCallback<ChangeEvent<int>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(Rect))
+			{
+				field.RegisterCallback<ChangeEvent<Rect>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(RectInt))
+			{
+				field.RegisterCallback<ChangeEvent<RectInt>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(Bounds))
+			{
+				field.RegisterCallback<ChangeEvent<Bounds>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+			else if (fieldType == typeof(BoundsInt))
+			{
+				field.RegisterCallback<ChangeEvent<BoundsInt>>((callback) => valueCallback.Invoke(callback.newValue));
+			}
+		}
+
+		/// <summary>
+		/// Bind a field to the target member value
+		/// </summary>
+		/// <typeparam name="T">The type of the field</typeparam>
+		/// <param name="field">The field visual element</param>
+		/// <param name="memberInfo">The member to bind</param>
+		/// <param name="targetObject">The target object of the member</param>
+		public static void BindFieldToMember<T>(VisualElement field, MemberInfo memberInfo, object targetObject) => BindFieldToMember(typeof(T), field, memberInfo, targetObject);
+
+		/// <summary>
+		/// Bind a field to the target member value
+		/// </summary>
+		/// <param name="fieldType">The type of the field</param>
+		/// <param name="field">The field visual element</param>
+		/// <param name="memberInfo">The member to bind</param>
+		/// <param name="targetObject">The target object of the member</param>
+		public static void BindFieldToMember(Type fieldType, VisualElement field, MemberInfo memberInfo, object targetObject)
+		{
+			UpdateVisualElement(field, () =>
+			{
+				var memberValue = ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject);
+
+				field.name = memberInfo.Name;
+
+				if (fieldType == typeof(string))
+				{
+					var textField = field as TextField;
+
+					textField.SetValueWithoutNotify((string)memberValue);
+				}
+				else if (fieldType == typeof(int))
+				{
+					var textField = field as IntegerField;
+
+					textField.SetValueWithoutNotify((int)memberValue);
+				}
+				else if (fieldType == typeof(uint))
+				{
+					var textField = field as UnsignedIntegerField;
+
+					textField.SetValueWithoutNotify((uint)memberValue);
+				}
+				else if (fieldType == typeof(long))
+				{
+					var textField = field as LongField;
+
+					textField.SetValueWithoutNotify((long)memberValue);
+				}
+				else if (fieldType == typeof(ulong))
+				{
+					var textField = field as UnsignedLongField;
+
+					textField.SetValueWithoutNotify((ulong)memberValue);
+				}
+				else if (fieldType == typeof(float))
+				{
+					var textField = field as FloatField;
+
+					textField.SetValueWithoutNotify((float)memberValue);
+				}
+				else if (fieldType == typeof(double))
+				{
+					var textField = field as DoubleField;
+
+					textField.SetValueWithoutNotify((double)memberValue);
+				}
+				else if (fieldType == typeof(bool))
+				{
+					var textField = field as Toggle;
+
+					textField.SetValueWithoutNotify((bool)memberValue);
+				}
+				else if (fieldType.IsEnum)
+				{
+					var textField = field as EnumField;
+
+					textField.SetValueWithoutNotify((Enum)memberValue);
+				}
+				else if (fieldType == typeof(Vector2))
+				{
+					var textField = field as Vector2Field;
+
+					textField.SetValueWithoutNotify((Vector2)memberValue);
+				}
+				else if (fieldType == typeof(Vector2Int))
+				{
+					var textField = field as Vector2IntField;
+
+					textField.SetValueWithoutNotify((Vector2Int)memberValue);
+				}
+				else if (fieldType == typeof(Vector3))
+				{
+					var textField = field as Vector3Field;
+
+					textField.SetValueWithoutNotify((Vector3)memberValue);
+				}
+				else if (fieldType == typeof(Vector3Int))
+				{
+					var textField = field as Vector3IntField;
+
+					textField.SetValueWithoutNotify((Vector3Int)memberValue);
+				}
+				else if (fieldType == typeof(Vector4))
+				{
+					var textField = field as Vector4Field;
+
+					textField.SetValueWithoutNotify((Vector4)memberValue);
+				}
+				else if (fieldType == typeof(Color))
+				{
+					var textField = field as ColorField;
+
+					textField.SetValueWithoutNotify((Color)memberValue);
+				}
+				else if (fieldType == typeof(Gradient))
+				{
+					var textField = field as GradientField;
+
+					textField.SetValueWithoutNotify((Gradient)memberValue);
+				}
+				else if (fieldType == typeof(AnimationCurve))
+				{
+					var textField = field as CurveField;
+
+					textField.SetValueWithoutNotify((AnimationCurve)memberValue);
+				}
+				else if (fieldType == typeof(LayerMask))
+				{
+					var textField = field as LayerField;
+
+					textField.SetValueWithoutNotify((LayerMask)memberValue);
+				}
+				else if (fieldType == typeof(Rect))
+				{
+					var textField = field as RectField;
+
+					textField.SetValueWithoutNotify((Rect)memberValue);
+				}
+				else if (fieldType == typeof(RectInt))
+				{
+					var textField = field as RectIntField;
+
+					textField.SetValueWithoutNotify((RectInt)memberValue);
+				}
+				else if (fieldType == typeof(Bounds))
+				{
+					var textField = field as BoundsField;
+
+					textField.SetValueWithoutNotify((Bounds)memberValue);
+				}
+				else if (fieldType == typeof(BoundsInt))
+				{
+					var textField = field as BoundsIntField;
+
+					textField.SetValueWithoutNotify((BoundsInt)memberValue);
+				}
+				else
+				{
+					Debug.LogError($"Cannot bind to the field to {fieldType}");
+				}
+			});
 		}
 
 		#region NON_GUI_RELATED_UTILITY_FUNCITONS

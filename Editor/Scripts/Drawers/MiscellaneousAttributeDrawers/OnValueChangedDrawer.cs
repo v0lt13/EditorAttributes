@@ -14,7 +14,7 @@ namespace EditorAttributes.Editor
 			ReflectionUtility.GetNestedObjectType(property, out object target);
 
     		var root = new VisualElement();
-		    var propertyField = new PropertyField(property);
+		    var propertyField = CreateProperty(property);
 
 			var function = ReflectionUtility.FindFunction(onValueChangedAttribute.FunctionName, property);
 			var functionParameters = function.GetParameters();

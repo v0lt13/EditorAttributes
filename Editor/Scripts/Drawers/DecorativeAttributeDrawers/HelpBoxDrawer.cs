@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
@@ -10,8 +9,8 @@ namespace EditorAttributes.Editor
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var helpBoxAttribute = attribute as HelpBoxAttribute;
-			var propertyField = new PropertyField(property);
-			
+			var propertyField = CreateProperty(property);
+
 			var root = new VisualElement();
 			var errorBox = new HelpBox();
 			var helpBox = new HelpBox(string.Empty, (HelpBoxMessageType)helpBoxAttribute.MessageType);

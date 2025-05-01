@@ -28,6 +28,10 @@ namespace EditorAttributes.Editor
 			}
 
 			var function = ReflectionUtility.FindFunction(buttonFieldAttribute.FunctionName, ownerObject);
+
+			if (function == null)
+				return new HelpBox($"Could not find function <b>{buttonFieldAttribute.FunctionName}</b>. If this function is inherited make sure is marked at protected.", HelpBoxMessageType.Error);
+
 			var functionParameters = function.GetParameters();
 			var buttonLabel = string.IsNullOrWhiteSpace(buttonFieldAttribute.ButtonLabel) ? function.Name : buttonFieldAttribute.ButtonLabel;
 

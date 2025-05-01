@@ -19,7 +19,7 @@ namespace EditorAttributes.Editor
 
 			var root = new VisualElement();
 
-			var propertyField = new PropertyField(property);
+			var propertyField = CreateProperty(property);
 			var helpBox = new HelpBox("", HelpBoxMessageType.Warning);
 
 			root.RegisterCallback<SerializedPropertyChangeEvent>((e) =>

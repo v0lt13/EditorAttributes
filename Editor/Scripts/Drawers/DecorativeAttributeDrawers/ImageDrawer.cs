@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 
 namespace EditorAttributes.Editor
 {
@@ -17,7 +16,7 @@ namespace EditorAttributes.Editor
 			var errorBox = new HelpBox();
 
 			root.Add(image);
-			root.Add(new PropertyField(property));
+			root.Add(CreateProperty(property));
 
 			UpdateVisualElement(image, () =>
 			{

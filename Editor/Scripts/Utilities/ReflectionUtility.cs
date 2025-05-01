@@ -275,6 +275,26 @@ namespace EditorAttributes.Editor.Utility
 		}
 
 		/// <summary>
+		/// Checks to see if a member has one of the specified attributes
+		/// </summary>
+		/// <param name="memberInfo">The member to check</param>
+		/// <param name="attributeTypes">The attribute types</param>
+		/// <returns>True if the member has at least one of specified attributes</returns>
+		public static bool HasAnyAttributes(MemberInfo memberInfo, params Type[] attributeTypes)
+		{
+			if (memberInfo == null)
+				return false;
+
+			foreach (var attribute in attributeTypes)
+			{
+				if (memberInfo.GetCustomAttribute(attribute) != null)
+					return true;
+			}
+
+			return false;
+		}
+
+		/// <summary>
 		/// Finds a member inside a serialzied object
 		/// </summary>
 		/// <param name="memberName">The name of the member to look for</param>

@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
@@ -14,7 +13,7 @@ namespace EditorAttributes.Editor
 
 			var root = new VisualElement();
 			var errorBox = new HelpBox();
-			var propertyField = new PropertyField(property);
+			var propertyField = CreateProperty(property);
 
 			var prefixLabel = new Label()
 			{
