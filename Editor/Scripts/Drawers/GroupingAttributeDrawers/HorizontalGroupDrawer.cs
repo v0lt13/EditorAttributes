@@ -83,7 +83,7 @@ namespace EditorAttributes.Editor
 
 		private VisualElement DrawProperty(SerializedProperty property)
 		{
-			var propertyField = CreateProperty(property);
+			var propertyField = CreatePropertyField(property);
 
 			if (property.propertyType != SerializedPropertyType.Generic)
 			{

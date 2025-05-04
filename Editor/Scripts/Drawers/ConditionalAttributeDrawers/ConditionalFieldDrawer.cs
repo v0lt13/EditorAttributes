@@ -13,7 +13,7 @@ namespace EditorAttributes.Editor
 			var conditionalAttribute = attribute as ConditionalFieldAttribute;
 
 			var root = new VisualElement();
-			var propertyField = CreateProperty(property);
+			var propertyField = CreatePropertyField(property);
 
 			var errorBox = new HelpBox();
 

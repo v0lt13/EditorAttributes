@@ -11,7 +11,7 @@ namespace EditorAttributes.Editor
 			var root = new VisualElement();
 
 			if (EditorApplication.isPlayingOrWillChangePlaymode)
-				root.Add(CreateProperty(property));
+				root.Add(CreatePropertyField(property));
 
 			return root;
 		}

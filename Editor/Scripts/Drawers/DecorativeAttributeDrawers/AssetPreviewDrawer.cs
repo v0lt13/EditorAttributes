@@ -13,7 +13,7 @@ namespace EditorAttributes.Editor
 			var assetPreviewAttribute = attribute as AssetPreviewAttribute;
 			var root = new VisualElement();
 
-			var propertyField = CreateProperty(property);
+			var propertyField = CreatePropertyField(property);
 
 			root.Add(propertyField);
 

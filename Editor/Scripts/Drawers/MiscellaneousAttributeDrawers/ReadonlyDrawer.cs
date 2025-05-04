@@ -8,7 +8,7 @@ namespace EditorAttributes.Editor
     {
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
-			var propertyField = CreateProperty(property);
+			var propertyField = CreatePropertyField(property);
 
 			propertyField.SetEnabled(false);
 

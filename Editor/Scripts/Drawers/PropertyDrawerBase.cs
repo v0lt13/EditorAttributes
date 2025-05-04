@@ -11,886 +11,906 @@ using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-	public class PropertyDrawerBase : PropertyDrawer
+    public class PropertyDrawerBase : PropertyDrawer
     {
-		protected bool CanApplyGlobalColor => EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR;				
-
-		public override VisualElement CreatePropertyGUI(SerializedProperty property) => CreateProperty(property);
-
-		/// <summary>
-		/// Override this function to customize the copied value from an element with using <see cref="AddPropertyContextMenu(VisualElement, SerializedProperty)"/>
-		/// </summary>
-		/// <param name="element">The element on which the context menu was added</param>
-		/// <param name="property">The attached serialized property</param>
-		/// <returns>The string that will be copied into the clipboard</returns>
-		protected virtual string CopyValue(VisualElement element, SerializedProperty property) => GetCopyPropertyValue(property);
-
-		/// <summary>
-		/// Override this function to customize the paste behaivour for an element with using <see cref="AddPropertyContextMenu(VisualElement, SerializedProperty)"/>
-		/// </summary>
-		/// <param name="element">The element on which the context menu was added</param>
-		/// <param name="property">The attached serialized property</param>
-		/// <param name="clipboardValue">The current clipboard value</param>
-		protected virtual void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue) => SetPropertyValueFromString(clipboardValue, property);
-
-		/// <summary>
-		/// Creates a properly binded property field from a serialized property
-		/// </summary>
-		/// <param name="property">The serialized property</param>
-		/// <returns>The binded property field</returns>
-		public static PropertyField CreateProperty(SerializedProperty property)
-		{
-			var propertyField = new PropertyField(property);
-			propertyField.BindProperty(property.serializedObject);
-
-			return propertyField;
-		}
-
-		/// <summary>
-		/// Sets the value of a property from a string
-		/// </summary>
-		/// <param name="value">The string value to convert</param>
-		/// <param name="property">The serialized property to assign the value to</param>
-		protected void SetPropertyValueFromString(string value, SerializedProperty property)
-		{
-			try
-			{
-				switch (property.propertyType)
-				{
-					case SerializedPropertyType.Integer:
-						property.intValue = Convert.ToInt32(value);
-						break;
-
-					case SerializedPropertyType.Float:
-						property.floatValue = Convert.ToSingle(value);
-						break;
-
-					case SerializedPropertyType.Boolean:
-						property.boolValue = Convert.ToBoolean(value);
-						break;
-
-					case SerializedPropertyType.String:
-						property.stringValue = value;
-						break;
-
-					case SerializedPropertyType.Character:
-						property.intValue = Convert.ToChar(value);
-						break;
-
-					case SerializedPropertyType.Color:
-						property.colorValue = ColorUtility.TryParseHtmlString(value, out Color color) ? color : Color.white;
-						break;
-
-					case SerializedPropertyType.Vector2:
-						property.vector2Value = VectorUtils.ParseVector2(value);
-						break;
-
-					case SerializedPropertyType.Vector3:
-						property.vector3Value = VectorUtils.ParseVector3(value);
-						break;
-
-					case SerializedPropertyType.Vector4:
-						property.vector4Value = VectorUtils.ParseVector4(value);
-						break;
-
-					case SerializedPropertyType.Vector2Int:
-						property.vector2IntValue = VectorUtils.ParseVector2Int(value);
-						break;
-
-					case SerializedPropertyType.Vector3Int:
-						property.vector3IntValue = VectorUtils.ParseVector3Int(value);
-						break;
-
-					default:
-						Debug.LogWarning($"The type {property.propertyType} is not supported", property.serializedObject.targetObject);
-						break;
-				}
-
-				property.serializedObject.ApplyModifiedProperties();
-			}
-			catch (FormatException)
-			{
-				Debug.LogError($"Could not convert the value \"{value}\" to {property.propertyType}", property.serializedObject.targetObject);
-			}
-		}
-
-		/// <summary>
-		/// Gets the value of a serialzied property and returns it as a string
-		/// </summary>
-		/// <param name="property">The serialized property to get the value from</param>
-		/// <returns>The serialized property value as a string</returns>
-		protected string GetPropertyValueAsString(SerializedProperty property)
-		{
-			return property.propertyType switch
-			{
-				SerializedPropertyType.String => property.stringValue,
-				SerializedPropertyType.Integer or SerializedPropertyType.LayerMask or SerializedPropertyType.Character => property.intValue.ToString(),
-				SerializedPropertyType.Enum => IsPropertyEnumFlag() ? property.enumValueFlag.ToString() : property.enumDisplayNames[property.enumValueIndex],
-				SerializedPropertyType.Float => property.floatValue.ToString(),
-				SerializedPropertyType.Boolean => property.boolValue.ToString(),
-				SerializedPropertyType.Vector2 => property.vector2Value.ToString(),
-				SerializedPropertyType.Vector3 => property.vector3Value.ToString(),
-				SerializedPropertyType.Vector4 => property.vector4Value.ToString(),
-				SerializedPropertyType.Rect => property.vector4Value.ToString(),
-				SerializedPropertyType.Bounds => property.boundsValue.ToString(),
-				SerializedPropertyType.Color => property.colorValue.ToString(),
-				SerializedPropertyType.Gradient => property.gradientValue.ToString(),
-				SerializedPropertyType.AnimationCurve => property.animationCurveValue.ToString(),
-				SerializedPropertyType.Quaternion => property.quaternionValue.ToString(),
-				SerializedPropertyType.Vector2Int => property.vector2IntValue.ToString(),
-				SerializedPropertyType.Vector3Int => property.vector3IntValue.ToString(),
-				SerializedPropertyType.RectInt => property.rectIntValue.ToString(),
-				SerializedPropertyType.BoundsInt => property.boundsIntValue.ToString(),
-				SerializedPropertyType.Hash128 => property.hash128Value.ToString(),
-				SerializedPropertyType.ArraySize => property.arraySize.ToString(),
-				SerializedPropertyType.FixedBufferSize => property.fixedBufferSize.ToString(),
-				SerializedPropertyType.ObjectReference => property.objectReferenceValue.ToString(),
-				SerializedPropertyType.ExposedReference => property.exposedReferenceValue.ToString(),
-				SerializedPropertyType.ManagedReference => property.managedReferenceValue.ToString(),
-				_ => string.Empty
-			};
-		}
-
-		/// <summary>
-		/// Converts the values of a collection into strings
-		/// </summary>
-		/// <param name="collectionName">The name of the collection to convert</param>
-		/// <param name="serializedProperty">The serialized property</param>
-		/// <param name="memberInfo">The member info of the collection</param>
-		/// <param name="errorBox">The error box to display any errors to</param>
-		/// <returns>The values of the collection in a list of strings</returns>
-		protected static List<string> ConvertCollectionValuesToStrings(string collectionName, SerializedProperty serializedProperty, MemberInfo memberInfo, HelpBox errorBox)
-		{
-			var stringList = new List<string>();
-			var memberInfoValue = ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
-
-			if (memberInfoValue is Array array)
-			{
-				foreach (var item in array)
-					stringList.Add(item == null ? "NULL" : item.ToString());
-			}
-			else if (memberInfoValue is IList list)
-			{
-				foreach (var item in list)
-					stringList.Add(item == null ? "NULL" : item.ToString());
-			}
-			else if (memberInfoValue is IDictionary dictionary)
-			{
-				foreach (DictionaryEntry item in dictionary)
-					stringList.Add(item.Value == null ? "NULL" : item.Value.ToString());
-			}
-			else
-			{
-				errorBox.text = $"Could not find the collection <b>{collectionName}</b>";
-			}
-
-			return stringList;
-		}
-
-		/// <summary>
-		/// Finds a nested serialized property
-		/// </summary>
-		/// <param name="property">The serialized property</param>
-		/// <param name="propertyName">The name of the property to find</param>
-		/// <returns>The nested serialized property</returns>
-		protected static SerializedProperty FindNestedProperty(SerializedProperty property, string propertyName)
-		{
-			var propertyPath = property.propertyPath;
-			var cutPathIndex = propertyPath.LastIndexOf('.');
-
-			if (cutPathIndex == -1)
-			{
-				return property.serializedObject.FindProperty(propertyName);
-			}
-			else
-			{
-				propertyPath = propertyPath[..cutPathIndex];
-
-				return property.serializedObject.FindProperty(propertyPath).FindPropertyRelative(propertyName);
-			}
-		}
-
-		/// <summary>
-		/// Gets the name of a serialized property accounting for C# properties
-		/// </summary>
-		/// <param name="propertyName">The name of the property to look for</param>
-		/// <param name="property">The serialized property</param>
-		/// <returns>The name of the serialized property</returns>
-		public static string GetSerializedPropertyName(string propertyName, SerializedProperty property)
-		{
-			var memberInfo = ReflectionUtility.GetValidMemberInfo(propertyName, property);
-
-			return memberInfo is PropertyInfo ? $"<{propertyName}>k__BackingField" : propertyName;
-		}
-
-		/// <summary>
-		/// Checks to see if the serialized property is a flagged enum
-		/// </summary>
-		/// <returns>True if the serialized property type is a flagged enum</returns>
-		protected bool IsPropertyEnumFlag() => fieldInfo.FieldType.IsDefined(typeof(FlagsAttribute), false);
-
-		/// <summary>
-		/// Displays an error box in the inspector
-		/// </summary>
-		/// <param name="root">The root visual element</param>
-		/// <param name="errorBox">The help box to displaying the errors</param>
-		public static void DisplayErrorBox(VisualElement root, HelpBox errorBox)
-		{
-			errorBox.messageType = HelpBoxMessageType.Error;
-
-			if (!string.IsNullOrEmpty(errorBox.text))
-			{
-				AddElement(root, errorBox);
-			}
-			else
-			{
-				RemoveElement(root, errorBox);
-			}
-		}
-
-		/// <summary>
-		/// Schedules an action to update
-		/// </summary>
-		/// <param name="visualElement">The visual element to schedule the update</param>
-		/// <param name="logicToUpdate">The logic to execute on the specified element</param>
-		/// <param name="intervalMs">The update interval in milliseconds</param>
-		/// <returns>The scheduled visual element item</returns>
-		public static IVisualElementScheduledItem UpdateVisualElement(VisualElement visualElement, Action logicToUpdate, long intervalMs = 60)
-		{
-			logicToUpdate.Invoke(); // Execute the logic once so we don't have to wait for the first execution of the scheduler
-
-			return visualElement.schedule.Execute(logicToUpdate).Every(intervalMs);
-		}
-
-		/// <summary>
-		/// Schedules an action to execute after a delay
-		/// </summary>
-		/// <param name="visualElement">The visual element to schedule the execution</param>
-		/// <param name="logicToExecute">The logic to execute on the specified element</param>
-		/// <param name="delayMs">The execution delay in milliseconds</param>
-		/// <returns>The scheduled visual element item</returns>
-		public static IVisualElementScheduledItem ExecuteLater(VisualElement visualElement, Action logicToExecute, long delayMs = 1) => visualElement.schedule.Execute(logicToExecute).StartingIn(delayMs);
-
-		/// <summary>
-		/// Add an element from another visual element if it doesn't exist
-		/// </summary>
-		/// <param name="root">The root to add the element on</param>
-		/// <param name="element">The element to add</param>
-		public static void AddElement(VisualElement root, VisualElement element)
-		{
-			if (!root.Contains(element))
-				root.Add(element);
-		}
-
-		/// <summary>
-		/// Removes an element from another visual element if it exists
-		/// </summary>
-		/// <param name="owner">The owner containing the element</param>
-		/// <param name="element">The element to remove</param>
-		public static void RemoveElement(VisualElement owner, VisualElement element)
-		{
-			if (owner.Contains(element))
-				owner.Remove(element);
-		}
-
-		/// <summary>
-		/// Gets the value of a condition for a conditional attribute
-		/// </summary>
-		/// <param name="memberInfo">The member info of the condition</param>
-		/// <param name="conditionalAttribute">The conditional attribute</param>
-		/// <param name="serializedProperty">The serialized property</param>
-		/// <param name="errorBox">The error box to display any errors to</param>
-		/// <returns>True if the condition is satisfied</returns>
-		public static bool GetConditionValue(MemberInfo memberInfo, IConditionalAttribute conditionalAttribute, SerializedProperty serializedProperty, HelpBox errorBox)
-		{
-			var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
-
-			if (memberInfoType == null)
-			{
-				errorBox.text = $"The provided condition \"{conditionalAttribute.ConditionName}\" could not be found";
-				return false;
-			}
-
-			if (memberInfoType == typeof(bool))
-			{
-				var memberInfoValue = ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
-
-				if (memberInfoValue == null)
-					return false;
-
-				return (bool)memberInfoValue;
-			}
-			else if (memberInfoType.IsEnum)
-			{
-				var memberInfoValue = ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
-
-				if (memberInfoValue == null)
-					return false;
-
-				return (int)memberInfoValue == conditionalAttribute.EnumValue;
-			}
-
-			errorBox.text = $"The provided condition \"{conditionalAttribute.ConditionName}\" is not a valid boolean or an enum";
-
-			return false;
-		}
-
-		internal static bool GetConditionValue(MemberInfo memberInfo, IConditionalAttribute conditionalAttribute, object targetObject, HelpBox errorBox) // Internal function used for the button drawer
-		{			
-			var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
-
-			if (memberInfoType == null)
-			{
-				errorBox.text = $"The provided condition \"{conditionalAttribute.ConditionName}\" could not be found";
-				return false;
-			}
-
-			if (memberInfoType == typeof(bool))
-			{
-				return (bool)ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject);
-			}
-			else if (memberInfoType.IsEnum)
-			{
-				return (int)ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject) == conditionalAttribute.EnumValue;
-			}
-
-			errorBox.text = $"The provided condition \"{conditionalAttribute.ConditionName}\" is not a valid boolean or an enum";
-			return false;
-		}
-
-		/// <summary>
-		/// Gets the string value from a member if the input mode is set to Dynamic
-		/// </summary>
-		/// <param name="inputText">The string input that may contain the member name</param>
-		/// <param name="property">The serialized property</param>
-		/// <param name="dynamicStringAttribute">The dynamic string attribute</param>
-		/// <param name="errorBox">The error box to display any errors to</param>
-		/// <returns>If the input mode is Constant will return the base input string, if is Dynamic will return the string value of the member</returns>
-		public static string GetDynamicString(string inputText, SerializedProperty property, IDynamicStringAttribute dynamicStringAttribute, HelpBox errorBox)
-		{
-			switch (dynamicStringAttribute.StringInputMode)
-			{
-				default:
-				case StringInputMode.Constant:
-					return inputText;
-
-				case StringInputMode.Dynamic:
-					var memberInfo = ReflectionUtility.GetValidMemberInfo(inputText, property);
-
-					if (memberInfo == null)
-					{
-						errorBox.text = $"The member <b>{inputText}</b> could not be found";
-						return inputText;
-					}
-
-					var memberValue = ReflectionUtility.GetMemberInfoValue(memberInfo, property);
-					var memberType = ReflectionUtility.GetMemberInfoType(memberInfo);
-
-					if (memberValue == null)
-						return inputText;
-
-					if (memberType == typeof(string))
-						return memberValue.ToString();
-
-					errorBox.text = $"The member <b>{inputText}</b> needs to return a string";
-					return inputText;
-			}
-		}
-
-		/// <summary>
-		/// Adds the property context menu to a non property element
-		/// </summary>
-		/// <param name="element">The element to add the context menu to</param>
-		/// <param name="property">The serialized property</param>
-		protected void AddPropertyContextMenu(VisualElement element, SerializedProperty property)
-		{
-			if (element is PropertyField)
-				Debug.LogError("Can't add the property context menu to a property field since it already has one by default.");
-
-			element.AddManipulator(new ContextualMenuManipulator((@event) =>
-			{
-				string searchText = $"h:#{property.serializedObject.targetObject.GetType().Name}.{property.propertyPath}={GetPropertyValueAsString(property).Replace(" ", "")}";
-
-				@event.menu.AppendAction("Copy Property Path", (action) => EditorGUIUtility.systemCopyBuffer = property.propertyPath);
-				@event.menu.AppendAction("Search Same Property Value", (action) => SearchService.ShowWindow().SetSearchText(searchText));
-
-				@event.menu.AppendSeparator();
-
-				@event.menu.AppendAction("Copy", (action) => EditorGUIUtility.systemCopyBuffer = CopyValue(element, property));
-				@event.menu.AppendAction("Paste", (action) => PasteValue(element, property, ParsePropertyClipboardValue(property, EditorGUIUtility.systemCopyBuffer)));
-
-				@event.menu.AppendSeparator();
-			}));
-		}
-
-		private string GetCopyPropertyValue(SerializedProperty property)
-		{
-			string propertyValue = GetPropertyValueAsString(property);
-
-			return property.propertyType switch
-			{
-				SerializedPropertyType.Vector2 or SerializedPropertyType.Vector2Int => $"Vector2{propertyValue}",
-				SerializedPropertyType.Vector3 or SerializedPropertyType.Vector3Int => $"Vector3{propertyValue}",
-				SerializedPropertyType.Rect or SerializedPropertyType.RectInt => $"Rect{propertyValue}",
-				SerializedPropertyType.Bounds or SerializedPropertyType.BoundsInt => $"Bounds{propertyValue}",
-				SerializedPropertyType.Vector4 or SerializedPropertyType.Quaternion => property.type + propertyValue,
-				SerializedPropertyType.LayerMask => $"LayerMask({propertyValue})",
-				SerializedPropertyType.Enum => $"Enum:{(IsPropertyEnumFlag() ? Convert.ToString(property.enumValueFlag, 2) : propertyValue)}",
-				_ => propertyValue
-			};
-		}
-
-		private string ParsePropertyClipboardValue(SerializedProperty property, string clipboardValue) => property.propertyType switch
-		{
-			SerializedPropertyType.Vector2 or SerializedPropertyType.Vector2Int => clipboardValue.Replace("Vector2", ""),
-			SerializedPropertyType.Vector3 or SerializedPropertyType.Vector3Int => clipboardValue.Replace("Vector3", ""),
-			SerializedPropertyType.Rect or SerializedPropertyType.RectInt => clipboardValue.Replace("Rect", ""),
-			SerializedPropertyType.Bounds or SerializedPropertyType.BoundsInt => clipboardValue.Replace("Bounds", ""),
-			SerializedPropertyType.Vector4 or SerializedPropertyType.Quaternion => clipboardValue.Replace(property.type, ""),
-			SerializedPropertyType.LayerMask => clipboardValue.Replace("LayerMask", ""),
-			SerializedPropertyType.Enum => clipboardValue.Replace("Enum:", ""),
-			_ => clipboardValue
-		};
-
-		/// <summary>
-		/// Applies the help box style to a visual element
-		/// </summary>
-		/// <param name="visualElement">The element to apply the style to</param>
-		public static void ApplyBoxStyle(VisualElement visualElement)
-		{
-			visualElement.style.borderTopLeftRadius = 3f;
-			visualElement.style.borderTopRightRadius = 3f;
-			visualElement.style.borderBottomLeftRadius = 3f;
-			visualElement.style.borderBottomRightRadius = 3f;
-
-			visualElement.style.borderBottomWidth = 1f;
-			visualElement.style.borderTopWidth = 1f;
-			visualElement.style.borderLeftWidth = 1f;
-			visualElement.style.borderRightWidth = 1f;
-
-			visualElement.style.borderTopColor = new Color(26f / 255f, 26f / 255f, 26f / 255f);
-			visualElement.style.borderBottomColor = new Color(26f / 255f, 26f / 255f, 26f / 255f);
-			visualElement.style.borderLeftColor = new Color(26f / 255f, 26f / 255f, 26f / 255f);
-			visualElement.style.borderRightColor = new Color(26f / 255f, 26f / 255f, 26f / 255f);
-
-			visualElement.style.backgroundColor = EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR ? EditorExtension.GLOBAL_COLOR / 2f : new Color(63f / 255f, 63f / 255f, 63f / 255f);
-
-			visualElement.style.paddingTop = 3f;
-			visualElement.style.paddingBottom = 3f;
-			visualElement.style.paddingLeft = 3f;
-			visualElement.style.paddingRight = 3f;
-
-			visualElement.style.marginTop = 1f;
-			visualElement.style.marginBottom = 1f;
-			visualElement.style.marginRight = 3f;
-			visualElement.style.marginLeft = 3f;
-		}
-
-		/// <summary>
-		/// Creates a field for a specific type
-		/// </summary>
-		/// <typeparam name="T"> The type of the field to create</typeparam>
-		/// <param name="fieldName">The name of the field</param>
-		/// <param name="fieldValue">The default value of the field</param>
-		/// <returns>A visual element of the appropriate field</returns>
-		public static VisualElement CreateFieldForType<T>(string fieldName, object fieldValue) => CreateFieldForType(typeof(T), fieldName, fieldValue);
-
-		/// <summary>
-		/// Creates a field for a specific type
-		/// </summary>
-		/// <param name="fieldType">The type of the field to create</param>
-		/// <param name="fieldName">The name of the field</param>
-		/// <param name="fieldValue">The default value of the field</param>
-		/// <returns>A visual element of the appropriate field</returns>
-		public static VisualElement CreateFieldForType(Type fieldType, string fieldName, object fieldValue)
-		{
-			fieldName = ObjectNames.NicifyVariableName(fieldName);
-
-			if (fieldType == typeof(string))
-			{
-				return new TextField(fieldName) { value = (string)fieldValue };
-			}
-			else if (fieldType == typeof(int))
-			{
-				return new IntegerField(fieldName) { value = (int)fieldValue };
-			}
-			else if (fieldType == typeof(uint))
-			{
-				return new UnsignedIntegerField(fieldName) { value = (uint)fieldValue };
-			}
-			else if (fieldType == typeof(long))
-			{
-				return new LongField(fieldName) { value = (long)fieldValue };
-			}
-			else if (fieldType == typeof(ulong))
-			{
-				return new UnsignedLongField(fieldName) { value = (ulong)fieldValue };
-			}
-			else if (fieldType == typeof(float))
-			{
-				return new FloatField(fieldName) { value = (float)fieldValue };
-			}
-			else if (fieldType == typeof(double))
-			{
-				return new DoubleField(fieldName) { value = (double)fieldValue };
-			}
-			else if (fieldType == typeof(bool))
-			{
-				return new Toggle(fieldName) { value = (bool)fieldValue };
-			}
-			else if (fieldType.IsEnum)
-			{
-				return new EnumField(fieldName, (Enum)fieldValue);
-			}
-			else if (fieldType == typeof(Vector2))
-			{
-				return new Vector2Field(fieldName) { value = (Vector2)fieldValue };
-			}
-			else if (fieldType == typeof(Vector2Int))
-			{
-				return new Vector2IntField(fieldName) { value = (Vector2Int)fieldValue };
-			}
-			else if (fieldType == typeof(Vector3))
-			{
-				return new Vector3Field(fieldName) { value = (Vector3)fieldValue };
-			}
-			else if (fieldType == typeof(Vector3Int))
-			{
-				return new Vector3IntField(fieldName) { value = (Vector3Int)fieldValue };
-			}
-			else if (fieldType == typeof(Vector4))
-			{
-				return new Vector4Field(fieldName) { value = (Vector4)fieldValue };
-			}
-			else if (fieldType == typeof(Color))
-			{
-				return new ColorField(fieldName) { value = (Color)fieldValue };
-			}
-			else if (fieldType == typeof(Gradient))
-			{
-				return new GradientField(fieldName) { value = (Gradient)fieldValue };
-			}
-			else if (fieldType == typeof(AnimationCurve))
-			{
-				return new CurveField(fieldName) { value = (AnimationCurve)fieldValue };
-			}
-			else if (fieldType == typeof(LayerMask))
-			{
-				return new LayerMaskField(fieldName, (LayerMask)fieldValue);
-			}
-			else if (fieldType == typeof(Rect))
-			{
-				return new RectField(fieldName) { value = (Rect)fieldValue };
-			}
-			else if (fieldType == typeof(RectInt))
-			{
-				return new RectIntField(fieldName) { value = (RectInt)fieldValue };
-			}
-			else if (fieldType == typeof(Bounds))
-			{
-				return new BoundsField(fieldName) { value = (Bounds)fieldValue };
-			}
-			else if (fieldType == typeof(BoundsInt))
-			{
-				return new BoundsIntField(fieldName) { value = (BoundsInt)fieldValue };
-			}
-			else
-			{
-				return new HelpBox($"The type {fieldType} is not supported", HelpBoxMessageType.Error);
-			}
-		}
-
-		/// <summary>
-		/// Registers a value changed callback for field of a specific type
-		/// </summary>
-		/// <typeparam name="T">The type of the value</typeparam>
-		/// <param name="field">The visual element of the field</param>
-		/// <param name="valueCallback">The callback action</param>
-		public static void RegisterValueChangedCallbackByType<T>(VisualElement field, Action<object> valueCallback) => RegisterValueChangedCallbackByType(typeof(T), field, valueCallback);
-
-		/// <summary>
-		/// Registers a value changed callback for field of a specific type
-		/// </summary>
-		/// <param name="fieldType">The type of the value</param>
-		/// <param name="field">The visual element of the field</param>
-		/// <param name="valueCallback">The callback action</param>
-		public static void RegisterValueChangedCallbackByType(Type fieldType, VisualElement field, Action<object> valueCallback)
-		{
-			if (fieldType == typeof(string))
-			{
-				field.RegisterCallback<ChangeEvent<string>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(int))
-			{
-				field.RegisterCallback<ChangeEvent<int>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(uint))
-			{
-				field.RegisterCallback<ChangeEvent<uint>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(long))
-			{
-				field.RegisterCallback<ChangeEvent<long>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(ulong))
-			{
-				field.RegisterCallback<ChangeEvent<ulong>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(float))
-			{
-				field.RegisterCallback<ChangeEvent<float>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(double))
-			{
-				field.RegisterCallback<ChangeEvent<double>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(bool))
-			{
-				field.RegisterCallback<ChangeEvent<bool>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType.IsEnum)
-			{
-				field.RegisterCallback<ChangeEvent<Enum>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(Vector2))
-			{
-				field.RegisterCallback<ChangeEvent<Vector2>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(Vector2Int))
-			{
-				field.RegisterCallback<ChangeEvent<Vector2Int>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(Vector3))
-			{
-				field.RegisterCallback<ChangeEvent<Vector3>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(Vector3Int))
-			{
-				field.RegisterCallback<ChangeEvent<Vector3Int>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(Vector4))
-			{
-				field.RegisterCallback<ChangeEvent<Vector4>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(Color))
-			{
-				field.RegisterCallback<ChangeEvent<Color>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(Gradient))
-			{
-				field.RegisterCallback<ChangeEvent<Gradient>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(AnimationCurve))
-			{
-				field.RegisterCallback<ChangeEvent<AnimationCurve>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(LayerMask))
-			{
-				field.RegisterCallback<ChangeEvent<int>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(Rect))
-			{
-				field.RegisterCallback<ChangeEvent<Rect>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(RectInt))
-			{
-				field.RegisterCallback<ChangeEvent<RectInt>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(Bounds))
-			{
-				field.RegisterCallback<ChangeEvent<Bounds>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-			else if (fieldType == typeof(BoundsInt))
-			{
-				field.RegisterCallback<ChangeEvent<BoundsInt>>((callback) => valueCallback.Invoke(callback.newValue));
-			}
-		}
-
-		/// <summary>
-		/// Bind a field to the target member value
-		/// </summary>
-		/// <typeparam name="T">The type of the field</typeparam>
-		/// <param name="field">The field visual element</param>
-		/// <param name="memberInfo">The member to bind</param>
-		/// <param name="targetObject">The target object of the member</param>
-		public static void BindFieldToMember<T>(VisualElement field, MemberInfo memberInfo, object targetObject) => BindFieldToMember(typeof(T), field, memberInfo, targetObject);
-
-		/// <summary>
-		/// Bind a field to the target member value
-		/// </summary>
-		/// <param name="fieldType">The type of the field</param>
-		/// <param name="field">The field visual element</param>
-		/// <param name="memberInfo">The member to bind</param>
-		/// <param name="targetObject">The target object of the member</param>
-		public static void BindFieldToMember(Type fieldType, VisualElement field, MemberInfo memberInfo, object targetObject)
-		{
-			UpdateVisualElement(field, () =>
-			{
-				var memberValue = ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject);
-
-				field.name = memberInfo.Name;
-
-				if (fieldType == typeof(string))
-				{
-					var textField = field as TextField;
-
-					textField.SetValueWithoutNotify((string)memberValue);
-				}
-				else if (fieldType == typeof(int))
-				{
-					var textField = field as IntegerField;
-
-					textField.SetValueWithoutNotify((int)memberValue);
-				}
-				else if (fieldType == typeof(uint))
-				{
-					var textField = field as UnsignedIntegerField;
-
-					textField.SetValueWithoutNotify((uint)memberValue);
-				}
-				else if (fieldType == typeof(long))
-				{
-					var textField = field as LongField;
-
-					textField.SetValueWithoutNotify((long)memberValue);
-				}
-				else if (fieldType == typeof(ulong))
-				{
-					var textField = field as UnsignedLongField;
-
-					textField.SetValueWithoutNotify((ulong)memberValue);
-				}
-				else if (fieldType == typeof(float))
-				{
-					var textField = field as FloatField;
-
-					textField.SetValueWithoutNotify((float)memberValue);
-				}
-				else if (fieldType == typeof(double))
-				{
-					var textField = field as DoubleField;
-
-					textField.SetValueWithoutNotify((double)memberValue);
-				}
-				else if (fieldType == typeof(bool))
-				{
-					var textField = field as Toggle;
-
-					textField.SetValueWithoutNotify((bool)memberValue);
-				}
-				else if (fieldType.IsEnum)
-				{
-					var textField = field as EnumField;
-
-					textField.SetValueWithoutNotify((Enum)memberValue);
-				}
-				else if (fieldType == typeof(Vector2))
-				{
-					var textField = field as Vector2Field;
-
-					textField.SetValueWithoutNotify((Vector2)memberValue);
-				}
-				else if (fieldType == typeof(Vector2Int))
-				{
-					var textField = field as Vector2IntField;
-
-					textField.SetValueWithoutNotify((Vector2Int)memberValue);
-				}
-				else if (fieldType == typeof(Vector3))
-				{
-					var textField = field as Vector3Field;
-
-					textField.SetValueWithoutNotify((Vector3)memberValue);
-				}
-				else if (fieldType == typeof(Vector3Int))
-				{
-					var textField = field as Vector3IntField;
-
-					textField.SetValueWithoutNotify((Vector3Int)memberValue);
-				}
-				else if (fieldType == typeof(Vector4))
-				{
-					var textField = field as Vector4Field;
-
-					textField.SetValueWithoutNotify((Vector4)memberValue);
-				}
-				else if (fieldType == typeof(Color))
-				{
-					var textField = field as ColorField;
-
-					textField.SetValueWithoutNotify((Color)memberValue);
-				}
-				else if (fieldType == typeof(Gradient))
-				{
-					var textField = field as GradientField;
-
-					textField.SetValueWithoutNotify((Gradient)memberValue);
-				}
-				else if (fieldType == typeof(AnimationCurve))
-				{
-					var textField = field as CurveField;
-
-					textField.SetValueWithoutNotify((AnimationCurve)memberValue);
-				}
-				else if (fieldType == typeof(LayerMask))
-				{
-					var textField = field as LayerField;
-
-					textField.SetValueWithoutNotify((LayerMask)memberValue);
-				}
-				else if (fieldType == typeof(Rect))
-				{
-					var textField = field as RectField;
-
-					textField.SetValueWithoutNotify((Rect)memberValue);
-				}
-				else if (fieldType == typeof(RectInt))
-				{
-					var textField = field as RectIntField;
-
-					textField.SetValueWithoutNotify((RectInt)memberValue);
-				}
-				else if (fieldType == typeof(Bounds))
-				{
-					var textField = field as BoundsField;
-
-					textField.SetValueWithoutNotify((Bounds)memberValue);
-				}
-				else if (fieldType == typeof(BoundsInt))
-				{
-					var textField = field as BoundsIntField;
-
-					textField.SetValueWithoutNotify((BoundsInt)memberValue);
-				}
-				else
-				{
-					Debug.LogError($"Cannot bind to the field to {fieldType}");
-				}
-			});
-		}
-
-		#region NON_GUI_RELATED_UTILITY_FUNCITONS
-
-		/// <summary>
-		/// A short handy version of Debug.Log
-		/// </summary>
-		/// <param name="message">The message to print</param>
-		protected static void Print(object message) => Debug.Log(message);
-
-		/// <summary>
-		/// Checks if a collection is null or has no members
-		/// </summary>
-		/// <param name="collection">The collection to check</param>
-		/// <returns>False is the collection is null or has no members, true otherwise</returns>
-		public static bool IsCollectionValid(ICollection collection) => collection != null && collection.Count != 0;
-
-		/// <summary>
-		/// Gets the size of a 2D texture
-		/// </summary>
-		/// <param name="texture">The texture to get the size from</param>
-		/// <returns>The width and height of the texture as a Vector2</returns>
-		public static Vector2 GetTextureSize(Texture2D texture) => new(texture.width, texture.height);
-
-		#endregion
-	}
+        protected bool CanApplyGlobalColor => EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR;
+
+        public override VisualElement CreatePropertyGUI(SerializedProperty property) => CreatePropertyField(property);
+
+        /// <summary>
+        /// Override this function to customize the copied value from an element with using <see cref="AddPropertyContextMenu(VisualElement, SerializedProperty)"/>
+        /// </summary>
+        /// <param name="element">The element on which the context menu was added</param>
+        /// <param name="property">The attached serialized property</param>
+        /// <returns>The string that will be copied into the clipboard</returns>
+        protected virtual string CopyValue(VisualElement element, SerializedProperty property) => GetCopyPropertyValue(property);
+
+        /// <summary>
+        /// Override this function to customize the paste behaivour for an element with using <see cref="AddPropertyContextMenu(VisualElement, SerializedProperty)"/>
+        /// </summary>
+        /// <param name="element">The element on which the context menu was added</param>
+        /// <param name="property">The attached serialized property</param>
+        /// <param name="clipboardValue">The current clipboard value</param>
+        protected virtual void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue) => SetPropertyValueFromString(clipboardValue, property);
+
+        /// <summary>
+        /// Creates a properly binded property field from a serialized property
+        /// </summary>
+        /// <param name="property">The serialized property</param>
+        /// <returns>The binded property field</returns>
+        public static PropertyField CreatePropertyField(SerializedProperty property)
+        {
+            var propertyField = new PropertyField(property);
+            propertyField.BindProperty(property.serializedObject);
+
+            return propertyField;
+        }
+
+        /// <summary>
+        /// Sets the value of a property from a string
+        /// </summary>
+        /// <param name="value">The string value to convert</param>
+        /// <param name="property">The serialized property to assign the value to</param>
+        protected void SetPropertyValueFromString(string value, SerializedProperty property)
+        {
+            try
+            {
+                switch (property.propertyType)
+                {
+                    case SerializedPropertyType.Integer:
+                        property.intValue = Convert.ToInt32(value);
+                        break;
+
+                    case SerializedPropertyType.Float:
+                        property.floatValue = Convert.ToSingle(value);
+                        break;
+
+                    case SerializedPropertyType.Boolean:
+                        property.boolValue = Convert.ToBoolean(value);
+                        break;
+
+                    case SerializedPropertyType.String:
+                        property.stringValue = value;
+                        break;
+
+                    case SerializedPropertyType.Character:
+                        property.intValue = Convert.ToChar(value);
+                        break;
+
+                    case SerializedPropertyType.Color:
+                        property.colorValue = ColorUtility.TryParseHtmlString(value, out Color color) ? color : Color.white;
+                        break;
+
+                    case SerializedPropertyType.Vector2:
+                        property.vector2Value = VectorUtils.ParseVector2(value);
+                        break;
+
+                    case SerializedPropertyType.Vector3:
+                        property.vector3Value = VectorUtils.ParseVector3(value);
+                        break;
+
+                    case SerializedPropertyType.Vector4:
+                        property.vector4Value = VectorUtils.ParseVector4(value);
+                        break;
+
+                    case SerializedPropertyType.Vector2Int:
+                        property.vector2IntValue = VectorUtils.ParseVector2Int(value);
+                        break;
+
+                    case SerializedPropertyType.Vector3Int:
+                        property.vector3IntValue = VectorUtils.ParseVector3Int(value);
+                        break;
+
+                    default:
+                        Debug.LogWarning($"The type {property.propertyType} is not supported", property.serializedObject.targetObject);
+                        break;
+                }
+
+                property.serializedObject.ApplyModifiedProperties();
+            }
+            catch (FormatException)
+            {
+                Debug.LogError($"Could not convert the value \"{value}\" to {property.propertyType}", property.serializedObject.targetObject);
+            }
+        }
+
+        /// <summary>
+        /// Gets the value of a serialzied property and returns it as a string
+        /// </summary>
+        /// <param name="property">The serialized property to get the value from</param>
+        /// <returns>The serialized property value as a string</returns>
+        protected string GetPropertyValueAsString(SerializedProperty property)
+        {
+            return property.propertyType switch
+            {
+                SerializedPropertyType.String => property.stringValue,
+                SerializedPropertyType.Integer or SerializedPropertyType.LayerMask or SerializedPropertyType.Character => property.intValue.ToString(),
+                SerializedPropertyType.Enum => IsPropertyEnumFlag() ? property.enumValueFlag.ToString() : property.enumDisplayNames[property.enumValueIndex],
+                SerializedPropertyType.Float => property.floatValue.ToString(),
+                SerializedPropertyType.Boolean => property.boolValue.ToString(),
+                SerializedPropertyType.Vector2 => property.vector2Value.ToString(),
+                SerializedPropertyType.Vector3 => property.vector3Value.ToString(),
+                SerializedPropertyType.Vector4 => property.vector4Value.ToString(),
+                SerializedPropertyType.Rect => property.vector4Value.ToString(),
+                SerializedPropertyType.Bounds => property.boundsValue.ToString(),
+                SerializedPropertyType.Color => property.colorValue.ToString(),
+                SerializedPropertyType.Gradient => property.gradientValue.ToString(),
+                SerializedPropertyType.AnimationCurve => property.animationCurveValue.ToString(),
+                SerializedPropertyType.Quaternion => property.quaternionValue.ToString(),
+                SerializedPropertyType.Vector2Int => property.vector2IntValue.ToString(),
+                SerializedPropertyType.Vector3Int => property.vector3IntValue.ToString(),
+                SerializedPropertyType.RectInt => property.rectIntValue.ToString(),
+                SerializedPropertyType.BoundsInt => property.boundsIntValue.ToString(),
+                SerializedPropertyType.Hash128 => property.hash128Value.ToString(),
+                SerializedPropertyType.ArraySize => property.arraySize.ToString(),
+                SerializedPropertyType.FixedBufferSize => property.fixedBufferSize.ToString(),
+                SerializedPropertyType.ObjectReference => property.objectReferenceValue.ToString(),
+                SerializedPropertyType.ExposedReference => property.exposedReferenceValue.ToString(),
+                SerializedPropertyType.ManagedReference => property.managedReferenceValue.ToString(),
+                _ => string.Empty
+            };
+        }
+
+        /// <summary>
+        /// Converts the values of a collection into strings
+        /// </summary>
+        /// <param name="collectionName">The name of the collection to convert</param>
+        /// <param name="serializedProperty">The serialized property</param>
+        /// <param name="memberInfo">The member info of the collection</param>
+        /// <param name="errorBox">The error box to display any errors to</param>
+        /// <returns>The values of the collection in a list of strings</returns>
+        protected static List<string> ConvertCollectionValuesToStrings(string collectionName, SerializedProperty serializedProperty, MemberInfo memberInfo, HelpBox errorBox)
+        {
+            var stringList = new List<string>();
+            var memberInfoValue = ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
+
+            if (memberInfoValue is Array array)
+            {
+                foreach (var item in array)
+                    stringList.Add(item == null ? "NULL" : item.ToString());
+            }
+            else if (memberInfoValue is IList list)
+            {
+                foreach (var item in list)
+                    stringList.Add(item == null ? "NULL" : item.ToString());
+            }
+            else if (memberInfoValue is IDictionary dictionary)
+            {
+                foreach (DictionaryEntry item in dictionary)
+                    stringList.Add(item.Value == null ? "NULL" : item.Value.ToString());
+            }
+            else
+            {
+                errorBox.text = $"Could not find the collection <b>{collectionName}</b>";
+            }
+
+            return stringList;
+        }
+
+        /// <summary>
+        /// Finds a nested serialized property
+        /// </summary>
+        /// <param name="property">The serialized property</param>
+        /// <param name="propertyName">The name of the property to find</param>
+        /// <returns>The nested serialized property</returns>
+        protected static SerializedProperty FindNestedProperty(SerializedProperty property, string propertyName)
+        {
+            var propertyPath = property.propertyPath;
+            var cutPathIndex = propertyPath.LastIndexOf('.');
+
+            if (cutPathIndex == -1)
+            {
+                return property.serializedObject.FindProperty(propertyName);
+            }
+            else
+            {
+                propertyPath = propertyPath[..cutPathIndex];
+
+                return property.serializedObject.FindProperty(propertyPath).FindPropertyRelative(propertyName);
+            }
+        }
+
+        /// <summary>
+        /// Gets the collection property from a collection item property
+        /// </summary>
+        /// <param name="property">The collection item property</param>
+        /// <returns>The collection property</returns>
+        public static SerializedProperty GetCollectionProperty(SerializedProperty property)
+        {
+            string path = property.propertyPath;
+
+            int index = path.LastIndexOf(".Array.data[");
+
+            if (index >= 0)
+            {
+                string collectionPath = path[..index];
+                return property.serializedObject.FindProperty(collectionPath);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the name of a serialized property accounting for C# properties
+        /// </summary>
+        /// <param name="propertyName">The name of the property to look for</param>
+        /// <param name="property">The serialized property</param>
+        /// <returns>The name of the serialized property</returns>
+        public static string GetSerializedPropertyName(string propertyName, SerializedProperty property)
+        {
+            var memberInfo = ReflectionUtility.GetValidMemberInfo(propertyName, property);
+
+            return memberInfo is PropertyInfo ? $"<{propertyName}>k__BackingField" : propertyName;
+        }
+
+        /// <summary>
+        /// Checks to see if the serialized property is a flagged enum
+        /// </summary>
+        /// <returns>True if the serialized property type is a flagged enum</returns>
+        protected bool IsPropertyEnumFlag() => fieldInfo.FieldType.IsDefined(typeof(FlagsAttribute), false);
+
+        /// <summary>
+        /// Displays an error box in the inspector
+        /// </summary>
+        /// <param name="root">The root visual element</param>
+        /// <param name="errorBox">The help box to displaying the errors</param>
+        public static void DisplayErrorBox(VisualElement root, HelpBox errorBox)
+        {
+            errorBox.messageType = HelpBoxMessageType.Error;
+
+            if (!string.IsNullOrEmpty(errorBox.text))
+            {
+                AddElement(root, errorBox);
+            }
+            else
+            {
+                RemoveElement(root, errorBox);
+            }
+        }
+
+        /// <summary>
+        /// Schedules an action to update
+        /// </summary>
+        /// <param name="visualElement">The visual element to schedule the update</param>
+        /// <param name="logicToUpdate">The logic to execute on the specified element</param>
+        /// <param name="intervalMs">The update interval in milliseconds</param>
+        /// <returns>The scheduled visual element item</returns>
+        public static IVisualElementScheduledItem UpdateVisualElement(VisualElement visualElement, Action logicToUpdate, long intervalMs = 60)
+        {
+            logicToUpdate.Invoke(); // Execute the logic once so we don't have to wait for the first execution of the scheduler
+
+            return visualElement.schedule.Execute(logicToUpdate).Every(intervalMs);
+        }
+
+        /// <summary>
+        /// Schedules an action to execute after a delay
+        /// </summary>
+        /// <param name="visualElement">The visual element to schedule the execution</param>
+        /// <param name="logicToExecute">The logic to execute on the specified element</param>
+        /// <param name="delayMs">The execution delay in milliseconds</param>
+        /// <returns>The scheduled visual element item</returns>
+        public static IVisualElementScheduledItem ExecuteLater(VisualElement visualElement, Action logicToExecute, long delayMs = 1) => visualElement.schedule.Execute(logicToExecute).StartingIn(delayMs);
+
+        /// <summary>
+        /// Add an element from another visual element if it doesn't exist
+        /// </summary>
+        /// <param name="root">The root to add the element on</param>
+        /// <param name="element">The element to add</param>
+        public static void AddElement(VisualElement root, VisualElement element)
+        {
+            if (!root.Contains(element))
+                root.Add(element);
+        }
+
+        /// <summary>
+        /// Removes an element from another visual element if it exists
+        /// </summary>
+        /// <param name="owner">The owner containing the element</param>
+        /// <param name="element">The element to remove</param>
+        public static void RemoveElement(VisualElement owner, VisualElement element)
+        {
+            if (owner.Contains(element))
+                owner.Remove(element);
+        }
+
+        /// <summary>
+        /// Gets the value of a condition for a conditional attribute
+        /// </summary>
+        /// <param name="memberInfo">The member info of the condition</param>
+        /// <param name="conditionalAttribute">The conditional attribute</param>
+        /// <param name="serializedProperty">The serialized property</param>
+        /// <param name="errorBox">The error box to display any errors to</param>
+        /// <returns>True if the condition is satisfied</returns>
+        public static bool GetConditionValue(MemberInfo memberInfo, IConditionalAttribute conditionalAttribute, SerializedProperty serializedProperty, HelpBox errorBox)
+        {
+            var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
+
+            if (memberInfoType == null)
+            {
+                errorBox.text = $"The provided condition \"{conditionalAttribute.ConditionName}\" could not be found";
+                return false;
+            }
+
+            if (memberInfoType == typeof(bool))
+            {
+                var memberInfoValue = ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
+
+                if (memberInfoValue == null)
+                    return false;
+
+                return (bool)memberInfoValue;
+            }
+            else if (memberInfoType.IsEnum)
+            {
+                var memberInfoValue = ReflectionUtility.GetMemberInfoValue(memberInfo, serializedProperty);
+
+                if (memberInfoValue == null)
+                    return false;
+
+                return (int)memberInfoValue == conditionalAttribute.EnumValue;
+            }
+
+            errorBox.text = $"The provided condition \"{conditionalAttribute.ConditionName}\" is not a valid boolean or an enum";
+
+            return false;
+        }
+
+        internal static bool GetConditionValue(MemberInfo memberInfo, IConditionalAttribute conditionalAttribute, object targetObject, HelpBox errorBox) // Internal function used for the button drawer
+        {
+            var memberInfoType = ReflectionUtility.GetMemberInfoType(memberInfo);
+
+            if (memberInfoType == null)
+            {
+                errorBox.text = $"The provided condition \"{conditionalAttribute.ConditionName}\" could not be found";
+                return false;
+            }
+
+            if (memberInfoType == typeof(bool))
+            {
+                return (bool)ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject);
+            }
+            else if (memberInfoType.IsEnum)
+            {
+                return (int)ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject) == conditionalAttribute.EnumValue;
+            }
+
+            errorBox.text = $"The provided condition \"{conditionalAttribute.ConditionName}\" is not a valid boolean or an enum";
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the string value from a member if the input mode is set to Dynamic
+        /// </summary>
+        /// <param name="inputText">The string input that may contain the member name</param>
+        /// <param name="property">The serialized property</param>
+        /// <param name="dynamicStringAttribute">The dynamic string attribute</param>
+        /// <param name="errorBox">The error box to display any errors to</param>
+        /// <returns>If the input mode is Constant will return the base input string, if is Dynamic will return the string value of the member</returns>
+        public static string GetDynamicString(string inputText, SerializedProperty property, IDynamicStringAttribute dynamicStringAttribute, HelpBox errorBox)
+        {
+            switch (dynamicStringAttribute.StringInputMode)
+            {
+                default:
+                case StringInputMode.Constant:
+                    return inputText;
+
+                case StringInputMode.Dynamic:
+                    var memberInfo = ReflectionUtility.GetValidMemberInfo(inputText, property);
+
+                    if (memberInfo == null)
+                    {
+                        errorBox.text = $"The member <b>{inputText}</b> could not be found";
+                        return inputText;
+                    }
+
+                    var memberValue = ReflectionUtility.GetMemberInfoValue(memberInfo, property);
+                    var memberType = ReflectionUtility.GetMemberInfoType(memberInfo);
+
+                    if (memberValue == null)
+                        return inputText;
+
+                    if (memberType == typeof(string))
+                        return memberValue.ToString();
+
+                    errorBox.text = $"The member <b>{inputText}</b> needs to return a string";
+                    return inputText;
+            }
+        }
+
+        /// <summary>
+        /// Adds the property context menu to a non property element
+        /// </summary>
+        /// <param name="element">The element to add the context menu to</param>
+        /// <param name="property">The serialized property</param>
+        protected void AddPropertyContextMenu(VisualElement element, SerializedProperty property)
+        {
+            if (element is PropertyField)
+                Debug.LogError("Can't add the property context menu to a property field since it already has one by default.");
+
+            element.AddManipulator(new ContextualMenuManipulator((@event) =>
+            {
+                string searchText = $"h:#{property.serializedObject.targetObject.GetType().Name}.{property.propertyPath}={GetPropertyValueAsString(property).Replace(" ", "")}";
+
+                @event.menu.AppendAction("Copy Property Path", (action) => EditorGUIUtility.systemCopyBuffer = property.propertyPath);
+                @event.menu.AppendAction("Search Same Property Value", (action) => SearchService.ShowWindow().SetSearchText(searchText));
+
+                @event.menu.AppendSeparator();
+
+                @event.menu.AppendAction("Copy", (action) => EditorGUIUtility.systemCopyBuffer = CopyValue(element, property));
+                @event.menu.AppendAction("Paste", (action) => PasteValue(element, property, ParsePropertyClipboardValue(property, EditorGUIUtility.systemCopyBuffer)));
+
+                @event.menu.AppendSeparator();
+            }));
+        }
+
+        private string GetCopyPropertyValue(SerializedProperty property)
+        {
+            string propertyValue = GetPropertyValueAsString(property);
+
+            return property.propertyType switch
+            {
+                SerializedPropertyType.Vector2 or SerializedPropertyType.Vector2Int => $"Vector2{propertyValue}",
+                SerializedPropertyType.Vector3 or SerializedPropertyType.Vector3Int => $"Vector3{propertyValue}",
+                SerializedPropertyType.Rect or SerializedPropertyType.RectInt => $"Rect{propertyValue}",
+                SerializedPropertyType.Bounds or SerializedPropertyType.BoundsInt => $"Bounds{propertyValue}",
+                SerializedPropertyType.Vector4 or SerializedPropertyType.Quaternion => property.type + propertyValue,
+                SerializedPropertyType.LayerMask => $"LayerMask({propertyValue})",
+                SerializedPropertyType.Enum => $"Enum:{(IsPropertyEnumFlag() ? Convert.ToString(property.enumValueFlag, 2) : propertyValue)}",
+                _ => propertyValue
+            };
+        }
+
+        private string ParsePropertyClipboardValue(SerializedProperty property, string clipboardValue) => property.propertyType switch
+        {
+            SerializedPropertyType.Vector2 or SerializedPropertyType.Vector2Int => clipboardValue.Replace("Vector2", ""),
+            SerializedPropertyType.Vector3 or SerializedPropertyType.Vector3Int => clipboardValue.Replace("Vector3", ""),
+            SerializedPropertyType.Rect or SerializedPropertyType.RectInt => clipboardValue.Replace("Rect", ""),
+            SerializedPropertyType.Bounds or SerializedPropertyType.BoundsInt => clipboardValue.Replace("Bounds", ""),
+            SerializedPropertyType.Vector4 or SerializedPropertyType.Quaternion => clipboardValue.Replace(property.type, ""),
+            SerializedPropertyType.LayerMask => clipboardValue.Replace("LayerMask", ""),
+            SerializedPropertyType.Enum => clipboardValue.Replace("Enum:", ""),
+            _ => clipboardValue
+        };
+
+        /// <summary>
+        /// Applies the help box style to a visual element
+        /// </summary>
+        /// <param name="visualElement">The element to apply the style to</param>
+        public static void ApplyBoxStyle(VisualElement visualElement)
+        {
+            visualElement.style.borderTopLeftRadius = 3f;
+            visualElement.style.borderTopRightRadius = 3f;
+            visualElement.style.borderBottomLeftRadius = 3f;
+            visualElement.style.borderBottomRightRadius = 3f;
+
+            visualElement.style.borderBottomWidth = 1f;
+            visualElement.style.borderTopWidth = 1f;
+            visualElement.style.borderLeftWidth = 1f;
+            visualElement.style.borderRightWidth = 1f;
+
+            visualElement.style.borderTopColor = new Color(26f / 255f, 26f / 255f, 26f / 255f);
+            visualElement.style.borderBottomColor = new Color(26f / 255f, 26f / 255f, 26f / 255f);
+            visualElement.style.borderLeftColor = new Color(26f / 255f, 26f / 255f, 26f / 255f);
+            visualElement.style.borderRightColor = new Color(26f / 255f, 26f / 255f, 26f / 255f);
+
+            visualElement.style.backgroundColor = EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR ? EditorExtension.GLOBAL_COLOR / 2f : new Color(63f / 255f, 63f / 255f, 63f / 255f);
+
+            visualElement.style.paddingTop = 3f;
+            visualElement.style.paddingBottom = 3f;
+            visualElement.style.paddingLeft = 3f;
+            visualElement.style.paddingRight = 3f;
+
+            visualElement.style.marginTop = 1f;
+            visualElement.style.marginBottom = 1f;
+            visualElement.style.marginRight = 3f;
+            visualElement.style.marginLeft = 3f;
+        }
+
+        /// <summary>
+        /// Creates a field for a specific type
+        /// </summary>
+        /// <typeparam name="T"> The type of the field to create</typeparam>
+        /// <param name="fieldName">The name of the field</param>
+        /// <param name="fieldValue">The default value of the field</param>
+        /// <returns>A visual element of the appropriate field</returns>
+        public static VisualElement CreateFieldForType<T>(string fieldName, object fieldValue) => CreateFieldForType(typeof(T), fieldName, fieldValue);
+
+        /// <summary>
+        /// Creates a field for a specific type
+        /// </summary>
+        /// <param name="fieldType">The type of the field to create</param>
+        /// <param name="fieldName">The name of the field</param>
+        /// <param name="fieldValue">The default value of the field</param>
+        /// <returns>A visual element of the appropriate field</returns>
+        public static VisualElement CreateFieldForType(Type fieldType, string fieldName, object fieldValue)
+        {
+            fieldName = ObjectNames.NicifyVariableName(fieldName);
+
+            if (fieldType == typeof(string))
+            {
+                return new TextField(fieldName) { value = (string)fieldValue };
+            }
+            else if (fieldType == typeof(int))
+            {
+                return new IntegerField(fieldName) { value = (int)fieldValue };
+            }
+            else if (fieldType == typeof(uint))
+            {
+                return new UnsignedIntegerField(fieldName) { value = (uint)fieldValue };
+            }
+            else if (fieldType == typeof(long))
+            {
+                return new LongField(fieldName) { value = (long)fieldValue };
+            }
+            else if (fieldType == typeof(ulong))
+            {
+                return new UnsignedLongField(fieldName) { value = (ulong)fieldValue };
+            }
+            else if (fieldType == typeof(float))
+            {
+                return new FloatField(fieldName) { value = (float)fieldValue };
+            }
+            else if (fieldType == typeof(double))
+            {
+                return new DoubleField(fieldName) { value = (double)fieldValue };
+            }
+            else if (fieldType == typeof(bool))
+            {
+                return new Toggle(fieldName) { value = (bool)fieldValue };
+            }
+            else if (fieldType.IsEnum)
+            {
+                return new EnumField(fieldName, (Enum)fieldValue);
+            }
+            else if (fieldType == typeof(Vector2))
+            {
+                return new Vector2Field(fieldName) { value = (Vector2)fieldValue };
+            }
+            else if (fieldType == typeof(Vector2Int))
+            {
+                return new Vector2IntField(fieldName) { value = (Vector2Int)fieldValue };
+            }
+            else if (fieldType == typeof(Vector3))
+            {
+                return new Vector3Field(fieldName) { value = (Vector3)fieldValue };
+            }
+            else if (fieldType == typeof(Vector3Int))
+            {
+                return new Vector3IntField(fieldName) { value = (Vector3Int)fieldValue };
+            }
+            else if (fieldType == typeof(Vector4))
+            {
+                return new Vector4Field(fieldName) { value = (Vector4)fieldValue };
+            }
+            else if (fieldType == typeof(Color))
+            {
+                return new ColorField(fieldName) { value = (Color)fieldValue };
+            }
+            else if (fieldType == typeof(Gradient))
+            {
+                return new GradientField(fieldName) { value = (Gradient)fieldValue };
+            }
+            else if (fieldType == typeof(AnimationCurve))
+            {
+                return new CurveField(fieldName) { value = (AnimationCurve)fieldValue };
+            }
+            else if (fieldType == typeof(LayerMask))
+            {
+                return new LayerMaskField(fieldName, (LayerMask)fieldValue);
+            }
+            else if (fieldType == typeof(Rect))
+            {
+                return new RectField(fieldName) { value = (Rect)fieldValue };
+            }
+            else if (fieldType == typeof(RectInt))
+            {
+                return new RectIntField(fieldName) { value = (RectInt)fieldValue };
+            }
+            else if (fieldType == typeof(Bounds))
+            {
+                return new BoundsField(fieldName) { value = (Bounds)fieldValue };
+            }
+            else if (fieldType == typeof(BoundsInt))
+            {
+                return new BoundsIntField(fieldName) { value = (BoundsInt)fieldValue };
+            }
+            else
+            {
+                return new HelpBox($"The type {fieldType} is not supported", HelpBoxMessageType.Error);
+            }
+        }
+
+        /// <summary>
+        /// Registers a value changed callback for field of a specific type
+        /// </summary>
+        /// <typeparam name="T">The type of the value</typeparam>
+        /// <param name="field">The visual element of the field</param>
+        /// <param name="valueCallback">The callback action</param>
+        public static void RegisterValueChangedCallbackByType<T>(VisualElement field, Action<object> valueCallback) => RegisterValueChangedCallbackByType(typeof(T), field, valueCallback);
+
+        /// <summary>
+        /// Registers a value changed callback for field of a specific type
+        /// </summary>
+        /// <param name="fieldType">The type of the value</param>
+        /// <param name="field">The visual element of the field</param>
+        /// <param name="valueCallback">The callback action</param>
+        public static void RegisterValueChangedCallbackByType(Type fieldType, VisualElement field, Action<object> valueCallback)
+        {
+            if (fieldType == typeof(string))
+            {
+                field.RegisterCallback<ChangeEvent<string>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(int))
+            {
+                field.RegisterCallback<ChangeEvent<int>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(uint))
+            {
+                field.RegisterCallback<ChangeEvent<uint>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(long))
+            {
+                field.RegisterCallback<ChangeEvent<long>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(ulong))
+            {
+                field.RegisterCallback<ChangeEvent<ulong>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(float))
+            {
+                field.RegisterCallback<ChangeEvent<float>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(double))
+            {
+                field.RegisterCallback<ChangeEvent<double>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(bool))
+            {
+                field.RegisterCallback<ChangeEvent<bool>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType.IsEnum)
+            {
+                field.RegisterCallback<ChangeEvent<Enum>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(Vector2))
+            {
+                field.RegisterCallback<ChangeEvent<Vector2>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(Vector2Int))
+            {
+                field.RegisterCallback<ChangeEvent<Vector2Int>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(Vector3))
+            {
+                field.RegisterCallback<ChangeEvent<Vector3>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(Vector3Int))
+            {
+                field.RegisterCallback<ChangeEvent<Vector3Int>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(Vector4))
+            {
+                field.RegisterCallback<ChangeEvent<Vector4>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(Color))
+            {
+                field.RegisterCallback<ChangeEvent<Color>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(Gradient))
+            {
+                field.RegisterCallback<ChangeEvent<Gradient>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(AnimationCurve))
+            {
+                field.RegisterCallback<ChangeEvent<AnimationCurve>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(LayerMask))
+            {
+                field.RegisterCallback<ChangeEvent<int>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(Rect))
+            {
+                field.RegisterCallback<ChangeEvent<Rect>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(RectInt))
+            {
+                field.RegisterCallback<ChangeEvent<RectInt>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(Bounds))
+            {
+                field.RegisterCallback<ChangeEvent<Bounds>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+            else if (fieldType == typeof(BoundsInt))
+            {
+                field.RegisterCallback<ChangeEvent<BoundsInt>>((callback) => valueCallback.Invoke(callback.newValue));
+            }
+        }
+
+        /// <summary>
+        /// Bind a field to the target member value
+        /// </summary>
+        /// <typeparam name="T">The type of the field</typeparam>
+        /// <param name="field">The field visual element</param>
+        /// <param name="memberInfo">The member to bind</param>
+        /// <param name="targetObject">The target object of the member</param>
+        public static void BindFieldToMember<T>(VisualElement field, MemberInfo memberInfo, object targetObject) => BindFieldToMember(typeof(T), field, memberInfo, targetObject);
+
+        /// <summary>
+        /// Bind a field to the target member value
+        /// </summary>
+        /// <param name="fieldType">The type of the field</param>
+        /// <param name="field">The field visual element</param>
+        /// <param name="memberInfo">The member to bind</param>
+        /// <param name="targetObject">The target object of the member</param>
+        public static void BindFieldToMember(Type fieldType, VisualElement field, MemberInfo memberInfo, object targetObject)
+        {
+            UpdateVisualElement(field, () =>
+            {
+                var memberValue = ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject);
+
+                field.name = memberInfo.Name;
+
+                if (fieldType == typeof(string))
+                {
+                    var textField = field as TextField;
+
+                    textField.SetValueWithoutNotify((string)memberValue);
+                }
+                else if (fieldType == typeof(int))
+                {
+                    var textField = field as IntegerField;
+
+                    textField.SetValueWithoutNotify((int)memberValue);
+                }
+                else if (fieldType == typeof(uint))
+                {
+                    var textField = field as UnsignedIntegerField;
+
+                    textField.SetValueWithoutNotify((uint)memberValue);
+                }
+                else if (fieldType == typeof(long))
+                {
+                    var textField = field as LongField;
+
+                    textField.SetValueWithoutNotify((long)memberValue);
+                }
+                else if (fieldType == typeof(ulong))
+                {
+                    var textField = field as UnsignedLongField;
+
+                    textField.SetValueWithoutNotify((ulong)memberValue);
+                }
+                else if (fieldType == typeof(float))
+                {
+                    var textField = field as FloatField;
+
+                    textField.SetValueWithoutNotify((float)memberValue);
+                }
+                else if (fieldType == typeof(double))
+                {
+                    var textField = field as DoubleField;
+
+                    textField.SetValueWithoutNotify((double)memberValue);
+                }
+                else if (fieldType == typeof(bool))
+                {
+                    var textField = field as Toggle;
+
+                    textField.SetValueWithoutNotify((bool)memberValue);
+                }
+                else if (fieldType.IsEnum)
+                {
+                    var textField = field as EnumField;
+
+                    textField.SetValueWithoutNotify((Enum)memberValue);
+                }
+                else if (fieldType == typeof(Vector2))
+                {
+                    var textField = field as Vector2Field;
+
+                    textField.SetValueWithoutNotify((Vector2)memberValue);
+                }
+                else if (fieldType == typeof(Vector2Int))
+                {
+                    var textField = field as Vector2IntField;
+
+                    textField.SetValueWithoutNotify((Vector2Int)memberValue);
+                }
+                else if (fieldType == typeof(Vector3))
+                {
+                    var textField = field as Vector3Field;
+
+                    textField.SetValueWithoutNotify((Vector3)memberValue);
+                }
+                else if (fieldType == typeof(Vector3Int))
+                {
+                    var textField = field as Vector3IntField;
+
+                    textField.SetValueWithoutNotify((Vector3Int)memberValue);
+                }
+                else if (fieldType == typeof(Vector4))
+                {
+                    var textField = field as Vector4Field;
+
+                    textField.SetValueWithoutNotify((Vector4)memberValue);
+                }
+                else if (fieldType == typeof(Color))
+                {
+                    var textField = field as ColorField;
+
+                    textField.SetValueWithoutNotify((Color)memberValue);
+                }
+                else if (fieldType == typeof(Gradient))
+                {
+                    var textField = field as GradientField;
+
+                    textField.SetValueWithoutNotify((Gradient)memberValue);
+                }
+                else if (fieldType == typeof(AnimationCurve))
+                {
+                    var textField = field as CurveField;
+
+                    textField.SetValueWithoutNotify((AnimationCurve)memberValue);
+                }
+                else if (fieldType == typeof(LayerMask))
+                {
+                    var textField = field as LayerField;
+
+                    textField.SetValueWithoutNotify((LayerMask)memberValue);
+                }
+                else if (fieldType == typeof(Rect))
+                {
+                    var textField = field as RectField;
+
+                    textField.SetValueWithoutNotify((Rect)memberValue);
+                }
+                else if (fieldType == typeof(RectInt))
+                {
+                    var textField = field as RectIntField;
+
+                    textField.SetValueWithoutNotify((RectInt)memberValue);
+                }
+                else if (fieldType == typeof(Bounds))
+                {
+                    var textField = field as BoundsField;
+
+                    textField.SetValueWithoutNotify((Bounds)memberValue);
+                }
+                else if (fieldType == typeof(BoundsInt))
+                {
+                    var textField = field as BoundsIntField;
+
+                    textField.SetValueWithoutNotify((BoundsInt)memberValue);
+                }
+                else
+                {
+                    Debug.LogError($"Cannot bind to the field to {fieldType}");
+                }
+            });
+        }
+
+        #region NON_GUI_RELATED_UTILITY_FUNCITONS
+
+        /// <summary>
+        /// A short handy version of Debug.Log
+        /// </summary>
+        /// <param name="message">The message to print</param>
+        protected static void Print(object message) => Debug.Log(message);
+
+        /// <summary>
+        /// Checks if a collection is null or has no members
+        /// </summary>
+        /// <param name="collection">The collection to check</param>
+        /// <returns>False is the collection is null or has no members, true otherwise</returns>
+        public static bool IsCollectionValid(ICollection collection) => collection != null && collection.Count != 0;
+
+        /// <summary>
+        /// Gets the size of a 2D texture
+        /// </summary>
+        /// <param name="texture">The texture to get the size from</param>
+        /// <returns>The width and height of the texture as a Vector2</returns>
+        public static Vector2 GetTextureSize(Texture2D texture) => new(texture.width, texture.height);
+
+        #endregion
+    }
 }

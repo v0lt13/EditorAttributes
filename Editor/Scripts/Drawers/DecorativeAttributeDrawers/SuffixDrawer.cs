@@ -13,7 +13,7 @@ namespace EditorAttributes.Editor
 			
 			var root = new VisualElement();
 			var errorBox = new HelpBox();
-			var propertyField = CreateProperty(property);
+			var propertyField = CreatePropertyField(property);
 
 			var suffixLabel = new Label() 
 			{

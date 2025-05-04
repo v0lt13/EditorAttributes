@@ -11,7 +11,7 @@ namespace EditorAttributes.Editor
 			var propertyWidthAttribute = attribute as PropertyWidthAttribute;
 
 			var root = new VisualElement();
-			var propertyField = CreateProperty(property);
+			var propertyField = CreatePropertyField(property);
 
 			root.Add(propertyField);
 

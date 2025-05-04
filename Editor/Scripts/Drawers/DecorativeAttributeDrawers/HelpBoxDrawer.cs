@@ -9,7 +9,7 @@ namespace EditorAttributes.Editor
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var helpBoxAttribute = attribute as HelpBoxAttribute;
-			var propertyField = CreateProperty(property);
+			var propertyField = CreatePropertyField(property);
 
 			var root = new VisualElement();
 			var errorBox = new HelpBox();

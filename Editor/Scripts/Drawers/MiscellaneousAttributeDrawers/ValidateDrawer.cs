@@ -14,7 +14,7 @@ namespace EditorAttributes.Editor
 			var validateAttribute = attribute as ValidateAttribute;
 			var conditionalProperty = ReflectionUtility.GetValidMemberInfo(validateAttribute.ConditionName, property);
 
-			var propertyField = CreateProperty(property);
+			var propertyField = CreatePropertyField(property);
 
 			root.Add(propertyField);
 

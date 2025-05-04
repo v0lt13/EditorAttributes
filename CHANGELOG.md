@@ -1,3 +1,9 @@
+EditorAttributes v2.7.0 Changelog:
+- Added CollectionRange Attribute
+- Added ShowInInspector Attribute
+- Removed the drawing of static and non serialized members in favor of the ShowInInspector Attribute
+- Fixed Button functions being called when selecting something
+
 EditorAttributes v2.6.1 Changelog:
 - Added option to show all non serialized members
 - Extended showing static fields to showing all static members

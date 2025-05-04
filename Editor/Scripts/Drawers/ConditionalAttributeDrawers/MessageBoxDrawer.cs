@@ -17,7 +17,7 @@ namespace EditorAttributes.Editor
 			var messageBox = new HelpBox(string.Empty, (HelpBoxMessageType)messageBoxAttribute.MessageType);
 			var errorBox = new HelpBox();
 
-			var propertyField = CreateProperty(property);
+			var propertyField = CreatePropertyField(property);
 
 			if (CanApplyGlobalColor)
 			{

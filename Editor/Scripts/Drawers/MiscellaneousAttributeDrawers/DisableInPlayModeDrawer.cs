@@ -10,7 +10,7 @@ namespace EditorAttributes.Editor
 		{
 			var root = new VisualElement();
 
-			root.Add(CreateProperty(property));
+			root.Add(CreatePropertyField(property));
 			root.SetEnabled(!EditorApplication.isPlayingOrWillChangePlaymode);
 
 			return root;

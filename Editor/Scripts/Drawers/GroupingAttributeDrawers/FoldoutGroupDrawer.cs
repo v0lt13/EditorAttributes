@@ -32,7 +32,7 @@ namespace EditorAttributes.Editor
 
 				if (variableProperty != null)
 				{
-					var propertyField = CreateProperty(variableProperty);
+					var propertyField = CreatePropertyField(variableProperty);
 
 					// Slightly move foldouts for serialized objects
 					if (variableProperty.propertyType == SerializedPropertyType.Generic && variableProperty.type != "UnityEvent" && !ReflectionUtility.IsPropertyCollection(variableProperty))

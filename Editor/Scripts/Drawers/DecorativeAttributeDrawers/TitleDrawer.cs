@@ -33,7 +33,7 @@ namespace EditorAttributes.Editor
 			}
 
 			root.Add(title);
-			root.Add(CreateProperty(property));
+			root.Add(CreatePropertyField(property));
 
 			UpdateVisualElement(title, () =>
 			{

@@ -13,7 +13,7 @@ namespace EditorAttributes.Editor
     		var root = new VisualElement();
             var drawHandleAttribute = attribute as DrawHandleAttribute;
 
-			root.Add(CreateProperty(property));
+			root.Add(CreatePropertyField(property));
 
 			switch (property.propertyType)
             {

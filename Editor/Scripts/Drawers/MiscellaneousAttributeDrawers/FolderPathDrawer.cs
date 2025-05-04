@@ -21,7 +21,7 @@ namespace EditorAttributes.Editor
 
 			var folderPath = property.stringValue;
 
-			var propertyField = CreateProperty(property);
+			var propertyField = CreatePropertyField(property);
 			var button = new Button(() => folderPath = EditorUtility.OpenFolderPanel("Select folder", "Assets", ""));
 
 			var buttonIcon = new Image() { image = EditorGUIUtility.IconContent("d_Folder Icon").image };

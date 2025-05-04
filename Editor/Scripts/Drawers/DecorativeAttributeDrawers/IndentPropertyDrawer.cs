@@ -11,7 +11,7 @@ namespace EditorAttributes.Editor
 			var indentPropertyAttribute = attribute as IndentPropertyAttribute;
             
             var root = new VisualElement();
-			var propertyField = CreateProperty(property);
+			var propertyField = CreatePropertyField(property);
 
 			propertyField.style.marginLeft = indentPropertyAttribute.IndentLevel;
 

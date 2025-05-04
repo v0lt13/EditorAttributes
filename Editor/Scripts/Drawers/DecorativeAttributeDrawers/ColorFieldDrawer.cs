@@ -13,7 +13,7 @@ namespace EditorAttributes.Editor
 			//var colorFieldAttribute = attribute as ColorFieldAttribute;
 			
 			var root = new VisualElement();
-			var propertyField = CreateProperty(property);
+			var propertyField = CreatePropertyField(property);
 
 			/*
 			var errorBox = new HelpBox();

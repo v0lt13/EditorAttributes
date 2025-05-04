@@ -16,7 +16,7 @@ namespace EditorAttributes.Editor
 			var errorBox = new HelpBox();
 
 			root.Add(image);
-			root.Add(CreateProperty(property));
+			root.Add(CreatePropertyField(property));
 
 			UpdateVisualElement(image, () =>
 			{

@@ -15,7 +15,7 @@ namespace EditorAttributes.Editor
 			var methodInfo = ReflectionUtility.FindFunction(inlineButtonAttribute.FunctionName, property.serializedObject.targetObject);
 
             var root = new VisualElement();
-            var propertyField = CreateProperty(property);
+            var propertyField = CreatePropertyField(property);
 
 			if (methodInfo.GetParameters().Length > 0)
 			{

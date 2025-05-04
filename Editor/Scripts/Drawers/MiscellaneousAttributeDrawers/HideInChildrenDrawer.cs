@@ -13,7 +13,7 @@ namespace EditorAttributes.Editor
 			var root = new VisualElement();
 
 			if (!IsPropertyInherited(property, hideInChildrenAttribute))
-				root.Add(CreateProperty(property));
+				root.Add(CreatePropertyField(property));
 
 			return root;
 		}
