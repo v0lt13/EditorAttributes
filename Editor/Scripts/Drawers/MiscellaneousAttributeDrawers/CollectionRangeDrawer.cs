@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
 
@@ -18,8 +19,9 @@ namespace EditorAttributes.Editor
             var propertyField = CreatePropertyField(property);
 
 #if UNITY_2023_3_OR_NEWER
-            property.arraySize = UnityEngine.Mathf.Clamp(property.arraySize, collectionRangeAttribute.MinRange, collectionRangeAttribute.MaxRange);
-            property.serializedObject.ApplyModifiedProperties();
+            ClampCollectionSize(property, collectionRangeAttribute);
+
+            propertyField.RegisterValueChangeCallback((evt) => ClampCollectionSize(property, collectionRangeAttribute));
 #else
             root.Add(new HelpBox("The CollectionRange Attribute is only available in <b>Unity 6 and above</b>", HelpBoxMessageType.Warning));
 #endif
@@ -27,6 +29,12 @@ namespace EditorAttributes.Editor
             root.Add(propertyField);
 
             return root;
+        }
+
+        private void ClampCollectionSize(SerializedProperty property, CollectionRangeAttribute collectionRangeAttribute)
+        {
+            property.arraySize = Mathf.Clamp(property.arraySize, collectionRangeAttribute.MinRange, collectionRangeAttribute.MaxRange);
+            property.serializedObject.ApplyModifiedProperties();
         }
     }
 }
