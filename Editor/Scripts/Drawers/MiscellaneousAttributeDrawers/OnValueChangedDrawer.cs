@@ -6,15 +6,15 @@ using EditorAttributes.Editor.Utility;
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(OnValueChangedAttribute))]
-    public class OnValueChangedDrawer : PropertyDrawerBase
-    {
-    	public override VisualElement CreatePropertyGUI(SerializedProperty property)
-    	{
+	public class OnValueChangedDrawer : PropertyDrawerBase
+	{
+		public override VisualElement CreatePropertyGUI(SerializedProperty property)
+		{
 			var onValueChangedAttribute = attribute as OnValueChangedAttribute;
 			ReflectionUtility.GetNestedObjectType(property, out object target);
 
-    		var root = new VisualElement();
-		    var propertyField = CreatePropertyField(property);
+			var root = new VisualElement();
+			var propertyField = CreatePropertyField(property);
 
 			var function = ReflectionUtility.FindFunction(onValueChangedAttribute.FunctionName, property);
 			var functionParameters = function.GetParameters();
@@ -33,10 +33,10 @@ namespace EditorAttributes.Editor
 			else
 			{
 				root.Add(propertyField);
-				root.Add(new HelpBox("Function cannot have parameters", HelpBoxMessageType.Error));
+				root.Add(new HelpBox("The function cannot have parameters", HelpBoxMessageType.Error));
 			}
 
-    		return root;
-    	}
-    }
+			return root;
+		}
+	}
 }

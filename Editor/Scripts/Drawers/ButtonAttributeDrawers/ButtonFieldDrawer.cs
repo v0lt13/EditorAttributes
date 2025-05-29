@@ -5,8 +5,8 @@ using EditorAttributes.Editor.Utility;
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(ButtonFieldAttribute))]
-    public class ButtonFieldDrawer : PropertyDrawerBase
-    {
+	public class ButtonFieldDrawer : PropertyDrawerBase
+	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var buttonFieldAttribute = attribute as ButtonFieldAttribute;
@@ -41,10 +41,10 @@ namespace EditorAttributes.Editor
 			{
 				if (buttonFieldAttribute.IsRepetable)
 				{
-					var repeatButton = new RepeatButton(() => function.Invoke(ownerObject, null), buttonFieldAttribute.PressDelay, buttonFieldAttribute.RepetitionInterval) 
+					var repeatButton = new RepeatButton(() => function.Invoke(ownerObject, null), buttonFieldAttribute.PressDelay, buttonFieldAttribute.RepetitionInterval)
 					{
-						text = buttonLabel, 
-						tooltip = property.tooltip 
+						text = buttonLabel,
+						tooltip = property.tooltip
 					};
 
 					repeatButton.style.height = buttonFieldAttribute.ButtonHeight;
@@ -54,10 +54,10 @@ namespace EditorAttributes.Editor
 				}
 				else
 				{
-					var button = new Button(() => function.Invoke(ownerObject, null)) 
-					{ 
-						text = buttonLabel, 
-						tooltip = property.tooltip 
+					var button = new Button(() => function.Invoke(ownerObject, null))
+					{
+						text = buttonLabel,
+						tooltip = property.tooltip
 					};
 
 					button.style.height = buttonFieldAttribute.ButtonHeight;
@@ -67,7 +67,7 @@ namespace EditorAttributes.Editor
 			}
 			else
 			{
-				root.Add(new HelpBox("Function cannot have parameters", HelpBoxMessageType.Error));
+				root.Add(new HelpBox("The function cannot have parameters", HelpBoxMessageType.Error));
 			}
 
 			return root;

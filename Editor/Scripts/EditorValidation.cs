@@ -8,6 +8,10 @@ using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using EditorAttributes.Editor.Utility;
 
+#if HAS_ADDRESSABLES_PACKAGE
+using UnityEditor.AddressableAssets;
+#endif
+
 namespace EditorAttributes.Editor
 {
 	[InitializeOnLoad]
@@ -25,7 +29,7 @@ namespace EditorAttributes.Editor
 		public void OnPreprocessBuild(BuildReport report)
 		{
 			BUILD_KILLERS = 0;
- 
+
 			if (!DISABLE_BUILD_VALIDATION)
 				ValidateAll();
 
@@ -69,8 +73,11 @@ namespace EditorAttributes.Editor
 			{
 				string scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
 
-				if (IsPackageAsset(scenePath)) continue;
-				if (SceneUtility.GetBuildIndexByScenePath(scenePath) == -1 && !IsAddressable(sceneGuid)) continue;
+				if (IsPackageAsset(scenePath))
+					continue;
+
+				if (SceneUtility.GetBuildIndexByScenePath(scenePath) == -1 && !IsAddressable(sceneGuid))
+					continue;
 
 				var openedScene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
 
@@ -85,19 +92,18 @@ namespace EditorAttributes.Editor
 
 		private static bool IsAddressable(string guid)
 		{
-#if USE_ADDRESSABLES
-			var settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
+#if HAS_ADDRESSABLES_PACKAGE
+			var settings = AddressableAssetSettingsDefaultObject.Settings;
+
 			foreach (var group in settings.groups)
 			{
-				if (group == null || group.entries.Count == 0) 
+				if (group == null || group.entries.Count == 0)
 					continue;
 
 				foreach (var entry in group.entries)
 				{
 					if (entry.guid == guid)
-					{
 						return true;
-					}
 				}
 			}
 #endif

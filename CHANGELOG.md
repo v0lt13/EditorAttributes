@@ -1,3 +1,8 @@
+EditorAttributes v2.7.1 Changelog:
+- Unity's Space and Header attributes now work on ShowInInspector properties
+- Validating all scenes should now also include addressable scenes
+- Updated offline documentation
+
 EditorAttributes v2.7.0 Changelog:
 - Added CollectionRange Attribute
 - Added ShowInInspector Attribute

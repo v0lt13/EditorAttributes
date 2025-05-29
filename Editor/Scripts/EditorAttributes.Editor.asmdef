@@ -17,8 +17,8 @@
     "versionDefines": [
         {
             "name": "com.unity.addressables",
-            "expression": "2.2.2",
-            "define": "USE_ADDRESSABLES"
+            "expression": "1.20",
+            "define": "HAS_ADDRESSABLES_PACKAGE"
         }
     ],
     "noEngineReferences": false
