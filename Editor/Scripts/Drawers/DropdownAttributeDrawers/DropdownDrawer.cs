@@ -10,8 +10,8 @@ using EditorAttributes.Editor.Utility;
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(DropdownAttribute))]
-    public class DropdownDrawer : PropertyDrawerBase
-    {
+	public class DropdownDrawer : PropertyDrawerBase
+	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var dropdownAttribute = attribute as DropdownAttribute;
@@ -23,7 +23,7 @@ namespace EditorAttributes.Editor
 
 			var displayValues = GetDisplayValues(collectionInfo, dropdownAttribute, property, propertyValues);
 
-			var dropdownField = IsCollectionValid(displayValues) ? new DropdownField(property.displayName, displayValues, GetDropdownDefaultValue(displayValues, property))
+			var dropdownField = IsCollectionValid(displayValues) ? new DropdownField(property.displayName, displayValues, GetDropdownDefaultValueIndex(propertyValues, property))
 				: new DropdownField(property.displayName, new List<string>() { "NULL" }, 0);
 
 			dropdownField.tooltip = property.tooltip;
@@ -145,11 +145,11 @@ namespace EditorAttributes.Editor
 			return displayStrings;
 		}
 
-		private string GetDropdownDefaultValue(List<string> collectionValues, SerializedProperty property)
+		private int GetDropdownDefaultValueIndex(List<string> collectionValues, SerializedProperty property)
 		{
 			var propertyStringValue = GetPropertyValueAsString(property);
 
-			return collectionValues.Contains(propertyStringValue) ? propertyStringValue : collectionValues[0];
+			return collectionValues.Contains(propertyStringValue) ? collectionValues.IndexOf(propertyStringValue) : 0;
 		}
 
 		private bool IsDictionary(MemberInfo collectionInfo, SerializedProperty serializedProperty, out IDictionary dictionary)
@@ -159,6 +159,6 @@ namespace EditorAttributes.Editor
 			dictionary = collectionValue as IDictionary;
 
 			return collectionValue is IDictionary;
-		}		
+		}
 	}
 }

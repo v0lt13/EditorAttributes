@@ -1,3 +1,11 @@
+EditorAttributes v2.7.2 Changelog:
+- Added the ability to execute button logic from multiple selections
+- Added a warning when trying to use an attribute from an ImGUI based editor
+- Foldout states and button parameters are now saved by the object's instance ID instead of name
+- Fixed dropdown reseting to default value when the inspector is refreshed while using dictionaries
+- Fixed property dropdowns not working inside collections
+- Fixed foldout states incorrectly loading
+
 EditorAttributes v2.7.1 Changelog:
 - Unity's Space and Header attributes now work on ShowInInspector properties
 - Validating all scenes should now also include addressable scenes

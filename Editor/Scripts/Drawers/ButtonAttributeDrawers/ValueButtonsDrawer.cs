@@ -9,18 +9,18 @@ using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-    [CustomPropertyDrawer(typeof(ValueButtonsAttribute))]
-    public class ValueButtonsDrawer : PropertyDrawerBase
-    {
+	[CustomPropertyDrawer(typeof(ValueButtonsAttribute))]
+	public class ValueButtonsDrawer : PropertyDrawerBase
+	{
 #if !UNITY_6000_0_OR_NEWER
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
-        {
-            var root = new VisualElement();
+		public override VisualElement CreatePropertyGUI(SerializedProperty property)
+		{
+			var root = new VisualElement();
 
-            root.Add(new HelpBox("The ValueButtons Attribute is only available in <b>Unity 6 and above</b>, use the <b>SelectionButtons Attribute</b> for the same functionality", HelpBoxMessageType.Warning));
+			root.Add(new HelpBox("The <b>ValueButtons Attribute</b> is only available in <b>Unity 6 and above</b>, use the <b>SelectionButtons Attribute</b> for the same functionality", HelpBoxMessageType.Warning));
 
-            return root;
-        }
+			return root;
+		}
 #else
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
@@ -83,5 +83,5 @@ namespace EditorAttributes.Editor
 			return new Span<int>(intArray);
 		}
 #endif
-    }
+	}
 }

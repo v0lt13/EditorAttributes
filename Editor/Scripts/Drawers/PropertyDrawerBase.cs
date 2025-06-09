@@ -19,6 +19,17 @@ namespace EditorAttributes.Editor
 
 		public override VisualElement CreatePropertyGUI(SerializedProperty property) => CreatePropertyField(property);
 
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+		{
+			EditorGUI.PropertyField(position, property, label, true);
+
+			var helpBoxStyle = GUI.skin.GetStyle("HelpBox");
+			helpBoxStyle.richText = true;
+
+			EditorGUILayout.HelpBox("You cannot use <b>EditorAttributes</b> with <b>ImGUI</b> based editors. " +
+				"Convert your editor to <b>UI Toolkit</b> for attributes to work, or remove the attributes from properties drawn by the editor script.", MessageType.Warning);
+		}
+
 		/// <summary>
 		/// Override this function to customize the copied value from an element with using <see cref="AddPropertyContextMenu(VisualElement, SerializedProperty)"/>
 		/// </summary>
@@ -474,6 +485,28 @@ namespace EditorAttributes.Editor
 			_ => clipboardValue
 		};
 
+		private protected string CreatePropertySaveKey(SerializedProperty property, string key) => $"{property.serializedObject.targetObject.GetInstanceID()}_{property.propertyPath}_{key}";
+
+		/// <summary>
+		/// Invokes a function on all specified targets
+		/// </summary>
+		/// <param name="targets">The property to get the targets from</param>
+		/// <param name="functionName">The name of the function to invoke</param>
+		/// <param name="parameterValues">Parameter values for the function</param>
+		public static void InvokeFunctionOnAllTargets(Object[] targets, string functionName, object[] parameterValues = null)
+		{
+			foreach (var target in targets)
+			{
+				var methodInfo = ReflectionUtility.FindFunction(functionName, target);
+
+				Undo.RecordObject(target, $"Invoke {functionName}");
+
+				methodInfo.Invoke(target, parameterValues);
+
+				EditorUtility.SetDirty(target);
+			}
+		}
+
 		/// <summary>
 		/// Applies the help box style to a visual element
 		/// </summary>
@@ -514,8 +547,9 @@ namespace EditorAttributes.Editor
 		/// <typeparam name="T"> The type of the field to create</typeparam>
 		/// <param name="fieldName">The name of the field</param>
 		/// <param name="fieldValue">The default value of the field</param>
+		/// <param name="showMixedValue">Whether to show the mixed value state for the field</param>
 		/// <returns>A visual element of the appropriate field</returns>
-		public static VisualElement CreateFieldForType<T>(string fieldName, object fieldValue) => CreateFieldForType(typeof(T), fieldName, fieldValue);
+		public static VisualElement CreateFieldForType<T>(string fieldName, object fieldValue, bool showMixedValue = false) => CreateFieldForType(typeof(T), fieldName, fieldValue, showMixedValue);
 
 		/// <summary>
 		/// Creates a field for a specific type
@@ -523,98 +557,99 @@ namespace EditorAttributes.Editor
 		/// <param name="fieldType">The type of the field to create</param>
 		/// <param name="fieldName">The name of the field</param>
 		/// <param name="fieldValue">The default value of the field</param>
+		/// <param name="showMixedValue">Whether to show the mixed value state for the field</param>
 		/// <returns>A visual element of the appropriate field</returns>
-		public static VisualElement CreateFieldForType(Type fieldType, string fieldName, object fieldValue)
+		public static VisualElement CreateFieldForType(Type fieldType, string fieldName, object fieldValue, bool showMixedValue = false)
 		{
 			fieldName = ObjectNames.NicifyVariableName(fieldName);
 
 			if (fieldType == typeof(string))
 			{
-				return new TextField(fieldName) { value = (string)fieldValue };
+				return new TextField(fieldName) { value = (string)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(int))
 			{
-				return new IntegerField(fieldName) { value = (int)fieldValue };
+				return new IntegerField(fieldName) { value = (int)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(uint))
 			{
-				return new UnsignedIntegerField(fieldName) { value = (uint)fieldValue };
+				return new UnsignedIntegerField(fieldName) { value = (uint)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(long))
 			{
-				return new LongField(fieldName) { value = (long)fieldValue };
+				return new LongField(fieldName) { value = (long)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(ulong))
 			{
-				return new UnsignedLongField(fieldName) { value = (ulong)fieldValue };
+				return new UnsignedLongField(fieldName) { value = (ulong)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(float))
 			{
-				return new FloatField(fieldName) { value = (float)fieldValue };
+				return new FloatField(fieldName) { value = (float)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(double))
 			{
-				return new DoubleField(fieldName) { value = (double)fieldValue };
+				return new DoubleField(fieldName) { value = (double)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(bool))
 			{
-				return new Toggle(fieldName) { value = (bool)fieldValue };
+				return new Toggle(fieldName) { value = (bool)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType.IsEnum)
 			{
-				return new EnumField(fieldName, (Enum)fieldValue);
+				return new EnumField(fieldName, (Enum)fieldValue) { showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(Vector2))
 			{
-				return new Vector2Field(fieldName) { value = (Vector2)fieldValue };
+				return new Vector2Field(fieldName) { value = (Vector2)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(Vector2Int))
 			{
-				return new Vector2IntField(fieldName) { value = (Vector2Int)fieldValue };
+				return new Vector2IntField(fieldName) { value = (Vector2Int)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(Vector3))
 			{
-				return new Vector3Field(fieldName) { value = (Vector3)fieldValue };
+				return new Vector3Field(fieldName) { value = (Vector3)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(Vector3Int))
 			{
-				return new Vector3IntField(fieldName) { value = (Vector3Int)fieldValue };
+				return new Vector3IntField(fieldName) { value = (Vector3Int)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(Vector4))
 			{
-				return new Vector4Field(fieldName) { value = (Vector4)fieldValue };
+				return new Vector4Field(fieldName) { value = (Vector4)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(Color))
 			{
-				return new ColorField(fieldName) { value = (Color)fieldValue };
+				return new ColorField(fieldName) { value = (Color)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(Gradient))
 			{
-				return new GradientField(fieldName) { value = (Gradient)fieldValue };
+				return new GradientField(fieldName) { value = (Gradient)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(AnimationCurve))
 			{
-				return new CurveField(fieldName) { value = (AnimationCurve)fieldValue };
+				return new CurveField(fieldName) { value = (AnimationCurve)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(LayerMask))
 			{
-				return new LayerMaskField(fieldName, (LayerMask)fieldValue);
+				return new LayerMaskField(fieldName, (LayerMask)fieldValue) { showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(Rect))
 			{
-				return new RectField(fieldName) { value = (Rect)fieldValue };
+				return new RectField(fieldName) { value = (Rect)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(RectInt))
 			{
-				return new RectIntField(fieldName) { value = (RectInt)fieldValue };
+				return new RectIntField(fieldName) { value = (RectInt)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(Bounds))
 			{
-				return new BoundsField(fieldName) { value = (Bounds)fieldValue };
+				return new BoundsField(fieldName) { value = (Bounds)fieldValue, showMixedValue = showMixedValue };
 			}
 			else if (fieldType == typeof(BoundsInt))
 			{
-				return new BoundsIntField(fieldName) { value = (BoundsInt)fieldValue };
+				return new BoundsIntField(fieldName) { value = (BoundsInt)fieldValue, showMixedValue = showMixedValue };
 			}
 			else
 			{

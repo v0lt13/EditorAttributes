@@ -6,12 +6,12 @@ using EditorAttributes.Editor.Utility;
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(FoldoutGroupAttribute))]
-    public class FoldoutGroupDrawer : PropertyDrawerBase
-    {
+	public class FoldoutGroupDrawer : PropertyDrawerBase
+	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var foldoutGroup = attribute as FoldoutGroupAttribute;
-			var isFoldedSaveKey = $"{property.serializedObject.targetObject}_{property.propertyPath}_IsFolded";
+			var foldoutSaveKey = CreatePropertySaveKey(property, "IsFoldoutGroupFolded");
 
 			var root = new VisualElement();
 
@@ -20,7 +20,7 @@ namespace EditorAttributes.Editor
 				style = { unityFontStyleAndWeight = FontStyle.Bold },
 				text = foldoutGroup.GroupName,
 				tooltip = property.tooltip,
-				value = EditorPrefs.GetBool(isFoldedSaveKey)
+				value = EditorPrefs.GetBool(foldoutSaveKey)
 			};
 
 			if (foldoutGroup.DrawInBox)
@@ -57,7 +57,6 @@ namespace EditorAttributes.Editor
 				}
 			}
 
-			foldout.RegisterValueChangedCallback((callback) => EditorPrefs.SetBool(isFoldedSaveKey, callback.newValue));
 			root.Add(foldout);
 
 			ExecuteLater(foldout, () =>
@@ -65,6 +64,9 @@ namespace EditorAttributes.Editor
 				var toggle = foldout.Q<Toggle>();
 
 				toggle.style.backgroundColor = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR / 3f : new Color(0.1f, 0.1f, 0.1f, 0.2f);
+
+				// Register this callback later since value changed callbacks are called on inspector initalization and we don't want to save values on initalization
+				foldout.RegisterValueChangedCallback((callback) => EditorPrefs.SetBool(foldoutSaveKey, callback.newValue));
 			});
 
 			return root;

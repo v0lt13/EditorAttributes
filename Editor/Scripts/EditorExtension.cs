@@ -33,7 +33,7 @@ namespace EditorAttributes.Editor
 
 			try
 			{
-				buttonParamsDataFilePath = Path.Combine(ButtonDrawer.PARAMS_DATA_LOCATION, $"{target}ParamsData.json");
+				buttonParamsDataFilePath = Path.Combine(ButtonDrawer.PARAMS_DATA_LOCATION, ButtonDrawer.GetFileName(target));
 			}
 			catch (ArgumentException)
 			{
@@ -214,7 +214,7 @@ namespace EditorAttributes.Editor
 
 			header.AddToClassList("unity-header-drawer__label");
 
-			var field = PropertyDrawerBase.CreateFieldForType(memberType, memberInfo.Name, memberValue);
+			var field = PropertyDrawerBase.CreateFieldForType(memberType, memberInfo.Name, memberValue, AreNonSerializedMemberValuesDifferent(memberInfo, targets));
 
 			field.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
 			field.SetEnabled(false);
@@ -240,6 +240,24 @@ namespace EditorAttributes.Editor
 			root.Add(field);
 
 			return root;
+		}
+
+		private bool AreNonSerializedMemberValuesDifferent(MemberInfo memberInfo, Object[] targets)
+		{
+			if (targets == null || targets.Length <= 1)
+				return false;
+
+			object firstValue = ReflectionUtility.GetMemberInfoValue(memberInfo, targets[0]);
+
+			for (int i = 1; i < targets.Length; i++)
+			{
+				object otherValue = ReflectionUtility.GetMemberInfoValue(memberInfo, targets[i]);
+
+				if (!Equals(firstValue, otherValue))
+					return true;
+			}
+
+			return false;
 		}
 
 		private bool HasRestrictedAttributes(MemberInfo memberInfo, out string errorMessage)
@@ -290,7 +308,7 @@ namespace EditorAttributes.Editor
 					GUIColorDrawer.ColorField(root, prevColor);
 				}
 
-				var button = ButtonDrawer.DrawButton(function, buttonAttribute, buttonFoldouts, buttonParameterValues, target);
+				var button = ButtonDrawer.DrawButton(function, buttonAttribute, buttonFoldouts, buttonParameterValues, targets);
 				var conditionalProperty = ReflectionUtility.GetValidMemberInfo(buttonAttribute.ConditionName, target);
 
 				button.RegisterCallback<FocusOutEvent>((callback) => ButtonDrawer.SaveParamsData(functions, target, buttonFoldouts, buttonParameterValues));

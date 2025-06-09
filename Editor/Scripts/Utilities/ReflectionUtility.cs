@@ -8,7 +8,7 @@ using System.Collections;
 namespace EditorAttributes.Editor.Utility
 {
 	public static class ReflectionUtility
-    {
+	{
 		public const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy;
 
 		/// <summary>
@@ -27,7 +27,7 @@ namespace EditorAttributes.Editor.Utility
 			// If the field null we try to see if its inside a serialized object
 			if (fieldInfo == null)
 			{
-				var serializedObjectType = GetNestedObjectType(property, out _);				
+				var serializedObjectType = GetNestedObjectType(property, out _);
 
 				if (serializedObjectType != null)
 					fieldInfo = serializedObjectType.GetField(fieldName, BINDING_FLAGS);
@@ -56,7 +56,7 @@ namespace EditorAttributes.Editor.Utility
 			{
 				var serializedObjectType = GetNestedObjectType(property, out _);
 
-				if (serializedObjectType != null) 
+				if (serializedObjectType != null)
 					propertyInfo = serializedObjectType.GetProperty(propertyName, BINDING_FLAGS);
 			}
 
@@ -98,7 +98,7 @@ namespace EditorAttributes.Editor.Utility
 
 					foreach (var function in functions)
 					{
-						if (function.Name == functionName) 
+						if (function.Name == functionName)
 							methodInfo = function;
 					}
 				}
@@ -119,7 +119,7 @@ namespace EditorAttributes.Editor.Utility
 
 				foreach (var function in functions)
 				{
-					if (function.Name == functionName) 
+					if (function.Name == functionName)
 						return function;
 				}
 
@@ -335,13 +335,13 @@ namespace EditorAttributes.Editor.Utility
 			try
 			{
 				nestedObject = property.serializedObject.targetObject;
-				var cutPathIndex = property.propertyPath.LastIndexOf('.');
+				int cutPathIndex = property.propertyPath.LastIndexOf('.');
 
 				if (cutPathIndex == -1) // If the cutPathIndex is -1 it means that the member is not nested and we return null
 					return null;
 
-				var path = property.propertyPath[..cutPathIndex].Replace(".Array.data[", "[");
-				var elements = path.Split('.');
+				string path = property.propertyPath[..cutPathIndex].Replace(".Array.data[", "[");
+				string[] elements = path.Split('.');
 
 				foreach (var element in elements)
 				{
@@ -349,7 +349,7 @@ namespace EditorAttributes.Editor.Utility
 					{
 						var elementName = element[..element.IndexOf("[")];
 						var index = Convert.ToInt32(element[element.IndexOf("[")..].Replace("[", "").Replace("]", ""));
-					
+
 						nestedObject = GetValue(nestedObject, elementName, index);
 					}
 					else
@@ -369,14 +369,14 @@ namespace EditorAttributes.Editor.Utility
 
 		private static object GetValue(object source, string name, int index)
 		{
-			if (GetValue(source, name) is not IEnumerable enumerable) 
+			if (GetValue(source, name) is not IEnumerable enumerable)
 				return null;
 
 			var enumerator = enumerable.GetEnumerator();
 
 			for (int i = 0; i <= index; i++)
 			{
-				if (!enumerator.MoveNext()) 
+				if (!enumerator.MoveNext())
 					return null;
 			}
 
