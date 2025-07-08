@@ -30,7 +30,7 @@ namespace EditorAttributesSamples
 		[Title("General Settings")]
 		public string gameName;
 		public bool isMultiplayer;
-		[ShowField(nameof(isMultiplayer)), Clamp(0, 5), IndentProperty(20f)] 
+		[ShowField(nameof(isMultiplayer)), Clamp(0, 5), IndentProperty(20f)]
 		public int maxPlayers;
 		[Space]
 		[Title("Entity Settings", titleSpace: 20f)]
@@ -50,7 +50,7 @@ namespace EditorAttributesSamples
 		[SelectionButtons]
 #endif
 		public Season season;
-		[Suffix(nameof(GetTimeOfDay), stringInputMode: StringInputMode.Dynamic), TimeField(TimeFormat.HourMinuteSecond, ConvertTo.Minutes)] 
+		[Suffix(nameof(GetTimeOfDay), stringInputMode: StringInputMode.Dynamic), TimeField(TimeFormat.HourMinuteSecond, Unit.Minute)]
 		public float timeOfDay;
 		[Space]
 		[Dropdown(nameof(GetAudioClips))] public string backgroundMusic;

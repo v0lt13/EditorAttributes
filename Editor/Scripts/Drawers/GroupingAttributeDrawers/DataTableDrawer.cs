@@ -7,8 +7,8 @@ using EditorAttributes.Editor.Utility;
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(DataTableAttribute))]
-    public class DataTableDrawer : PropertyDrawerBase
-    {
+	public class DataTableDrawer : PropertyDrawerBase
+	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var dataTableAttribute = attribute as DataTableAttribute;
@@ -28,7 +28,7 @@ namespace EditorAttributes.Editor
 			if (dataTableAttribute.DrawInBox)
 				ApplyBoxStyle(root);
 
-			var label = new Label(property.displayName) 
+			var label = new Label(property.displayName)
 			{
 				tooltip = property.tooltip,
 				style = {
@@ -40,7 +40,7 @@ namespace EditorAttributes.Editor
 					alignSelf = Align.Center,
 					color = EditorExtension.GLOBAL_COLOR
 				}
-			};			
+			};
 
 			root.Add(label);
 
@@ -55,7 +55,7 @@ namespace EditorAttributes.Editor
 					root.Add(errorBox);
 					break;
 				}
-				 
+
 				if (serializedProperty.depth >= initialDepth + 2) // Skip the X Y Z properties that are inside Vectors since we draw the vector field ourself
 					continue;
 
@@ -66,7 +66,10 @@ namespace EditorAttributes.Editor
 				if (dataTableAttribute.ShowLabels && IsNotFirstArrayElement(property))
 				{
 					var propertyLabel = new Label(serializedProperty.displayName);
+
 					propertyLabel.style.color = EditorExtension.GLOBAL_COLOR;
+					propertyLabel.style.overflow = Overflow.Hidden;
+					propertyLabel.tooltip = serializedProperty.tooltip;
 
 					tableColumn.Add(propertyLabel);
 				}

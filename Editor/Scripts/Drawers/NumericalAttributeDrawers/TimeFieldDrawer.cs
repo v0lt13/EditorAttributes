@@ -5,21 +5,29 @@ using UnityEngine.UIElements;
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(TimeFieldAttribute))]
-    public class TimeFieldDrawer : PropertyDrawerBase
-    {
-    	public override VisualElement CreatePropertyGUI(SerializedProperty property)
-    	{
-            var timeFieldAttribute = attribute as TimeFieldAttribute;
+	public class TimeFieldDrawer : PropertyDrawerBase
+	{
+		public override VisualElement CreatePropertyGUI(SerializedProperty property)
+		{
+			var timeFieldAttribute = attribute as TimeFieldAttribute;
 
-			var timeVectorSaveKeyX = $"{property.serializedObject.targetObject}_{property.propertyPath}_TimeX";
-			var timeVectorSaveKeyY = $"{property.serializedObject.targetObject}_{property.propertyPath}_TimeY";
-			var timeVectorSaveKeyZ = $"{property.serializedObject.targetObject}_{property.propertyPath}_TimeZ";
+			var timeVectorSaveKeyX = CreatePropertySaveKey(property, "TimeX");
+			var timeVectorSaveKeyY = CreatePropertySaveKey(property, "TimeY");
+			var timeVectorSaveKeyZ = CreatePropertySaveKey(property, "TimeZ");
 
 			var root = new VisualElement();
-            var errorBox = new HelpBox();
+			var errorBox = new HelpBox();
 
-            if (property.propertyType is SerializedPropertyType.Float or SerializedPropertyType.Integer)
-            {
+			if (!UnitConverter.IsUnitInCategory(timeFieldAttribute.ConversionUnit, UnitCategory.Time))
+			{
+				errorBox.text = $"The conversion unit <b>{timeFieldAttribute.ConversionUnit}</b> is not a valid time unit";
+
+				DisplayErrorBox(root, errorBox);
+				return root;
+			}
+
+			if (property.propertyType is SerializedPropertyType.Float or SerializedPropertyType.Integer)
+			{
 				var timeField = new Vector3Field(property.displayName)
 				{
 					value = new Vector3(EditorPrefs.GetFloat(timeVectorSaveKeyX), EditorPrefs.GetFloat(timeVectorSaveKeyY), EditorPrefs.GetFloat(timeVectorSaveKeyZ)),
@@ -30,7 +38,7 @@ namespace EditorAttributes.Editor
 				AddPropertyContextMenu(timeField, property);
 
 				timeField.RegisterValueChangedCallback((callback) =>
-                {
+				{
 					switch (property.propertyType)
 					{
 						case SerializedPropertyType.Float:
@@ -46,7 +54,7 @@ namespace EditorAttributes.Editor
 					EditorPrefs.SetFloat(timeVectorSaveKeyY, callback.newValue.y);
 					EditorPrefs.SetFloat(timeVectorSaveKeyZ, callback.newValue.z);
 					property.serializedObject.ApplyModifiedProperties();
-                });
+				});
 
 				root.Add(timeField);
 
@@ -55,18 +63,21 @@ namespace EditorAttributes.Editor
 					var labels = timeField.Query<Label>(className: "unity-base-text-field__label").ToList();
 
 					foreach (var label in labels)
+					{
 						label.text = GetFormatInitial(labels.IndexOf(label), timeFieldAttribute);
+						label.tooltip = GetFormatTooltip(labels.IndexOf(label), timeFieldAttribute);
+					}
 				});
 			}
 			else
-            {
-                errorBox.text = "The TimeField Attribute can only be attached to Integers or Floats";
-            }
+			{
+				errorBox.text = "The TimeField Attribute can only be attached to Integers or Floats";
+			}
 
-            DisplayErrorBox(root, errorBox);
+			DisplayErrorBox(root, errorBox);
 
-            return root;
-    	}
+			return root;
+		}
 
 		protected override string CopyValue(VisualElement element, SerializedProperty property)
 		{
@@ -82,8 +93,51 @@ namespace EditorAttributes.Editor
 			vector3field.value = VectorUtils.ParseVector3(clipboardValue.Replace("Vector3", ""));
 		}
 
+		private string GetFormatTooltip(int index, TimeFieldAttribute timeFieldAttribute)
+		{
+			return timeFieldAttribute.TimeFormat switch
+			{
+				TimeFormat.YearMonthWeek => index switch
+				{
+					0 => "Year",
+					1 => "Month",
+					2 => "Week",
+					_ => string.Empty,
+				},
+				TimeFormat.YearMonthDay => index switch
+				{
+					0 => "Year",
+					1 => "Month",
+					2 => "Day",
+					_ => string.Empty,
+				},
+				TimeFormat.WeekDayHour => index switch
+				{
+					0 => "Week",
+					1 => "Day",
+					2 => "Hour",
+					_ => string.Empty,
+				},
+				TimeFormat.DayHourMinute => index switch
+				{
+					0 => "Day",
+					1 => "Hour",
+					2 => "Minute",
+					_ => string.Empty,
+				},
+				TimeFormat.HourMinuteSecond => index switch
+				{
+					0 => "Hour",
+					1 => "Minute",
+					2 => "Second",
+					_ => string.Empty,
+				},
+				_ => string.Empty,
+			};
+		}
+
 		private string GetFormatInitial(int index, TimeFieldAttribute timeFieldAttribute)
-        {
+		{
 			return timeFieldAttribute.TimeFormat switch
 			{
 				TimeFormat.YearMonthWeek => index switch
@@ -91,91 +145,81 @@ namespace EditorAttributes.Editor
 					0 => "Y",
 					1 => "M",
 					2 => "W",
-					_ => "ERR",
+					_ => string.Empty,
 				},
 				TimeFormat.YearMonthDay => index switch
 				{
 					0 => "Y",
 					1 => "M",
 					2 => "D",
-					_ => "ERR",
+					_ => string.Empty,
 				},
 				TimeFormat.WeekDayHour => index switch
 				{
-					0 => "Y",
+					0 => "W",
 					1 => "D",
 					2 => "H",
-					_ => "ERR",
+					_ => string.Empty,
 				},
 				TimeFormat.DayHourMinute => index switch
 				{
 					0 => "D",
 					1 => "H",
 					2 => "M",
-					_ => "ERR",
+					_ => string.Empty,
 				},
 				TimeFormat.HourMinuteSecond => index switch
 				{
 					0 => "H",
 					1 => "M",
 					2 => "S",
-					_ => "ERR",
+					_ => string.Empty,
 				},
-				_ => "ERR",
+				_ => string.Empty,
 			};
 		}
 
 		private float GetConvertedTimeValue(Vector3 value, TimeFieldAttribute timeFieldAttribute)
 		{
-			return timeFieldAttribute.TimeFormat switch
+			double total = timeFieldAttribute.TimeFormat switch
 			{
-				TimeFormat.YearMonthWeek => timeFieldAttribute.ConvertTo switch
-				{
-					ConvertTo.Days => value.x * 365f + value.y * 30f + value.z * 7f,
-					ConvertTo.Hours => (value.x * 365f + value.y * 30f + value.z * 7f) * 24f,
-					ConvertTo.Minutes => (value.x * 365f + value.y * 30f + value.z * 7f) * 24f * 60f,
-					ConvertTo.Seconds => (value.x * 365f + value.y * 30f + value.z * 7f) * 24f * 60f * 60f,
-					ConvertTo.Miliseconds => (value.x * 365f + value.y * 30f + value.z * 7f) * 24f * 60f * 60f * 1000f,
-					_ => 0f
-				},
-				TimeFormat.YearMonthDay => timeFieldAttribute.ConvertTo switch
-				{
-					ConvertTo.Days => value.x * 365f + value.y * 30f + value.z,
-					ConvertTo.Hours => (value.x * 365f + value.y * 30f + value.z) * 24f,
-					ConvertTo.Minutes => (value.x * 365f + value.y * 30f + value.z) * 24f * 60f,
-					ConvertTo.Seconds => (value.x * 365f + value.y * 30f + value.z) * 24f * 60f * 60f,
-					ConvertTo.Miliseconds => (value.x * 365f + value.y * 30f + value.z) * 24f * 60f * 60f * 1000f,
-					_ => 0f
-				},
-				TimeFormat.WeekDayHour => timeFieldAttribute.ConvertTo switch
-				{
-					ConvertTo.Days => value.x * 7f + value.y,
-					ConvertTo.Hours => (value.x * 7f + value.y) * 24f + value.z,
-					ConvertTo.Minutes => ((value.x * 7f + value.y) * 24f + value.z) * 60f,
-					ConvertTo.Seconds => ((value.x * 7f + value.y) * 24f + value.z) * 60f * 60f,
-					ConvertTo.Miliseconds => ((value.x * 7f + value.y) * 24f + value.z) * 60f * 60f * 1000f,
-					_ => 0f
-				},
-				TimeFormat.DayHourMinute => timeFieldAttribute.ConvertTo switch
-				{
-					ConvertTo.Days => value.x + value.y / 24f + value.z / (24f * 60f),
-					ConvertTo.Hours => value.x * 24f + value.y + value.z / 60f,
-					ConvertTo.Minutes => (value.x * 24f * 60f) + value.y * 60f + value.z,
-					ConvertTo.Seconds => ((value.x * 24f * 60f) + value.y * 60f + value.z) * 60f,
-					ConvertTo.Miliseconds => ((value.x * 24f * 60f) + value.y * 60f + value.z) * 60f * 1000f,
-					_ => 0f
-				},
-				TimeFormat.HourMinuteSecond => timeFieldAttribute.ConvertTo switch
-				{
-					ConvertTo.Days => value.x / 24f + value.y / (24f * 60f) + value.z / (24f * 60f * 60f),
-					ConvertTo.Hours => value.x + value.y / 60f + value.z / (60f * 60f),
-					ConvertTo.Minutes => (value.x * 60f) + value.y + value.z / 60f,
-					ConvertTo.Seconds => ((value.x * 60f) + value.y) * 60f + value.z,
-					ConvertTo.Miliseconds => (((value.x * 60f) + value.y) * 60f + value.z) * 1000f,
-					_ => 0f
-				},
-				_ => 0f
+				TimeFormat.YearMonthWeek =>
+					GetConverted(value.x, Unit.Year, timeFieldAttribute.ConversionUnit) +
+					GetConverted(value.y, Unit.Month, timeFieldAttribute.ConversionUnit) +
+					GetConverted(value.z, Unit.Week, timeFieldAttribute.ConversionUnit),
+
+				TimeFormat.YearMonthDay =>
+					GetConverted(value.x, Unit.Year, timeFieldAttribute.ConversionUnit) +
+					GetConverted(value.y, Unit.Month, timeFieldAttribute.ConversionUnit) +
+					GetConverted(value.z, Unit.Day, timeFieldAttribute.ConversionUnit),
+
+				TimeFormat.WeekDayHour =>
+					GetConverted(value.x, Unit.Week, timeFieldAttribute.ConversionUnit) +
+					GetConverted(value.y, Unit.Day, timeFieldAttribute.ConversionUnit) +
+					GetConverted(value.z, Unit.Hour, timeFieldAttribute.ConversionUnit),
+
+				TimeFormat.DayHourMinute =>
+					GetConverted(value.x, Unit.Day, timeFieldAttribute.ConversionUnit) +
+					GetConverted(value.y, Unit.Hour, timeFieldAttribute.ConversionUnit) +
+					GetConverted(value.z, Unit.Minute, timeFieldAttribute.ConversionUnit),
+
+				TimeFormat.HourMinuteSecond =>
+					GetConverted(value.x, Unit.Hour, timeFieldAttribute.ConversionUnit) +
+					GetConverted(value.y, Unit.Minute, timeFieldAttribute.ConversionUnit) +
+					GetConverted(value.z, Unit.Second, timeFieldAttribute.ConversionUnit),
+
+				_ => 0
 			};
+
+			return (float)total;
 		}
-    }
+
+		private double GetConverted(float value, Unit from, Unit to)
+		{
+			if (from == to)
+				return value;
+
+			return value * UnitConverter.GetConversion(from.ToString(), to.ToString()).conversion;
+		}
+	}
 }

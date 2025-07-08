@@ -89,6 +89,8 @@ namespace EditorAttributes.Editor
 						{
 							propertyField.SetEnabled(false);
 							root.Add(propertyField);
+
+							continue;
 						}
 
 						var field = ReflectionUtility.FindField(property.name, target);
@@ -108,8 +110,7 @@ namespace EditorAttributes.Editor
 							GUIColorDrawer.ColorField(propertyField, prevColor);
 						}
 
-						if (property.name != "m_Script")
-							propertyList.Add(property.name, propertyField);
+						propertyList.Add(property.name, propertyField);
 					}
 					while (property.NextVisible(false));
 				}

@@ -8,10 +8,10 @@ namespace EditorAttributesSamples
 	{
 		[Header("TimeField Attribute:")]
 		[Rename(nameof(ConversionResultDays), stringInputMode: StringInputMode.Dynamic)]
-		[SerializeField, TimeField(TimeFormat.YearMonthWeek, ConvertTo.Days)] private int intField;
+		[SerializeField, TimeField(TimeFormat.YearMonthWeek, Unit.Day)] private int intField;
 
 		[Rename(nameof(ConversionResultSeconds), stringInputMode: StringInputMode.Dynamic)]
-		[SerializeField, TimeField(TimeFormat.DayHourMinute, ConvertTo.Seconds)] private float floatField;
+		[SerializeField, TimeField(TimeFormat.DayHourMinute, Unit.Second)] private float floatField;
 
 		private string ConversionResultDays() => $"{intField} Days";
 		private string ConversionResultSeconds() => $"{floatField} Seconds";

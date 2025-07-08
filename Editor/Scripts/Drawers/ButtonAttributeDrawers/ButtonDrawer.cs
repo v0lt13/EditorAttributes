@@ -249,6 +249,22 @@ namespace EditorAttributes.Editor
 				File.Delete(filePath);
 		}
 
+		internal static void ClearAllParamsData()
+		{
+			if (Directory.Exists(PARAMS_DATA_LOCATION))
+			{
+				int fileCount = 0;
+
+				foreach (var file in Directory.GetFiles(PARAMS_DATA_LOCATION, "*_ButtonParameterData.json"))
+				{
+					File.Delete(file);
+					fileCount++;
+				}
+
+				Debug.Log($"<b>{fileCount}</b> files were deleted");
+			}
+		}
+
 		internal static string GetFileName(object target) => $"{(target as Object).GetInstanceID()}_{target}_ButtonParameterData.json";
 
 		internal static string GetFunctionID(MethodInfo function, object target) => $"{(target as Object).GetInstanceID()}_{target}_{function.Name}_{string.Join("_", function.GetParameters().Select(param => param.ParameterType.Name))}";

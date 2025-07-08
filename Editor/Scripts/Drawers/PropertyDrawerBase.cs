@@ -1,14 +1,13 @@
+using EditorAttributes.Editor.Utility;
 using System;
-using UnityEngine;
-using UnityEditor;
-using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
+using UnityEditor;
 using UnityEditor.Search;
 using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
-using System.Collections.Generic;
-using EditorAttributes.Editor.Utility;
-
 using Object = UnityEngine.Object;
 
 namespace EditorAttributes.Editor
@@ -764,6 +763,290 @@ namespace EditorAttributes.Editor
 		}
 
 		/// <summary>
+		/// Gets the value of the appropriate field
+		/// </summary>
+		/// <param name="field">The visual element of the field</param>
+		/// <returns>The field value</returns>
+		public static object GetFieldValue(VisualElement field) => field switch
+		{
+			TextField textField => textField.value,
+			IntegerField integerField => integerField.value,
+			UnsignedIntegerField unsignedIntegerField => unsignedIntegerField.value,
+			LongField longField => longField.value,
+			UnsignedLongField unsignedLongField => unsignedLongField.value,
+			FloatField floatField => floatField.value,
+			DoubleField doubleField => doubleField.value,
+			Toggle toggle => toggle.value,
+			EnumField enumField => enumField.value,
+			Vector2Field vector2Field => vector2Field.value,
+			Vector2IntField vector2IntField => vector2IntField.value,
+			Vector3Field vector3Field => vector3Field.value,
+			Vector3IntField vector3IntField => vector3IntField.value,
+			Vector4Field vector4Field => vector4Field.value,
+			ColorField colorField => colorField.value,
+			GradientField gradientField => gradientField.value,
+			CurveField curveField => curveField.value,
+			LayerMaskField layerMaskField => layerMaskField.value,
+			RectField rectField => rectField.value,
+			RectIntField rectIntField => rectIntField.value,
+			BoundsField boundsField => boundsField.value,
+			BoundsIntField boundsIntField => boundsIntField.value,
+			_ => null,
+		};
+
+		/// <summary>
+		/// Sets the value of the appropriate field
+		/// </summary>
+		/// <param name="field">The visual element of the field</param>
+		/// <param name="value">The value to set</param>
+		/// <param name="notify">Whether to call the value change callback when setting the value</param>
+		public static void SetFieldValue(VisualElement field, object value, bool notify = false)
+		{
+			if (field is TextField textField)
+			{
+				if (notify)
+				{
+					textField.value = (string)value;
+				}
+				else
+				{
+					textField.SetValueWithoutNotify((string)value);
+				}
+			}
+			else if (field is IntegerField integerField)
+			{
+				if (notify)
+				{
+					integerField.value = (int)value;
+				}
+				else
+				{
+					integerField.SetValueWithoutNotify((int)value);
+				}
+			}
+			else if (field is UnsignedIntegerField unsignedIntegerField)
+			{
+				if (notify)
+				{
+					unsignedIntegerField.value = (uint)value;
+				}
+				else
+				{
+					unsignedIntegerField.SetValueWithoutNotify((uint)value);
+				}
+			}
+			else if (field is LongField longField)
+			{
+				if (notify)
+				{
+					longField.value = (long)value;
+				}
+				else
+				{
+					longField.SetValueWithoutNotify((long)value);
+				}
+			}
+			else if (field is UnsignedLongField unsignedLongField)
+			{
+				if (notify)
+				{
+					unsignedLongField.value = (ulong)value;
+				}
+				else
+				{
+					unsignedLongField.SetValueWithoutNotify((ulong)value);
+				}
+			}
+			else if (field is FloatField floatField)
+			{
+				if (notify)
+				{
+					floatField.value = (float)value;
+				}
+				else
+				{
+					floatField.SetValueWithoutNotify((float)value);
+				}
+			}
+			else if (field is DoubleField doubleField)
+			{
+				if (notify)
+				{
+					doubleField.value = (double)value;
+				}
+				else
+				{
+					doubleField.SetValueWithoutNotify((double)value);
+				}
+			}
+			else if (field is Toggle toggle)
+			{
+				if (notify)
+				{
+					toggle.value = (bool)value;
+				}
+				else
+				{
+					toggle.SetValueWithoutNotify((bool)value);
+				}
+			}
+			else if (field is EnumField enumField)
+			{
+				if (notify)
+				{
+					enumField.value = (Enum)value;
+				}
+				else
+				{
+					enumField.SetValueWithoutNotify((Enum)value);
+				}
+			}
+			else if (field is Vector2Field vector2Field)
+			{
+				if (notify)
+				{
+					vector2Field.value = (Vector2)value;
+				}
+				else
+				{
+					vector2Field.SetValueWithoutNotify((Vector2)value);
+				}
+			}
+			else if (field is Vector2IntField vector2IntField)
+			{
+				if (notify)
+				{
+					vector2IntField.value = (Vector2Int)value;
+				}
+				else
+				{
+					vector2IntField.SetValueWithoutNotify((Vector2Int)value);
+				}
+			}
+			else if (field is Vector3Field vector3Field)
+			{
+				if (notify)
+				{
+					vector3Field.value = (Vector3)value;
+				}
+				else
+				{
+					vector3Field.SetValueWithoutNotify((Vector3)value);
+				}
+			}
+			else if (field is Vector3IntField vector3IntField)
+			{
+				if (notify)
+				{
+					vector3IntField.value = (Vector3Int)value;
+				}
+				else
+				{
+					vector3IntField.SetValueWithoutNotify((Vector3Int)value);
+				}
+			}
+			else if (field is Vector4Field vector4Field)
+			{
+				if (notify)
+				{
+					vector4Field.value = (Vector4)value;
+				}
+				else
+				{
+					vector4Field.SetValueWithoutNotify((Vector4)value);
+				}
+			}
+			else if (field is ColorField colorField)
+			{
+				if (notify)
+				{
+					colorField.value = (Color)value;
+				}
+				else
+				{
+					colorField.SetValueWithoutNotify((Color)value);
+				}
+			}
+			else if (field is GradientField gradientField)
+			{
+				if (notify)
+				{
+					gradientField.value = (Gradient)value;
+				}
+				else
+				{
+					gradientField.SetValueWithoutNotify((Gradient)value);
+				}
+			}
+			else if (field is CurveField curveField)
+			{
+				if (notify)
+				{
+					curveField.value = (AnimationCurve)value;
+				}
+				else
+				{
+					curveField.SetValueWithoutNotify((AnimationCurve)value);
+				}
+			}
+			else if (field is LayerMaskField layerMaskField)
+			{
+				if (notify)
+				{
+					layerMaskField.value = (LayerMask)value;
+				}
+				else
+				{
+					layerMaskField.SetValueWithoutNotify((LayerMask)value);
+				}
+			}
+			else if (field is RectField rectField)
+			{
+				if (notify)
+				{
+					rectField.value = (Rect)value;
+				}
+				else
+				{
+					rectField.SetValueWithoutNotify((Rect)value);
+				}
+			}
+			else if (field is RectIntField rectIntField)
+			{
+				if (notify)
+				{
+					rectIntField.value = (RectInt)value;
+				}
+				else
+				{
+					rectIntField.SetValueWithoutNotify((RectInt)value);
+				}
+			}
+			else if (field is BoundsField boundsField)
+			{
+				if (notify)
+				{
+					boundsField.value = (Bounds)value;
+				}
+				else
+				{
+					boundsField.SetValueWithoutNotify((Bounds)value);
+				}
+			}
+			else if (field is BoundsIntField boundsIntField)
+			{
+				if (notify)
+				{
+					boundsIntField.value = (BoundsInt)value;
+				}
+				else
+				{
+					boundsIntField.SetValueWithoutNotify((BoundsInt)value);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Bind a field to the target member value
 		/// </summary>
 		/// <typeparam name="T">The type of the field</typeparam>
@@ -789,135 +1072,135 @@ namespace EditorAttributes.Editor
 
 				if (fieldType == typeof(string))
 				{
-					var textField = field as TextField;
+					var inputField = field as TextField;
 
-					textField.SetValueWithoutNotify((string)memberValue);
+					inputField.SetValueWithoutNotify((string)memberValue);
 				}
 				else if (fieldType == typeof(int))
 				{
-					var textField = field as IntegerField;
+					var inputField = field as IntegerField;
 
-					textField.SetValueWithoutNotify((int)memberValue);
+					inputField.SetValueWithoutNotify((int)memberValue);
 				}
 				else if (fieldType == typeof(uint))
 				{
-					var textField = field as UnsignedIntegerField;
+					var inputField = field as UnsignedIntegerField;
 
-					textField.SetValueWithoutNotify((uint)memberValue);
+					inputField.SetValueWithoutNotify((uint)memberValue);
 				}
 				else if (fieldType == typeof(long))
 				{
-					var textField = field as LongField;
+					var inputField = field as LongField;
 
-					textField.SetValueWithoutNotify((long)memberValue);
+					inputField.SetValueWithoutNotify((long)memberValue);
 				}
 				else if (fieldType == typeof(ulong))
 				{
-					var textField = field as UnsignedLongField;
+					var inputField = field as UnsignedLongField;
 
-					textField.SetValueWithoutNotify((ulong)memberValue);
+					inputField.SetValueWithoutNotify((ulong)memberValue);
 				}
 				else if (fieldType == typeof(float))
 				{
-					var textField = field as FloatField;
+					var inputField = field as FloatField;
 
-					textField.SetValueWithoutNotify((float)memberValue);
+					inputField.SetValueWithoutNotify((float)memberValue);
 				}
 				else if (fieldType == typeof(double))
 				{
-					var textField = field as DoubleField;
+					var inputField = field as DoubleField;
 
-					textField.SetValueWithoutNotify((double)memberValue);
+					inputField.SetValueWithoutNotify((double)memberValue);
 				}
 				else if (fieldType == typeof(bool))
 				{
-					var textField = field as Toggle;
+					var inputField = field as Toggle;
 
-					textField.SetValueWithoutNotify((bool)memberValue);
+					inputField.SetValueWithoutNotify((bool)memberValue);
 				}
 				else if (fieldType.IsEnum)
 				{
-					var textField = field as EnumField;
+					var inputField = field as EnumField;
 
-					textField.SetValueWithoutNotify((Enum)memberValue);
+					inputField.SetValueWithoutNotify((Enum)memberValue);
 				}
 				else if (fieldType == typeof(Vector2))
 				{
-					var textField = field as Vector2Field;
+					var inputField = field as Vector2Field;
 
-					textField.SetValueWithoutNotify((Vector2)memberValue);
+					inputField.SetValueWithoutNotify((Vector2)memberValue);
 				}
 				else if (fieldType == typeof(Vector2Int))
 				{
-					var textField = field as Vector2IntField;
+					var inputField = field as Vector2IntField;
 
-					textField.SetValueWithoutNotify((Vector2Int)memberValue);
+					inputField.SetValueWithoutNotify((Vector2Int)memberValue);
 				}
 				else if (fieldType == typeof(Vector3))
 				{
-					var textField = field as Vector3Field;
+					var inputField = field as Vector3Field;
 
-					textField.SetValueWithoutNotify((Vector3)memberValue);
+					inputField.SetValueWithoutNotify((Vector3)memberValue);
 				}
 				else if (fieldType == typeof(Vector3Int))
 				{
-					var textField = field as Vector3IntField;
+					var inputField = field as Vector3IntField;
 
-					textField.SetValueWithoutNotify((Vector3Int)memberValue);
+					inputField.SetValueWithoutNotify((Vector3Int)memberValue);
 				}
 				else if (fieldType == typeof(Vector4))
 				{
-					var textField = field as Vector4Field;
+					var inputField = field as Vector4Field;
 
-					textField.SetValueWithoutNotify((Vector4)memberValue);
+					inputField.SetValueWithoutNotify((Vector4)memberValue);
 				}
 				else if (fieldType == typeof(Color))
 				{
-					var textField = field as ColorField;
+					var inputField = field as ColorField;
 
-					textField.SetValueWithoutNotify((Color)memberValue);
+					inputField.SetValueWithoutNotify((Color)memberValue);
 				}
 				else if (fieldType == typeof(Gradient))
 				{
-					var textField = field as GradientField;
+					var inputField = field as GradientField;
 
-					textField.SetValueWithoutNotify((Gradient)memberValue);
+					inputField.SetValueWithoutNotify((Gradient)memberValue);
 				}
 				else if (fieldType == typeof(AnimationCurve))
 				{
-					var textField = field as CurveField;
+					var inputField = field as CurveField;
 
-					textField.SetValueWithoutNotify((AnimationCurve)memberValue);
+					inputField.SetValueWithoutNotify((AnimationCurve)memberValue);
 				}
 				else if (fieldType == typeof(LayerMask))
 				{
-					var textField = field as LayerField;
+					var inputField = field as LayerField;
 
-					textField.SetValueWithoutNotify((LayerMask)memberValue);
+					inputField.SetValueWithoutNotify((LayerMask)memberValue);
 				}
 				else if (fieldType == typeof(Rect))
 				{
-					var textField = field as RectField;
+					var inputField = field as RectField;
 
-					textField.SetValueWithoutNotify((Rect)memberValue);
+					inputField.SetValueWithoutNotify((Rect)memberValue);
 				}
 				else if (fieldType == typeof(RectInt))
 				{
-					var textField = field as RectIntField;
+					var inputField = field as RectIntField;
 
-					textField.SetValueWithoutNotify((RectInt)memberValue);
+					inputField.SetValueWithoutNotify((RectInt)memberValue);
 				}
 				else if (fieldType == typeof(Bounds))
 				{
-					var textField = field as BoundsField;
+					var inputField = field as BoundsField;
 
-					textField.SetValueWithoutNotify((Bounds)memberValue);
+					inputField.SetValueWithoutNotify((Bounds)memberValue);
 				}
 				else if (fieldType == typeof(BoundsInt))
 				{
-					var textField = field as BoundsIntField;
+					var inputField = field as BoundsIntField;
 
-					textField.SetValueWithoutNotify((BoundsInt)memberValue);
+					inputField.SetValueWithoutNotify((BoundsInt)memberValue);
 				}
 				else
 				{
