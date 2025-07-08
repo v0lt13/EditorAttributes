@@ -11,7 +11,7 @@ namespace EditorAttributes.Editor
 	{
 		[SerializeField] internal bool disableBuildValidation;
 		[Space]
-		[SerializeField, DataTable] internal List<UnitDefinition> customUnitDefinitions = new();
+		[SerializeField, DataTable] internal UnitDefinition[] customUnitDefinitions;
 
 		void OnValidate() => UnitConverter.UNIT_CONVERSION_MAP = UnitConverter.GenerateConversionMap();
 
