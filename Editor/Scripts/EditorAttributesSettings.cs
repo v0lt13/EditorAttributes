@@ -58,7 +58,7 @@ namespace EditorAttributes.Editor
 
 			var helpButton = new Button(() => Application.OpenURL("https://editorattributesdocs.readthedocs.io/en/latest/GettingStarted/editorattributessettings.html"))
 			{
-				tooltip = "Open reference for EditorAttributes Settings.",
+				tooltip = "Open reference for Editor Attributes Settings.",
 				style =
 				{
 					borderTopLeftRadius = 0f, borderTopRightRadius = 0f, borderBottomLeftRadius = 0f, borderBottomRightRadius = 0f,
@@ -88,7 +88,7 @@ namespace EditorAttributes.Editor
 			var clearParamsButton = new Button(() => ButtonDrawer.ClearAllParamsData())
 			{
 				text = "Delete Buttons Parameter Data",
-				tooltip = "Deletes all buttons parameter data stored in ProjectSettings/EditorAttributes",
+				tooltip = "Deletes all buttons parameter data stored in Project Settings/Editor Attributes",
 				style = { marginTop = 10f }
 			};
 
@@ -105,7 +105,7 @@ namespace EditorAttributes.Editor
 		public override void OnDeactivate() => EditorAttributesSettings.instance.SaveSettings();
 
 		[SettingsProvider]
-		internal static SettingsProvider CreateSettingsProvider() => new EditorAttributesSettingsProvider("Project/EditorAttributes", SettingsScope.Project)
+		internal static SettingsProvider CreateSettingsProvider() => new EditorAttributesSettingsProvider("Project/Editor Attributes", SettingsScope.Project)
 		{
 			keywords = new HashSet<string>(new[] { "EditorAttributes", "Editor", "Attributes" })
 		};
