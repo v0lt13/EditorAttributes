@@ -256,5 +256,11 @@ namespace EditorAttributes
 		MilesPerGallon_US,
 		MilesPerGallon_UK,
 		LitersPer100Kilometers,
-	}
+
+        // Percent
+        PercentMultiplier,
+        Percent,
+        Permille,
+        Permyriad,
+    }
 }

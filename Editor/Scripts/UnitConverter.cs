@@ -28,8 +28,9 @@ namespace EditorAttributes.Editor
 		Frequency,
 		Data,
 		Density,
-		FuelEconomy
-	}
+		FuelEconomy,
+        Percent
+    }
 
 	[Serializable]
 	internal class UnitDefinition
@@ -316,7 +317,13 @@ namespace EditorAttributes.Editor
 			new(Unit.MilesPerGallon_US, "mpg", UnitCategory.FuelEconomy, 1d),
 			new(Unit.MilesPerGallon_UK, "mpg", UnitCategory.FuelEconomy, 1.20095d),
 			new(Unit.LitersPer100Kilometers, "L/100km", UnitCategory.FuelEconomy, 235.215d),
-		};
+
+			// Percent (base: %m)
+			new(Unit.PercentMultiplier, "%m", UnitCategory.Percent, 1d),
+            new(Unit.Percent, "%", UnitCategory.Percent, 0.01d),
+            new(Unit.Permille, "‰", UnitCategory.Percent, 0.001d),
+            new(Unit.Permyriad, "‱", UnitCategory.Percent, 0.0001d),
+        };
 
 		internal static Dictionary<(string from, string to), UnitConverter> UNIT_CONVERSION_MAP = new();
 

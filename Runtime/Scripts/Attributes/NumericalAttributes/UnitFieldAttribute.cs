@@ -10,12 +10,32 @@ namespace EditorAttributes
 		public string DisplayUnit { get; private set; }
 		public string ConversionUnit { get; private set; }
 
-		/// <summary>
-		/// Attribute to display a numerical field as a specified unit and convert it to another unit
-		/// </summary>
-		/// <param name="displayUnit">The unit to display in the inspector</param>
-		/// <param name="conversionUnit">The unit to convert to</param>
-		public UnitFieldAttribute(Unit displayUnit, Unit conversionUnit)
+        /// <summary>
+        /// Attribute to display a numerical field as a specified unit
+        /// </summary>
+        /// <param name="displayUnit">The unit to display in the inspector</param>
+        public UnitFieldAttribute(Unit displayUnit)
+        {
+            DisplayUnit = displayUnit.ToString();
+            ConversionUnit = displayUnit.ToString();
+        }
+
+        /// <summary>
+        /// Attribute to display a numerical field as a specified unit
+        /// </summary>
+        /// <param name="customDisplayUnit">The custom unit to display in the inspector</param>
+        public UnitFieldAttribute(string customDisplayUnit)
+        {
+            DisplayUnit = customDisplayUnit;
+            ConversionUnit = customDisplayUnit;
+        }
+
+        /// <summary>
+        /// Attribute to display a numerical field as a specified unit and convert it to another unit
+        /// </summary>
+        /// <param name="displayUnit">The unit to display in the inspector</param>
+        /// <param name="conversionUnit">The unit to convert to</param>
+        public UnitFieldAttribute(Unit displayUnit, Unit conversionUnit)
 		{
 			DisplayUnit = displayUnit.ToString();
 			ConversionUnit = conversionUnit.ToString();
