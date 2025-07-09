@@ -29,7 +29,7 @@ namespace EditorAttributes.Editor
 		Data,
 		Density,
 		FuelEconomy,
-        Percent
+        Percentage
     }
 
 	[Serializable]
@@ -319,10 +319,10 @@ namespace EditorAttributes.Editor
 			new(Unit.LitersPer100Kilometers, "L/100km", UnitCategory.FuelEconomy, 235.215d),
 
 			// Percent (base: %m)
-			new(Unit.PercentMultiplier, "%m", UnitCategory.Percent, 1d),
-            new(Unit.Percent, "%", UnitCategory.Percent, 0.01d),
-            new(Unit.Permille, "‰", UnitCategory.Percent, 0.001d),
-            new(Unit.Permyriad, "‱", UnitCategory.Percent, 0.0001d),
+			new(Unit.PercentMultiplier, "%m", UnitCategory.Percentage, 1d),
+            new(Unit.Percent, "%", UnitCategory.Percentage, 0.01d),
+            new(Unit.Permille, "‰", UnitCategory.Percentage, 0.001d),
+            new(Unit.Permyriad, "‱", UnitCategory.Percentage, 0.0001d),
         };
 
 		internal static Dictionary<(string from, string to), UnitConverter> UNIT_CONVERSION_MAP = new();
