@@ -17,17 +17,20 @@ namespace EditorAttributes.Editor
 
 		internal void AddCustomDefinitions()
 		{
-			foreach (var customUnitDefinition in customUnitDefinitions)
-			{
-				if (customUnitDefinition.category != UnitCategory.Custom)
-					customUnitDefinition.categoryName = customUnitDefinition.category.ToString();
-			}
+            var unitDefinitions = UnitConverter.UNIT_DEFINITIONS;
 
-			var unitDefinitions = UnitConverter.UNIT_DEFINITIONS;
+            unitDefinitions.RemoveWhere((unitDefinition) => unitDefinition.unit == Unit.Custom);
 
-			unitDefinitions.RemoveWhere((unitDefinition) => unitDefinition.unit == Unit.Custom);
-			unitDefinitions.UnionWith(customUnitDefinitions);
-		}
+            if (customUnitDefinitions == null)
+                return;
+
+            foreach (var customUnitDefinition in customUnitDefinitions)
+            {
+                if (customUnitDefinition.category != UnitCategory.Custom)
+                    customUnitDefinition.categoryName = customUnitDefinition.category.ToString();
+            }
+            unitDefinitions.UnionWith(customUnitDefinitions);
+        }
 
 		internal void SaveSettings() => Save(true);
 	}
