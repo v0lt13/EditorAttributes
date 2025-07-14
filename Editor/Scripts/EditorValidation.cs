@@ -83,6 +83,9 @@ namespace EditorAttributes.Editor
 #if HAS_ADDRESSABLES_PACKAGE
 			var settings = AddressableAssetSettingsDefaultObject.Settings;
 
+			if (settings == null)
+				return false;
+			
 			foreach (var group in settings.groups)
 			{
 				if (group == null || group.entries.Count == 0)
