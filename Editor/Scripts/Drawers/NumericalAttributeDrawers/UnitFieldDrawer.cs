@@ -27,8 +27,12 @@ namespace EditorAttributes.Editor
             }
 
             // Wait for Unity fields to be setup.
-            root.RegisterCallbackOnce<GeometryChangedEvent>((changeEvent) =>
+            root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+
+            void OnGeometryChanged(GeometryChangedEvent changeEvent)
             {
+                root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+
                 root.Query<BindableElement>(className: TextInputBaseField<Void>.ussClassName).ForEach((element) =>
                 {
                     // This will query into all types that implement these numerics.
@@ -74,7 +78,7 @@ namespace EditorAttributes.Editor
                         textCopy.parent.Add(suffix);
                     }, 25);
                 });
-            });
+            }
 
             return root;
         }
