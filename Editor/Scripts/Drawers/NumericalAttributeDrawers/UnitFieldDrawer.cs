@@ -82,6 +82,9 @@ namespace EditorAttributes.Editor
             return root;
         }
 
+        // NOTE: TrackPropertyValue is used to sync value changes from
+        // non-inspector sources back to the inspector (like a script
+        // that changes values in OnValidate).
         private VisualElement CreateFieldCopy(BindableElement element, SerializedProperty property, UnitFieldAttribute unitFieldAttribute)
         {
             UnitConverter convertedUnit = GetConversion();
@@ -92,7 +95,7 @@ namespace EditorAttributes.Editor
 
                 var floatFieldCopy = CreateFieldForType<float>(floatField.label, (float)(floatField.value / convertedUnit.conversion), property.hasMultipleDifferentValues) as FloatField;
                 floatFieldCopy.RegisterValueChangedCallback((changeEvent) => floatField.value = (float)(floatFieldCopy.value * GetConversion().conversion));
-                floatField.TrackPropertyValue(property, (property) => floatFieldCopy.SetValueWithoutNotify((float)(floatField.value / GetConversion().conversion)));
+                //floatField.TrackPropertyValue(property, (property) => floatFieldCopy.SetValueWithoutNotify((float)(floatField.value / GetConversion().conversion)));
                 return floatFieldCopy;
             }
             else if (element is DoubleField)
@@ -101,7 +104,7 @@ namespace EditorAttributes.Editor
 
                 var doubleFieldCopy = CreateFieldForType<double>(doubleField.label, doubleField.value / convertedUnit.conversion, property.hasMultipleDifferentValues) as DoubleField;
                 doubleFieldCopy.RegisterValueChangedCallback((changeEvent) => doubleField.value = doubleFieldCopy.value * GetConversion().conversion);
-                doubleField.TrackPropertyValue(property, (property) => doubleFieldCopy.SetValueWithoutNotify(doubleField.value / GetConversion().conversion));
+                //doubleField.TrackPropertyValue(property, (property) => doubleFieldCopy.SetValueWithoutNotify(doubleField.value / GetConversion().conversion));
                 return doubleFieldCopy;
             }
             else if (element is IntegerField)
@@ -110,7 +113,7 @@ namespace EditorAttributes.Editor
 
                 var integerFieldCopy = CreateFieldForType<int>(integerField.label, (int)(integerField.value / convertedUnit.conversion), property.hasMultipleDifferentValues) as IntegerField;
                 integerFieldCopy.RegisterValueChangedCallback((changeEvent) => integerField.value = (int)(integerFieldCopy.value * GetConversion().conversion));
-                integerField.TrackPropertyValue(property, (property) => integerFieldCopy.SetValueWithoutNotify((int)(integerField.value / GetConversion().conversion)));
+                //integerField.TrackPropertyValue(property, (property) => integerFieldCopy.SetValueWithoutNotify((int)(integerField.value / GetConversion().conversion)));
                 return integerFieldCopy;
             }
             else if (element is UnsignedIntegerField)
@@ -119,7 +122,7 @@ namespace EditorAttributes.Editor
 
                 var unsignedIntegerFieldCopy = CreateFieldForType<uint>(unsignedIntegerField.label, (uint)(unsignedIntegerField.value / convertedUnit.conversion), property.hasMultipleDifferentValues) as UnsignedIntegerField;
                 unsignedIntegerFieldCopy.RegisterValueChangedCallback((changeEvent) => unsignedIntegerField.value = (uint)(unsignedIntegerFieldCopy.value * GetConversion().conversion));
-                unsignedIntegerField.TrackPropertyValue(property, (property) => unsignedIntegerFieldCopy.SetValueWithoutNotify((uint)(unsignedIntegerField.value / GetConversion().conversion)));
+                //unsignedIntegerField.TrackPropertyValue(property, (property) => unsignedIntegerFieldCopy.SetValueWithoutNotify((uint)(unsignedIntegerField.value / GetConversion().conversion)));
                 return unsignedIntegerFieldCopy;
             }
             else if (element is LongField)
@@ -128,7 +131,7 @@ namespace EditorAttributes.Editor
 
                 var longFieldCopy = CreateFieldForType<long>(longField.label, (long)(longField.value / convertedUnit.conversion), property.hasMultipleDifferentValues) as LongField;
                 longFieldCopy.RegisterValueChangedCallback((changeEvent) => longField.value = (long)(longFieldCopy.value * GetConversion().conversion));
-                longField.TrackPropertyValue(property, (property) => longFieldCopy.SetValueWithoutNotify((long)(longField.value / GetConversion().conversion)));
+                //longField.TrackPropertyValue(property, (property) => longFieldCopy.SetValueWithoutNotify((long)(longField.value / GetConversion().conversion)));
                 return longFieldCopy;
             }
             else if (element is UnsignedLongField)
@@ -137,7 +140,7 @@ namespace EditorAttributes.Editor
 
                 var unsignedLongFieldCopy = CreateFieldForType<ulong>(unsignedLongField.label, (ulong)(unsignedLongField.value / convertedUnit.conversion), property.hasMultipleDifferentValues) as UnsignedLongField;
                 unsignedLongFieldCopy.RegisterValueChangedCallback((changeEvent) => unsignedLongField.value = (ulong)(unsignedLongFieldCopy.value * GetConversion().conversion));
-                unsignedLongField.TrackPropertyValue(property, (property) => unsignedLongFieldCopy.SetValueWithoutNotify((ulong)(unsignedLongField.value / GetConversion().conversion)));
+                //unsignedLongField.TrackPropertyValue(property, (property) => unsignedLongFieldCopy.SetValueWithoutNotify((ulong)(unsignedLongField.value / GetConversion().conversion)));
                 return unsignedLongFieldCopy;
             }
             else
