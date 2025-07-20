@@ -66,10 +66,9 @@ namespace EditorAttributes.Editor
                         var suffix = new Label(convertedUnit.unitLabel);
                         suffix.tooltip = unitFieldAttribute.DisplayUnit;
                         suffix.style.color = textCopy.style.color;
-                        suffix.style.fontSize = 10;
                         suffix.style.unityFontDefinition = textCopy.style.unityFontDefinition;
                         suffix.style.opacity = 0.5f;
-                        suffix.style.unityTextAlign = TextAnchor.MiddleLeft;
+                        suffix.style.unityTextAlign = TextAnchor.MiddleRight;
                         suffix.style.flexGrow = 1;
                         suffix.style.flexShrink = 1;
                         suffix.style.paddingLeft = 1;
