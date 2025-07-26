@@ -540,15 +540,137 @@ namespace EditorAttributes.Editor
 			visualElement.style.marginLeft = 3f;
 		}
 
-		/// <summary>
-		/// Creates a field for a specific type
-		/// </summary>
-		/// <typeparam name="T"> The type of the field to create</typeparam>
-		/// <param name="fieldName">The name of the field</param>
-		/// <param name="fieldValue">The default value of the field</param>
-		/// <param name="showMixedValue">Whether to show the mixed value state for the field</param>
-		/// <returns>A visual element of the appropriate field</returns>
-		public static VisualElement CreateFieldForType<T>(string fieldName, object fieldValue, bool showMixedValue = false) => CreateFieldForType(typeof(T), fieldName, fieldValue, showMixedValue);
+        /// <summary>
+        /// Copies all of the style values from a <see cref="VisualElement"/> to another
+        /// </summary>
+        /// <param name="copyTo">The element to copy the style to</param>
+        /// <param name="copyFrom">The element to copy the style from</param>
+        public void CopyStyle(VisualElement copyTo, VisualElement copyFrom)
+        {
+            copyTo.style.position = copyFrom.style.position;
+            copyTo.style.top = copyFrom.style.top;
+            copyTo.style.bottom = copyFrom.style.bottom;
+            copyTo.style.left = copyFrom.style.left;
+            copyTo.style.right = copyFrom.style.right;
+            copyTo.style.paddingTop = copyFrom.style.paddingTop;
+            copyTo.style.paddingBottom = copyFrom.style.paddingBottom;
+            copyTo.style.paddingLeft = copyFrom.style.paddingLeft;
+            copyTo.style.paddingRight = copyFrom.style.paddingRight;
+            copyTo.style.alignContent = copyFrom.style.alignContent;
+            copyTo.style.alignItems = copyFrom.style.alignItems;
+            copyTo.style.alignSelf = copyFrom.style.alignSelf;
+            copyTo.style.flexBasis = copyFrom.style.flexBasis;
+            copyTo.style.flexDirection = copyFrom.style.flexDirection;
+            copyTo.style.flexWrap = copyFrom.style.flexWrap;
+            copyTo.style.width = copyFrom.style.width;
+            copyTo.style.height = copyFrom.style.height;
+            copyTo.style.justifyContent = copyFrom.style.justifyContent;
+            copyTo.style.marginTop = copyFrom.style.marginTop;
+            copyTo.style.marginBottom = copyFrom.style.marginBottom;
+            copyTo.style.marginLeft = copyFrom.style.marginLeft;
+            copyTo.style.marginRight = copyFrom.style.marginRight;
+            copyTo.style.transformOrigin = copyFrom.style.transformOrigin;
+            copyTo.style.translate = copyFrom.style.translate;
+            copyTo.style.rotate = copyFrom.style.rotate;
+            copyTo.style.scale = copyFrom.style.scale;
+            copyTo.style.transitionDelay = copyFrom.style.transitionDelay;
+            copyTo.style.transitionDuration = copyFrom.style.transitionDuration;
+            copyTo.style.transitionProperty = copyFrom.style.transitionProperty;
+            copyTo.style.transitionTimingFunction = copyFrom.style.transitionTimingFunction;
+            copyTo.style.color = copyFrom.style.color;
+            copyTo.style.backgroundColor = copyFrom.style.backgroundColor;
+            copyTo.style.unityBackgroundImageTintColor = copyFrom.style.unityBackgroundImageTintColor;
+            copyTo.style.backgroundImage = copyFrom.style.backgroundImage;
+            copyTo.style.backgroundPositionX = copyFrom.style.backgroundPositionX;
+            copyTo.style.backgroundPositionY = copyFrom.style.backgroundPositionY;
+            copyTo.style.backgroundRepeat = copyFrom.style.backgroundRepeat;
+            copyTo.style.backgroundSize = copyFrom.style.backgroundSize;
+            copyTo.style.opacity = copyFrom.style.opacity;
+            copyTo.style.unityOverflowClipBox = copyFrom.style.unityOverflowClipBox;
+            copyTo.style.minWidth = copyFrom.style.minWidth;
+            copyTo.style.maxWidth = copyFrom.style.maxWidth;
+            copyTo.style.minHeight = copyFrom.style.minHeight;
+            copyTo.style.maxHeight = copyFrom.style.maxHeight;
+            copyTo.style.borderTopColor = copyFrom.style.borderTopColor;
+            copyTo.style.borderBottomColor = copyFrom.style.borderBottomColor;
+            copyTo.style.borderLeftColor = copyFrom.style.borderLeftColor;
+            copyTo.style.borderRightColor = copyFrom.style.borderRightColor;
+            copyTo.style.fontSize = copyFrom.style.fontSize;
+            copyTo.style.unityFont = copyFrom.style.unityFont;
+            copyTo.style.unityFontStyleAndWeight = copyFrom.style.unityFontStyleAndWeight;
+            copyTo.style.unityFontDefinition = copyFrom.style.unityFontDefinition;
+            copyTo.style.unityTextAlign = copyFrom.style.unityTextAlign;
+            copyTo.style.textShadow = copyFrom.style.textShadow;
+            copyTo.style.unityTextOutlineColor = copyFrom.style.unityTextOutlineColor;
+            copyTo.style.unityEditorTextRenderingMode = copyFrom.style.unityEditorTextRenderingMode;
+            copyTo.style.unityTextOverflowPosition = copyFrom.style.unityTextOverflowPosition;
+            copyTo.style.textOverflow = copyFrom.style.textOverflow;
+            copyTo.style.unityTextGenerator = copyFrom.style.unityTextGenerator;
+            copyTo.style.unityTextOutlineWidth = copyFrom.style.unityTextOutlineWidth;
+            copyTo.style.wordSpacing = copyFrom.style.wordSpacing;
+            copyTo.style.unityParagraphSpacing = copyFrom.style.unityParagraphSpacing;
+            copyTo.style.whiteSpace = copyFrom.style.whiteSpace;
+            copyTo.style.cursor = copyFrom.style.cursor;
+            copyTo.style.overflow = copyFrom.style.overflow;
+            foreach (var c in copyFrom.GetClasses())
+                copyTo.AddToClassList(c);
+        }
+
+        /// <summary>
+        /// Returns the type of the field
+        /// </summary>
+        /// <param name="field">The visual element of the field</param>
+        /// <param name="mask">Restrict the returned field type to specific </param>
+        /// <returns>The type of the field</returns>
+        public Type GetFieldType(VisualElement field, FieldMask mask = FieldMask.Any) => field switch
+        {
+            IntegerField => (mask & FieldMask.Numeric) != 0 ? typeof(int) : null,
+            UnsignedIntegerField => (mask & FieldMask.Numeric) != 0 ? typeof(uint) : null,
+            LongField => (mask & FieldMask.Numeric) != 0 ? typeof(long) : null,
+            UnsignedLongField => (mask & FieldMask.Numeric) != 0 ? typeof(ulong) : null,
+            FloatField => (mask & FieldMask.Numeric) != 0 ? typeof(float) : null,
+            DoubleField => (mask & FieldMask.Numeric) != 0 ? typeof(double) : null,
+            Toggle => (mask & FieldMask.Bool) != 0 ? typeof(bool) : null,
+            TextField => (mask & FieldMask.String) != 0 ? typeof(string) : null,
+            ColorField => (mask & FieldMask.Color) != 0 ? typeof(Color) : null,
+            GradientField => (mask & FieldMask.Color) != 0 ? typeof(Gradient) : null,
+            EnumField => (mask & FieldMask.Enum) != 0 ? typeof(Enum) : null,
+            LayerMaskField => (mask & FieldMask.Enum) != 0 ? typeof(LayerMask) : null,
+            CurveField => (mask & FieldMask.Animation) != 0 ? typeof(AnimationCurve) : null,
+            Vector2Field => (mask & FieldMask.Composite) != 0 ? typeof(Vector2) : null,
+            Vector2IntField => (mask & FieldMask.Composite) != 0 ? typeof(Vector2Int) : null,
+            Vector3Field => (mask & FieldMask.Composite) != 0 ? typeof(Vector3) : null,
+            Vector3IntField => (mask & FieldMask.Composite) != 0 ? typeof(Vector3Int) : null,
+            Vector4Field => (mask & FieldMask.Composite) != 0 ? typeof(Vector4) : null,
+            RectField => (mask & FieldMask.Composite) != 0 ? typeof(Rect) : null,
+            RectIntField => (mask & FieldMask.Composite) != 0 ? typeof(RectInt) : null,
+            BoundsField => (mask & FieldMask.Composite) != 0 ? typeof(Bounds) : null,
+            BoundsIntField => (mask & FieldMask.Composite) != 0 ? typeof(BoundsInt) : null,
+            _ => null
+        };
+
+        [Flags]
+        public enum FieldMask
+        {
+            Any = ~0,
+            Bool = 1 << 0,
+            Numeric = 1 << 1,
+            String = 1 << 2,
+            Color = 1 << 3,
+            Enum = 1 << 4,
+            Animation = 1 << 5,
+            Composite = 1 << 6,
+        }
+
+        /// <summary>
+        /// Creates a field for a specific type
+        /// </summary>
+        /// <typeparam name="T"> The type of the field to create</typeparam>
+        /// <param name="fieldName">The name of the field</param>
+        /// <param name="fieldValue">The default value of the field</param>
+        /// <param name="showMixedValue">Whether to show the mixed value state for the field</param>
+        /// <returns>A visual element of the appropriate field</returns>
+        public static VisualElement CreateFieldForType<T>(string fieldName, object fieldValue, bool showMixedValue = false) => CreateFieldForType(typeof(T), fieldName, fieldValue, showMixedValue);
 
 		/// <summary>
 		/// Creates a field for a specific type
@@ -794,13 +916,45 @@ namespace EditorAttributes.Editor
 			_ => null,
 		};
 
-		/// <summary>
-		/// Sets the value of the appropriate field
-		/// </summary>
-		/// <param name="field">The visual element of the field</param>
-		/// <param name="value">The value to set</param>
-		/// <param name="notify">Whether to call the value change callback when setting the value</param>
-		public static void SetFieldValue(VisualElement field, object value, bool notify = false)
+        /// <summary>
+        /// Gets the label of the appropriate field
+        /// </summary>
+        /// <param name="field">The visual element of the field</param>
+        /// <returns>The field label</returns>
+        public static string GetFieldLabel(VisualElement field) => field switch
+        {
+            TextField textField => textField.label,
+            IntegerField integerField => integerField.label,
+            UnsignedIntegerField unsignedIntegerField => unsignedIntegerField.label,
+            LongField longField => longField.label,
+            UnsignedLongField unsignedLongField => unsignedLongField.label,
+            FloatField floatField => floatField.label,
+            DoubleField doubleField => doubleField.label,
+            Toggle toggle => toggle.label,
+            EnumField enumField => enumField.label,
+            Vector2Field vector2Field => vector2Field.label,
+            Vector2IntField vector2IntField => vector2IntField.label,
+            Vector3Field vector3Field => vector3Field.label,
+            Vector3IntField vector3IntField => vector3IntField.label,
+            Vector4Field vector4Field => vector4Field.label,
+            ColorField colorField => colorField.label,
+            GradientField gradientField => gradientField.label,
+            CurveField curveField => curveField.label,
+            LayerMaskField layerMaskField => layerMaskField.label,
+            RectField rectField => rectField.label,
+            RectIntField rectIntField => rectIntField.label,
+            BoundsField boundsField => boundsField.label,
+            BoundsIntField boundsIntField => boundsIntField.label,
+            _ => null,
+        };
+
+        /// <summary>
+        /// Sets the value of the appropriate field
+        /// </summary>
+        /// <param name="field">The visual element of the field</param>
+        /// <param name="value">The value to set</param>
+        /// <param name="notify">Whether to call the value change callback when setting the value</param>
+        public static void SetFieldValue(VisualElement field, object value, bool notify = false)
 		{
 			if (field is TextField textField)
 			{
