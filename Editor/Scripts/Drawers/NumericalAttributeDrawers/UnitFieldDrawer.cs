@@ -93,6 +93,9 @@ namespace EditorAttributes.Editor
 
             Type fieldType = GetFieldType(element, FieldMask.Numeric);
 
+            if (fieldType == null)
+                return null;
+
             var elementCopy = CreateFieldForType(fieldType, GetFieldLabel(element), Convert.ChangeType(Convert.ToDouble(GetFieldValue(element)) / convertedUnit.conversion, fieldType), property.hasMultipleDifferentValues);
             RegisterValueChangedCallbackByType(fieldType, elementCopy, (changeEvent) => SetFieldValue(element, Convert.ChangeType(Convert.ToDouble(GetFieldValue(elementCopy)) * GetConversion().conversion, fieldType), true));
             element.TrackPropertyValue(property, (property) => SetFieldValue(elementCopy, Convert.ChangeType(Convert.ToDouble(GetFieldValue(element)) / GetConversion().conversion, fieldType)));
