@@ -1,19 +1,22 @@
-using EditorAttributes.Editor.Utility;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using UnityEditor;
-using UnityEditor.Search;
-using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEditor;
+using System.Linq;
+using System.Reflection;
+using UnityEditor.Search;
+using System.Collections;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
+using System.Collections.Generic;
+using EditorAttributes.Editor.Utility;
 using Object = UnityEngine.Object;
 
 namespace EditorAttributes.Editor
 {
 	public class PropertyDrawerBase : PropertyDrawer
 	{
+		internal const string GROUPED_PROPERTY_ID = "GroupedProperty";
+
 		protected bool CanApplyGlobalColor => EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR;
 
 		public override VisualElement CreatePropertyGUI(SerializedProperty property) => CreatePropertyField(property);
@@ -131,37 +134,34 @@ namespace EditorAttributes.Editor
 		/// </summary>
 		/// <param name="property">The serialized property to get the value from</param>
 		/// <returns>The serialized property value as a string</returns>
-		protected string GetPropertyValueAsString(SerializedProperty property)
+		protected string GetPropertyValueAsString(SerializedProperty property) => property.propertyType switch
 		{
-			return property.propertyType switch
-			{
-				SerializedPropertyType.String => property.stringValue,
-				SerializedPropertyType.Integer or SerializedPropertyType.LayerMask or SerializedPropertyType.Character => property.intValue.ToString(),
-				SerializedPropertyType.Enum => IsPropertyEnumFlag() ? property.enumValueFlag.ToString() : property.enumDisplayNames[property.enumValueIndex],
-				SerializedPropertyType.Float => property.floatValue.ToString(),
-				SerializedPropertyType.Boolean => property.boolValue.ToString(),
-				SerializedPropertyType.Vector2 => property.vector2Value.ToString(),
-				SerializedPropertyType.Vector3 => property.vector3Value.ToString(),
-				SerializedPropertyType.Vector4 => property.vector4Value.ToString(),
-				SerializedPropertyType.Rect => property.vector4Value.ToString(),
-				SerializedPropertyType.Bounds => property.boundsValue.ToString(),
-				SerializedPropertyType.Color => property.colorValue.ToString(),
-				SerializedPropertyType.Gradient => property.gradientValue.ToString(),
-				SerializedPropertyType.AnimationCurve => property.animationCurveValue.ToString(),
-				SerializedPropertyType.Quaternion => property.quaternionValue.ToString(),
-				SerializedPropertyType.Vector2Int => property.vector2IntValue.ToString(),
-				SerializedPropertyType.Vector3Int => property.vector3IntValue.ToString(),
-				SerializedPropertyType.RectInt => property.rectIntValue.ToString(),
-				SerializedPropertyType.BoundsInt => property.boundsIntValue.ToString(),
-				SerializedPropertyType.Hash128 => property.hash128Value.ToString(),
-				SerializedPropertyType.ArraySize => property.arraySize.ToString(),
-				SerializedPropertyType.FixedBufferSize => property.fixedBufferSize.ToString(),
-				SerializedPropertyType.ObjectReference => property.objectReferenceValue.ToString(),
-				SerializedPropertyType.ExposedReference => property.exposedReferenceValue.ToString(),
-				SerializedPropertyType.ManagedReference => property.managedReferenceValue.ToString(),
-				_ => string.Empty
-			};
-		}
+			SerializedPropertyType.String => property.stringValue,
+			SerializedPropertyType.Integer or SerializedPropertyType.LayerMask or SerializedPropertyType.Character => property.intValue.ToString(),
+			SerializedPropertyType.Enum => IsPropertyEnumFlag() ? property.enumValueFlag.ToString() : property.enumDisplayNames[property.enumValueIndex],
+			SerializedPropertyType.Float => property.floatValue.ToString(),
+			SerializedPropertyType.Boolean => property.boolValue.ToString(),
+			SerializedPropertyType.Vector2 => property.vector2Value.ToString(),
+			SerializedPropertyType.Vector3 => property.vector3Value.ToString(),
+			SerializedPropertyType.Vector4 => property.vector4Value.ToString(),
+			SerializedPropertyType.Rect => property.vector4Value.ToString(),
+			SerializedPropertyType.Bounds => property.boundsValue.ToString(),
+			SerializedPropertyType.Color => property.colorValue.ToString(),
+			SerializedPropertyType.Gradient => property.gradientValue.ToString(),
+			SerializedPropertyType.AnimationCurve => property.animationCurveValue.ToString(),
+			SerializedPropertyType.Quaternion => property.quaternionValue.ToString(),
+			SerializedPropertyType.Vector2Int => property.vector2IntValue.ToString(),
+			SerializedPropertyType.Vector3Int => property.vector3IntValue.ToString(),
+			SerializedPropertyType.RectInt => property.rectIntValue.ToString(),
+			SerializedPropertyType.BoundsInt => property.boundsIntValue.ToString(),
+			SerializedPropertyType.Hash128 => property.hash128Value.ToString(),
+			SerializedPropertyType.ArraySize => property.arraySize.ToString(),
+			SerializedPropertyType.FixedBufferSize => property.fixedBufferSize.ToString(),
+			SerializedPropertyType.ObjectReference => property.objectReferenceValue.ToString(),
+			SerializedPropertyType.ExposedReference => property.exposedReferenceValue.ToString(),
+			SerializedPropertyType.ManagedReference => property.managedReferenceValue.ToString(),
+			_ => string.Empty
+		};
 
 		/// <summary>
 		/// Converts the values of a collection into strings
@@ -540,137 +540,94 @@ namespace EditorAttributes.Editor
 			visualElement.style.marginLeft = 3f;
 		}
 
-        /// <summary>
-        /// Copies all of the style values from a <see cref="VisualElement"/> to another
-        /// </summary>
-        /// <param name="copyTo">The element to copy the style to</param>
-        /// <param name="copyFrom">The element to copy the style from</param>
-        public void CopyStyle(VisualElement copyTo, VisualElement copyFrom)
-        {
-            copyTo.style.position = copyFrom.style.position;
-            copyTo.style.top = copyFrom.style.top;
-            copyTo.style.bottom = copyFrom.style.bottom;
-            copyTo.style.left = copyFrom.style.left;
-            copyTo.style.right = copyFrom.style.right;
-            copyTo.style.paddingTop = copyFrom.style.paddingTop;
-            copyTo.style.paddingBottom = copyFrom.style.paddingBottom;
-            copyTo.style.paddingLeft = copyFrom.style.paddingLeft;
-            copyTo.style.paddingRight = copyFrom.style.paddingRight;
-            copyTo.style.alignContent = copyFrom.style.alignContent;
-            copyTo.style.alignItems = copyFrom.style.alignItems;
-            copyTo.style.alignSelf = copyFrom.style.alignSelf;
-            copyTo.style.flexBasis = copyFrom.style.flexBasis;
-            copyTo.style.flexDirection = copyFrom.style.flexDirection;
-            copyTo.style.flexWrap = copyFrom.style.flexWrap;
-            copyTo.style.width = copyFrom.style.width;
-            copyTo.style.height = copyFrom.style.height;
-            copyTo.style.justifyContent = copyFrom.style.justifyContent;
-            copyTo.style.marginTop = copyFrom.style.marginTop;
-            copyTo.style.marginBottom = copyFrom.style.marginBottom;
-            copyTo.style.marginLeft = copyFrom.style.marginLeft;
-            copyTo.style.marginRight = copyFrom.style.marginRight;
-            copyTo.style.transformOrigin = copyFrom.style.transformOrigin;
-            copyTo.style.translate = copyFrom.style.translate;
-            copyTo.style.rotate = copyFrom.style.rotate;
-            copyTo.style.scale = copyFrom.style.scale;
-            copyTo.style.transitionDelay = copyFrom.style.transitionDelay;
-            copyTo.style.transitionDuration = copyFrom.style.transitionDuration;
-            copyTo.style.transitionProperty = copyFrom.style.transitionProperty;
-            copyTo.style.transitionTimingFunction = copyFrom.style.transitionTimingFunction;
-            copyTo.style.color = copyFrom.style.color;
-            copyTo.style.backgroundColor = copyFrom.style.backgroundColor;
-            copyTo.style.unityBackgroundImageTintColor = copyFrom.style.unityBackgroundImageTintColor;
-            copyTo.style.backgroundImage = copyFrom.style.backgroundImage;
-            copyTo.style.backgroundPositionX = copyFrom.style.backgroundPositionX;
-            copyTo.style.backgroundPositionY = copyFrom.style.backgroundPositionY;
-            copyTo.style.backgroundRepeat = copyFrom.style.backgroundRepeat;
-            copyTo.style.backgroundSize = copyFrom.style.backgroundSize;
-            copyTo.style.opacity = copyFrom.style.opacity;
-            copyTo.style.unityOverflowClipBox = copyFrom.style.unityOverflowClipBox;
-            copyTo.style.minWidth = copyFrom.style.minWidth;
-            copyTo.style.maxWidth = copyFrom.style.maxWidth;
-            copyTo.style.minHeight = copyFrom.style.minHeight;
-            copyTo.style.maxHeight = copyFrom.style.maxHeight;
-            copyTo.style.borderTopColor = copyFrom.style.borderTopColor;
-            copyTo.style.borderBottomColor = copyFrom.style.borderBottomColor;
-            copyTo.style.borderLeftColor = copyFrom.style.borderLeftColor;
-            copyTo.style.borderRightColor = copyFrom.style.borderRightColor;
-            copyTo.style.fontSize = copyFrom.style.fontSize;
-            copyTo.style.unityFont = copyFrom.style.unityFont;
-            copyTo.style.unityFontStyleAndWeight = copyFrom.style.unityFontStyleAndWeight;
-            copyTo.style.unityFontDefinition = copyFrom.style.unityFontDefinition;
-            copyTo.style.unityTextAlign = copyFrom.style.unityTextAlign;
-            copyTo.style.textShadow = copyFrom.style.textShadow;
-            copyTo.style.unityTextOutlineColor = copyFrom.style.unityTextOutlineColor;
-            copyTo.style.unityEditorTextRenderingMode = copyFrom.style.unityEditorTextRenderingMode;
-            copyTo.style.unityTextOverflowPosition = copyFrom.style.unityTextOverflowPosition;
-            copyTo.style.textOverflow = copyFrom.style.textOverflow;
-            copyTo.style.unityTextGenerator = copyFrom.style.unityTextGenerator;
-            copyTo.style.unityTextOutlineWidth = copyFrom.style.unityTextOutlineWidth;
-            copyTo.style.wordSpacing = copyFrom.style.wordSpacing;
-            copyTo.style.unityParagraphSpacing = copyFrom.style.unityParagraphSpacing;
-            copyTo.style.whiteSpace = copyFrom.style.whiteSpace;
-            copyTo.style.cursor = copyFrom.style.cursor;
-            copyTo.style.overflow = copyFrom.style.overflow;
-            foreach (var c in copyFrom.GetClasses())
-                copyTo.AddToClassList(c);
-        }
+		/// <summary>
+		/// Copies all of the style values from a <see cref="VisualElement"/> to another
+		/// </summary>
+		/// <param name="copyFrom">The element to copy the style from</param>
+		/// <param name="copyTo">The element to copy the style to</param>
+		public void CopyStyle(VisualElement copyFrom, VisualElement copyTo)
+		{
+			copyTo.style.position = copyFrom.style.position;
+			copyTo.style.top = copyFrom.style.top;
+			copyTo.style.bottom = copyFrom.style.bottom;
+			copyTo.style.left = copyFrom.style.left;
+			copyTo.style.right = copyFrom.style.right;
+			copyTo.style.paddingTop = copyFrom.style.paddingTop;
+			copyTo.style.paddingBottom = copyFrom.style.paddingBottom;
+			copyTo.style.paddingLeft = copyFrom.style.paddingLeft;
+			copyTo.style.paddingRight = copyFrom.style.paddingRight;
+			copyTo.style.alignContent = copyFrom.style.alignContent;
+			copyTo.style.alignItems = copyFrom.style.alignItems;
+			copyTo.style.alignSelf = copyFrom.style.alignSelf;
+			copyTo.style.flexBasis = copyFrom.style.flexBasis;
+			copyTo.style.flexDirection = copyFrom.style.flexDirection;
+			copyTo.style.flexWrap = copyFrom.style.flexWrap;
+			copyTo.style.width = copyFrom.style.width;
+			copyTo.style.height = copyFrom.style.height;
+			copyTo.style.justifyContent = copyFrom.style.justifyContent;
+			copyTo.style.marginTop = copyFrom.style.marginTop;
+			copyTo.style.marginBottom = copyFrom.style.marginBottom;
+			copyTo.style.marginLeft = copyFrom.style.marginLeft;
+			copyTo.style.marginRight = copyFrom.style.marginRight;
+			copyTo.style.transformOrigin = copyFrom.style.transformOrigin;
+			copyTo.style.translate = copyFrom.style.translate;
+			copyTo.style.rotate = copyFrom.style.rotate;
+			copyTo.style.scale = copyFrom.style.scale;
+			copyTo.style.transitionDelay = copyFrom.style.transitionDelay;
+			copyTo.style.transitionDuration = copyFrom.style.transitionDuration;
+			copyTo.style.transitionProperty = copyFrom.style.transitionProperty;
+			copyTo.style.transitionTimingFunction = copyFrom.style.transitionTimingFunction;
+			copyTo.style.color = copyFrom.style.color;
+			copyTo.style.backgroundColor = copyFrom.style.backgroundColor;
+			copyTo.style.unityBackgroundImageTintColor = copyFrom.style.unityBackgroundImageTintColor;
+			copyTo.style.backgroundImage = copyFrom.style.backgroundImage;
+			copyTo.style.backgroundPositionX = copyFrom.style.backgroundPositionX;
+			copyTo.style.backgroundPositionY = copyFrom.style.backgroundPositionY;
+			copyTo.style.backgroundRepeat = copyFrom.style.backgroundRepeat;
+			copyTo.style.backgroundSize = copyFrom.style.backgroundSize;
+			copyTo.style.opacity = copyFrom.style.opacity;
+			copyTo.style.unityOverflowClipBox = copyFrom.style.unityOverflowClipBox;
+			copyTo.style.minWidth = copyFrom.style.minWidth;
+			copyTo.style.maxWidth = copyFrom.style.maxWidth;
+			copyTo.style.minHeight = copyFrom.style.minHeight;
+			copyTo.style.maxHeight = copyFrom.style.maxHeight;
+			copyTo.style.borderTopColor = copyFrom.style.borderTopColor;
+			copyTo.style.borderBottomColor = copyFrom.style.borderBottomColor;
+			copyTo.style.borderLeftColor = copyFrom.style.borderLeftColor;
+			copyTo.style.borderRightColor = copyFrom.style.borderRightColor;
+			copyTo.style.fontSize = copyFrom.style.fontSize;
+			copyTo.style.unityFont = copyFrom.style.unityFont;
+			copyTo.style.unityFontStyleAndWeight = copyFrom.style.unityFontStyleAndWeight;
+			copyTo.style.unityFontDefinition = copyFrom.style.unityFontDefinition;
+			copyTo.style.unityTextAlign = copyFrom.style.unityTextAlign;
+			copyTo.style.textShadow = copyFrom.style.textShadow;
+			copyTo.style.unityTextOutlineColor = copyFrom.style.unityTextOutlineColor;
+			copyTo.style.unityTextOverflowPosition = copyFrom.style.unityTextOverflowPosition;
+			copyTo.style.textOverflow = copyFrom.style.textOverflow;
+			copyTo.style.unityTextOutlineWidth = copyFrom.style.unityTextOutlineWidth;
+			copyTo.style.wordSpacing = copyFrom.style.wordSpacing;
+			copyTo.style.unityParagraphSpacing = copyFrom.style.unityParagraphSpacing;
+			copyTo.style.whiteSpace = copyFrom.style.whiteSpace;
+			copyTo.style.cursor = copyFrom.style.cursor;
+			copyTo.style.overflow = copyFrom.style.overflow;
 
-        /// <summary>
-        /// Returns the type of the field
-        /// </summary>
-        /// <param name="field">The visual element of the field</param>
-        /// <param name="mask">Restrict the returned field type to specific </param>
-        /// <returns>The type of the field</returns>
-        public Type GetFieldType(VisualElement field, FieldMask mask = FieldMask.Any) => field switch
-        {
-            IntegerField => (mask & FieldMask.Numeric) != 0 ? typeof(int) : null,
-            UnsignedIntegerField => (mask & FieldMask.Numeric) != 0 ? typeof(uint) : null,
-            LongField => (mask & FieldMask.Numeric) != 0 ? typeof(long) : null,
-            UnsignedLongField => (mask & FieldMask.Numeric) != 0 ? typeof(ulong) : null,
-            FloatField => (mask & FieldMask.Numeric) != 0 ? typeof(float) : null,
-            DoubleField => (mask & FieldMask.Numeric) != 0 ? typeof(double) : null,
-            Toggle => (mask & FieldMask.Bool) != 0 ? typeof(bool) : null,
-            TextField => (mask & FieldMask.String) != 0 ? typeof(string) : null,
-            ColorField => (mask & FieldMask.Color) != 0 ? typeof(Color) : null,
-            GradientField => (mask & FieldMask.Color) != 0 ? typeof(Gradient) : null,
-            EnumField => (mask & FieldMask.Enum) != 0 ? typeof(Enum) : null,
-            LayerMaskField => (mask & FieldMask.Enum) != 0 ? typeof(LayerMask) : null,
-            CurveField => (mask & FieldMask.Animation) != 0 ? typeof(AnimationCurve) : null,
-            Vector2Field => (mask & FieldMask.Composite) != 0 ? typeof(Vector2) : null,
-            Vector2IntField => (mask & FieldMask.Composite) != 0 ? typeof(Vector2Int) : null,
-            Vector3Field => (mask & FieldMask.Composite) != 0 ? typeof(Vector3) : null,
-            Vector3IntField => (mask & FieldMask.Composite) != 0 ? typeof(Vector3Int) : null,
-            Vector4Field => (mask & FieldMask.Composite) != 0 ? typeof(Vector4) : null,
-            RectField => (mask & FieldMask.Composite) != 0 ? typeof(Rect) : null,
-            RectIntField => (mask & FieldMask.Composite) != 0 ? typeof(RectInt) : null,
-            BoundsField => (mask & FieldMask.Composite) != 0 ? typeof(Bounds) : null,
-            BoundsIntField => (mask & FieldMask.Composite) != 0 ? typeof(BoundsInt) : null,
-            _ => null
-        };
+#if UNITY_6000_0_OR_NEWER
+			copyTo.style.unityTextGenerator = copyFrom.style.unityTextGenerator;
+			copyTo.style.unityEditorTextRenderingMode = copyFrom.style.unityEditorTextRenderingMode;
+#endif
+			foreach (var @class in copyFrom.GetClasses())
+				copyTo.AddToClassList(@class);
+		}
 
-        [Flags]
-        public enum FieldMask
-        {
-            Any = ~0,
-            Bool = 1 << 0,
-            Numeric = 1 << 1,
-            String = 1 << 2,
-            Color = 1 << 3,
-            Enum = 1 << 4,
-            Animation = 1 << 5,
-            Composite = 1 << 6,
-        }
-
-        /// <summary>
-        /// Creates a field for a specific type
-        /// </summary>
-        /// <typeparam name="T"> The type of the field to create</typeparam>
-        /// <param name="fieldName">The name of the field</param>
-        /// <param name="fieldValue">The default value of the field</param>
-        /// <param name="showMixedValue">Whether to show the mixed value state for the field</param>
-        /// <returns>A visual element of the appropriate field</returns>
-        public static VisualElement CreateFieldForType<T>(string fieldName, object fieldValue, bool showMixedValue = false) => CreateFieldForType(typeof(T), fieldName, fieldValue, showMixedValue);
+		/// <summary>
+		/// Creates a field for a specific type
+		/// </summary>
+		/// <typeparam name="T"> The type of the field to create</typeparam>
+		/// <param name="fieldName">The name of the field</param>
+		/// <param name="fieldValue">The default value of the field</param>
+		/// <param name="showMixedValue">Whether to show the mixed value state for the field</param>
+		/// <returns>A visual element of the appropriate field</returns>
+		public static VisualElement CreateFieldForType<T>(string fieldName, object fieldValue, bool showMixedValue = false) => CreateFieldForType(typeof(T), fieldName, fieldValue, showMixedValue);
 
 		/// <summary>
 		/// Creates a field for a specific type
@@ -772,6 +729,23 @@ namespace EditorAttributes.Editor
 			{
 				return new BoundsIntField(fieldName) { value = (BoundsInt)fieldValue, showMixedValue = showMixedValue };
 			}
+			else if (fieldType.IsSerializable && !ReflectionUtility.IsTypeCollection(fieldType))
+			{
+				var serializedObjectFoldout = new Foldout { text = fieldName };
+
+				var nestedFields = fieldType.GetFields();
+
+				foreach (var field in nestedFields)
+				{
+					var createdField = CreateFieldForType(field.FieldType, field.Name, field.GetValue(fieldValue));
+
+					createdField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
+
+					serializedObjectFoldout.Add(createdField);
+				}
+
+				return serializedObjectFoldout;
+			}
 			else
 			{
 				return new HelpBox($"The type <b>{fieldType}</b> is not supported", HelpBoxMessageType.Error);
@@ -779,20 +753,22 @@ namespace EditorAttributes.Editor
 		}
 
 		/// <summary>
-		/// Registers a value changed callback for field of a specific type
+		/// Registers a value changed callback for field of a specific type.
 		/// </summary>
 		/// <typeparam name="T">The type of the value</typeparam>
 		/// <param name="field">The visual element of the field</param>
 		/// <param name="valueCallback">The callback action</param>
-		public static void RegisterValueChangedCallbackByType<T>(VisualElement field, Action<object> valueCallback) => RegisterValueChangedCallbackByType(typeof(T), field, valueCallback);
+		/// <param name="objectValue">The value of the registered serialized object. This parameter is only required if you need to register value callbacks to serialized objects</param>
+		public static void RegisterValueChangedCallbackByType<T>(VisualElement field, Action<object> valueCallback, object objectValue = null) => RegisterValueChangedCallbackByType(typeof(T), field, valueCallback, objectValue);
 
 		/// <summary>
-		/// Registers a value changed callback for field of a specific type
+		/// Registers a value changed callback for field of a specific type.
 		/// </summary>
 		/// <param name="fieldType">The type of the value</param>
 		/// <param name="field">The visual element of the field</param>
 		/// <param name="valueCallback">The callback action</param>
-		public static void RegisterValueChangedCallbackByType(Type fieldType, VisualElement field, Action<object> valueCallback)
+		/// <param name="objectValue">The value of the registered serialized object. This parameter is only required if you need to register value callbacks to serialized objects</param>
+		public static void RegisterValueChangedCallbackByType(Type fieldType, VisualElement field, Action<object> valueCallback, object objectValue = null)
 		{
 			if (fieldType == typeof(string))
 			{
@@ -882,7 +858,59 @@ namespace EditorAttributes.Editor
 			{
 				field.RegisterCallback<ChangeEvent<BoundsInt>>((callback) => valueCallback.Invoke(callback.newValue));
 			}
+			else if (fieldType.IsSerializable && !ReflectionUtility.IsTypeCollection(fieldType))
+			{
+				if (objectValue == null)
+				{
+					Debug.LogError("You are attempting to register a value on a custom serialized object but the <b>objectValue</b> parameter is not assigned");
+					return;
+				}
+
+				var nestedFields = fieldType.GetFields();
+
+				foreach (var nestedField in nestedFields)
+				{
+					RegisterValueChangedCallbackByType(nestedField.FieldType, field, (value) =>
+					{
+						nestedField.SetValue(objectValue, value);
+
+						valueCallback.Invoke(objectValue);
+					});
+				}
+			}
 		}
+
+		/// <summary>
+		/// Gets the label of the appropriate field
+		/// </summary>
+		/// <param name="field">The visual element of the field</param>
+		/// <returns>The field label</returns>
+		public static string GetFieldLabel(VisualElement field) => field switch
+		{
+			TextField textField => textField.label,
+			IntegerField integerField => integerField.label,
+			UnsignedIntegerField unsignedIntegerField => unsignedIntegerField.label,
+			LongField longField => longField.label,
+			UnsignedLongField unsignedLongField => unsignedLongField.label,
+			FloatField floatField => floatField.label,
+			DoubleField doubleField => doubleField.label,
+			Toggle toggle => toggle.label,
+			EnumField enumField => enumField.label,
+			Vector2Field vector2Field => vector2Field.label,
+			Vector2IntField vector2IntField => vector2IntField.label,
+			Vector3Field vector3Field => vector3Field.label,
+			Vector3IntField vector3IntField => vector3IntField.label,
+			Vector4Field vector4Field => vector4Field.label,
+			ColorField colorField => colorField.label,
+			GradientField gradientField => gradientField.label,
+			CurveField curveField => curveField.label,
+			LayerMaskField layerMaskField => layerMaskField.label,
+			RectField rectField => rectField.label,
+			RectIntField rectIntField => rectIntField.label,
+			BoundsField boundsField => boundsField.label,
+			BoundsIntField boundsIntField => boundsIntField.label,
+			_ => null,
+		};
 
 		/// <summary>
 		/// Gets the value of the appropriate field
@@ -916,45 +944,13 @@ namespace EditorAttributes.Editor
 			_ => null,
 		};
 
-        /// <summary>
-        /// Gets the label of the appropriate field
-        /// </summary>
-        /// <param name="field">The visual element of the field</param>
-        /// <returns>The field label</returns>
-        public static string GetFieldLabel(VisualElement field) => field switch
-        {
-            TextField textField => textField.label,
-            IntegerField integerField => integerField.label,
-            UnsignedIntegerField unsignedIntegerField => unsignedIntegerField.label,
-            LongField longField => longField.label,
-            UnsignedLongField unsignedLongField => unsignedLongField.label,
-            FloatField floatField => floatField.label,
-            DoubleField doubleField => doubleField.label,
-            Toggle toggle => toggle.label,
-            EnumField enumField => enumField.label,
-            Vector2Field vector2Field => vector2Field.label,
-            Vector2IntField vector2IntField => vector2IntField.label,
-            Vector3Field vector3Field => vector3Field.label,
-            Vector3IntField vector3IntField => vector3IntField.label,
-            Vector4Field vector4Field => vector4Field.label,
-            ColorField colorField => colorField.label,
-            GradientField gradientField => gradientField.label,
-            CurveField curveField => curveField.label,
-            LayerMaskField layerMaskField => layerMaskField.label,
-            RectField rectField => rectField.label,
-            RectIntField rectIntField => rectIntField.label,
-            BoundsField boundsField => boundsField.label,
-            BoundsIntField boundsIntField => boundsIntField.label,
-            _ => null,
-        };
-
-        /// <summary>
-        /// Sets the value of the appropriate field
-        /// </summary>
-        /// <param name="field">The visual element of the field</param>
-        /// <param name="value">The value to set</param>
-        /// <param name="notify">Whether to call the value change callback when setting the value</param>
-        public static void SetFieldValue(VisualElement field, object value, bool notify = false)
+		/// <summary>
+		/// Sets the value of the appropriate field
+		/// </summary>
+		/// <param name="field">The visual element of the field</param>
+		/// <param name="value">The value to set</param>
+		/// <param name="notify">Whether to call the value change callback when setting the value</param>
+		public static void SetFieldValue(VisualElement field, object value, bool notify = false)
 		{
 			if (field is TextField textField)
 			{
@@ -1222,145 +1218,32 @@ namespace EditorAttributes.Editor
 			{
 				var memberValue = ReflectionUtility.GetMemberInfoValue(memberInfo, targetObject);
 
-				field.name = memberInfo.Name;
-
-				if (fieldType == typeof(string))
+				if (IsTypeValid(fieldType))
 				{
-					var inputField = field as TextField;
-
-					inputField.SetValueWithoutNotify((string)memberValue);
+					SetFieldValue(field, memberValue);
 				}
-				else if (fieldType == typeof(int))
+				else if (!fieldType.IsPrimitive && fieldType.IsSerializable && !ReflectionUtility.IsTypeCollection(fieldType))
 				{
-					var inputField = field as IntegerField;
+					var childFields = field.contentContainer.Children().ToArray();
+					var nestedFields = fieldType.GetFields();
 
-					inputField.SetValueWithoutNotify((int)memberValue);
-				}
-				else if (fieldType == typeof(uint))
-				{
-					var inputField = field as UnsignedIntegerField;
+					for (int i = 0; i < nestedFields.Length; i++)
+					{
+						var nestedField = nestedFields[i];
 
-					inputField.SetValueWithoutNotify((uint)memberValue);
-				}
-				else if (fieldType == typeof(long))
-				{
-					var inputField = field as LongField;
-
-					inputField.SetValueWithoutNotify((long)memberValue);
-				}
-				else if (fieldType == typeof(ulong))
-				{
-					var inputField = field as UnsignedLongField;
-
-					inputField.SetValueWithoutNotify((ulong)memberValue);
-				}
-				else if (fieldType == typeof(float))
-				{
-					var inputField = field as FloatField;
-
-					inputField.SetValueWithoutNotify((float)memberValue);
-				}
-				else if (fieldType == typeof(double))
-				{
-					var inputField = field as DoubleField;
-
-					inputField.SetValueWithoutNotify((double)memberValue);
-				}
-				else if (fieldType == typeof(bool))
-				{
-					var inputField = field as Toggle;
-
-					inputField.SetValueWithoutNotify((bool)memberValue);
-				}
-				else if (fieldType.IsEnum)
-				{
-					var inputField = field as EnumField;
-
-					inputField.SetValueWithoutNotify((Enum)memberValue);
-				}
-				else if (fieldType == typeof(Vector2))
-				{
-					var inputField = field as Vector2Field;
-
-					inputField.SetValueWithoutNotify((Vector2)memberValue);
-				}
-				else if (fieldType == typeof(Vector2Int))
-				{
-					var inputField = field as Vector2IntField;
-
-					inputField.SetValueWithoutNotify((Vector2Int)memberValue);
-				}
-				else if (fieldType == typeof(Vector3))
-				{
-					var inputField = field as Vector3Field;
-
-					inputField.SetValueWithoutNotify((Vector3)memberValue);
-				}
-				else if (fieldType == typeof(Vector3Int))
-				{
-					var inputField = field as Vector3IntField;
-
-					inputField.SetValueWithoutNotify((Vector3Int)memberValue);
-				}
-				else if (fieldType == typeof(Vector4))
-				{
-					var inputField = field as Vector4Field;
-
-					inputField.SetValueWithoutNotify((Vector4)memberValue);
-				}
-				else if (fieldType == typeof(Color))
-				{
-					var inputField = field as ColorField;
-
-					inputField.SetValueWithoutNotify((Color)memberValue);
-				}
-				else if (fieldType == typeof(Gradient))
-				{
-					var inputField = field as GradientField;
-
-					inputField.SetValueWithoutNotify((Gradient)memberValue);
-				}
-				else if (fieldType == typeof(AnimationCurve))
-				{
-					var inputField = field as CurveField;
-
-					inputField.SetValueWithoutNotify((AnimationCurve)memberValue);
-				}
-				else if (fieldType == typeof(LayerMask))
-				{
-					var inputField = field as LayerField;
-
-					inputField.SetValueWithoutNotify((LayerMask)memberValue);
-				}
-				else if (fieldType == typeof(Rect))
-				{
-					var inputField = field as RectField;
-
-					inputField.SetValueWithoutNotify((Rect)memberValue);
-				}
-				else if (fieldType == typeof(RectInt))
-				{
-					var inputField = field as RectIntField;
-
-					inputField.SetValueWithoutNotify((RectInt)memberValue);
-				}
-				else if (fieldType == typeof(Bounds))
-				{
-					var inputField = field as BoundsField;
-
-					inputField.SetValueWithoutNotify((Bounds)memberValue);
-				}
-				else if (fieldType == typeof(BoundsInt))
-				{
-					var inputField = field as BoundsIntField;
-
-					inputField.SetValueWithoutNotify((BoundsInt)memberValue);
+						SetFieldValue(childFields[i], nestedField.GetValue(memberValue));
+					}
 				}
 				else
 				{
 					Debug.LogError($"Cannot bind to the field to <b>{fieldType}</b>, this type is not supported", (Object)targetObject);
 				}
 			});
+
+			static bool IsTypeValid(Type type) => type.IsEnum
+			|| type == typeof(string) || type == typeof(int) || type == typeof(uint) || type == typeof(long) || type == typeof(ulong) || type == typeof(float) || type == typeof(double) || type == typeof(bool)
+			|| type == typeof(Vector2) || type == typeof(Vector2Int) || type == typeof(Vector3) || type == typeof(Vector3Int) || type == typeof(Vector4) || type == typeof(Color)
+			|| type == typeof(LayerMask) || type == typeof(Rect) || type == typeof(RectInt) || type == typeof(Bounds) || type == typeof(BoundsInt) || type == typeof(Gradient) || type == typeof(AnimationCurve);
 		}
 
 		#region NON_GUI_RELATED_UTILITY_FUNCITONS

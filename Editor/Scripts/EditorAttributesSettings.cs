@@ -13,26 +13,68 @@ namespace EditorAttributes.Editor
 		[Space]
 		[SerializeField, DataTable] internal UnitDefinition[] customUnitDefinitions;
 
+		[MessageBox(nameof(messageBoxText), nameof(CheckValidUnitDefinitions), MessageMode.Warning, StringInputMode.Dynamic)]
+		[SerializeField] private Void messageBoxHolder;
+
+		private string messageBoxText;
+
 		void OnValidate() => UnitConverter.UNIT_CONVERSION_MAP = UnitConverter.GenerateConversionMap();
 
 		internal void AddCustomDefinitions()
 		{
-            var unitDefinitions = UnitConverter.UNIT_DEFINITIONS;
+			var unitDefinitions = UnitConverter.UNIT_DEFINITIONS;
 
-            unitDefinitions.RemoveWhere((unitDefinition) => unitDefinition.unit == Unit.Custom);
+			unitDefinitions.RemoveWhere((unitDefinition) => unitDefinition.unit == Unit.Custom);
 
-            if (customUnitDefinitions == null)
-                return;
+			if (customUnitDefinitions == null)
+				return;
 
-            foreach (var customUnitDefinition in customUnitDefinitions)
-            {
-                if (customUnitDefinition.category != UnitCategory.Custom)
-                    customUnitDefinition.categoryName = customUnitDefinition.category.ToString();
-            }
-            unitDefinitions.UnionWith(customUnitDefinitions);
-        }
+			foreach (var customUnitDefinition in customUnitDefinitions)
+			{
+				if (string.IsNullOrWhiteSpace(customUnitDefinition.unitName) || string.IsNullOrWhiteSpace(customUnitDefinition.unitLabel))
+					continue;
+
+				if (customUnitDefinition.category != UnitCategory.Custom)
+				{
+					customUnitDefinition.categoryName = customUnitDefinition.category.ToString();
+				}
+				else if (string.IsNullOrWhiteSpace(customUnitDefinition.unitName))
+				{
+					continue;
+				}
+			}
+
+			unitDefinitions.UnionWith(customUnitDefinitions);
+		}
 
 		internal void SaveSettings() => Save(true);
+
+		private bool CheckValidUnitDefinitions()
+		{
+			foreach (var customUnitDefinition in customUnitDefinitions)
+			{
+				if (string.IsNullOrWhiteSpace(customUnitDefinition.unitName))
+				{
+					messageBoxText = "Custom unit name cannot be empty";
+					return true;
+				}
+
+				if (customUnitDefinition.category == UnitCategory.Custom && string.IsNullOrWhiteSpace(customUnitDefinition.categoryName))
+				{
+					messageBoxText = "Custom unit category name cannot be empty";
+					return true;
+				}
+
+				if (string.IsNullOrWhiteSpace(customUnitDefinition.unitLabel))
+				{
+					messageBoxText = "Custom unit label cannot be empty";
+					return true;
+				}
+			}
+
+			messageBoxText = string.Empty;
+			return false;
+		}
 	}
 
 	internal class EditorAttributesSettingsProvider : SettingsProvider
@@ -92,11 +134,14 @@ namespace EditorAttributes.Editor
 				style = { marginTop = 10f }
 			};
 
+			var messageBoxHolderPropertyField = PropertyDrawerBase.CreatePropertyField(serializedObject.FindProperty("messageBoxHolder"));
+
 			header.Add(helpButton);
 
 			settingsContainer.Add(header);
 			settingsContainer.Add(disableBuildValidationPropertyField);
 			settingsContainer.Add(customUnitDefinitionsPropertyField);
+			settingsContainer.Add(messageBoxHolderPropertyField);
 			settingsContainer.Add(clearParamsButton);
 
 			rootElement.Add(settingsContainer);

@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace EditorAttributes.Editor.Utility
 {
 	public static class ColorUtils
-    {
+	{
 		/// <summary>
 		/// Applies a color to a visual element via the color attribute
 		/// </summary>
@@ -35,7 +35,7 @@ namespace EditorAttributes.Editor.Utility
 				foreach (var scrollview in scrollviews)
 					scrollview.style.backgroundColor = GetColorFromAttribute(color, errorBox) / 3f;
 
-				var inputFields = visualElement.Query(className: "unity-property-field__input").ToList();
+				var inputFields = visualElement.Query(className: "unity-base-field__input").ToList();
 
 				foreach (var inputField in inputFields)
 					inputField.style.backgroundColor = GetColorFromAttribute(color, errorBox) / 3f;
@@ -76,7 +76,7 @@ namespace EditorAttributes.Editor.Utility
 				foreach (var scrollview in scrollviews)
 					scrollview.style.backgroundColor = color / 3f;
 
-				var inputFields = visualElement.Query(className: "unity-property-field__input").ToList();
+				var inputFields = visualElement.Query(className: "unity-base-field__input").ToList();
 
 				foreach (var inputField in inputFields)
 					inputField.style.backgroundColor = color / 3f;

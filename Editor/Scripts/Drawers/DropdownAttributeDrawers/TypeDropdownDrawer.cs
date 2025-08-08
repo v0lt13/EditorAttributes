@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 
@@ -41,6 +42,20 @@ namespace EditorAttributes.Editor
 					}
 
 					property.serializedObject.ApplyModifiedProperties();
+				});
+
+				typeDropdown.TrackPropertyValue(property, (trackedProperty) =>
+				{
+					string dropdownValue = ConvertPropertyValueToDropdownValue(trackedProperty.stringValue);
+
+					if (typeDropdown.choices.Contains(dropdownValue))
+					{
+						typeDropdown.SetValueWithoutNotify(dropdownValue);
+					}
+					else
+					{
+						Debug.LogWarning($"The value <b>{trackedProperty.stringValue}</b> set to the <b>{trackedProperty.name}</b> variable is not a valid type string.", trackedProperty.serializedObject.targetObject);
+					}
 				});
 
 				root.Add(typeDropdown);

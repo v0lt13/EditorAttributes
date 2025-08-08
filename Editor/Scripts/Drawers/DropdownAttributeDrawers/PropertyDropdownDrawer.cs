@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEditor;
-using System.Reflection;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Collections.Generic;
@@ -103,9 +102,6 @@ namespace EditorAttributes.Editor
 							continue;
 
 						var field = ReflectionUtility.FindField(property.name, property.serializedObject.targetObject);
-
-						if (field?.GetCustomAttribute<HidePropertyAttribute>() != null) // Skip fields with the HideProperty attribute
-							continue;
 
 						var propertyField = CreatePropertyField(property);
 

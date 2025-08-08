@@ -11,22 +11,22 @@ namespace EditorAttributesSamples
 		[SerializeField] private Void tabGroup;
 
 		[VerticalGroup(nameof(intField01), nameof(intField02))]
-		[SerializeField, HideInInspector] private Void intGroup;
+		[SerializeField, HideProperty] private Void intGroup;
 
 		[VerticalGroup(nameof(stringField01), nameof(stringField02), nameof(stringField03))]
-		[SerializeField, HideInInspector] private Void stringGroup;
+		[SerializeField, HideProperty] private Void stringGroup;
 
 		[VerticalGroup(true, nameof(boolField01), nameof(boolField02))]
-		[SerializeField, HideInInspector] private Void boolGroup;
+		[SerializeField, HideProperty] private Void boolGroup;
 
-		[SerializeField, HideInInspector] private int intField01;
-		[SerializeField, HideInInspector] private int intField02;
+		[SerializeField, HideProperty] private int intField01;
+		[SerializeField, HideProperty] private int intField02;
 
-		[SerializeField, HideInInspector] private string stringField01;
-		[SerializeField, HideInInspector] private string stringField02;
-		[SerializeField, HideInInspector] private string stringField03;
+		[SerializeField, HideProperty] private string stringField01;
+		[SerializeField, HideProperty] private string stringField02;
+		[SerializeField, HideProperty] private string stringField03;
 
-		[SerializeField, HideInInspector] private bool boolField01;
-		[SerializeField, HideInInspector] private bool boolField02;
+		[SerializeField, HideProperty] private bool boolField01;
+		[SerializeField, HideProperty] private bool boolField02;
 	}
 }

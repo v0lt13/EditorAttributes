@@ -1,27 +1,28 @@
+using EditorAttributes.Editor.Utility;
+using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Animations;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEditor.Animations;
-using System.Collections.Generic;
-using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(AnimatorParamDropdownAttribute))]
-    public class AnimatorParamDropdownDrawer : PropertyDrawerBase
-    {
-    	public override VisualElement CreatePropertyGUI(SerializedProperty property)
-    	{
+	public class AnimatorParamDropdownDrawer : PropertyDrawerBase
+	{
+		public override VisualElement CreatePropertyGUI(SerializedProperty property)
+		{
 			var animatorParamAttribute = attribute as AnimatorParamDropdownAttribute;
 
-            var root = new VisualElement();
+			var root = new VisualElement();
 			var errorBox = new HelpBox();
 
 			if (property.propertyType == SerializedPropertyType.String)
 			{
 				var animatorParameters = GetAnimatorParams(animatorParamAttribute, property, errorBox);
 
-				var dropdownField = IsCollectionValid(animatorParameters) ? new DropdownField(property.displayName, animatorParameters, GetDropdownDefaultValue(animatorParameters, property)) 
+				var dropdownField = IsCollectionValid(animatorParameters) ? new DropdownField(property.displayName, animatorParameters, GetDropdownDefaultValue(animatorParameters, property))
 					: new DropdownField(property.displayName, new List<string>() { "NULL" }, 0);
 
 				dropdownField.tooltip = property.tooltip;
@@ -35,6 +36,18 @@ namespace EditorAttributes.Editor
 					{
 						property.stringValue = callback.newValue;
 						property.serializedObject.ApplyModifiedProperties();
+					}
+				});
+
+				dropdownField.TrackPropertyValue(property, (trackedProperty) =>
+				{
+					if (dropdownField.choices.Contains(trackedProperty.stringValue))
+					{
+						dropdownField.SetValueWithoutNotify(trackedProperty.stringValue);
+					}
+					else
+					{
+						Debug.LogWarning($"The value <b>{trackedProperty.stringValue}</b> set to the <b>{trackedProperty.name}</b> variable is not a valid animator parameter.", trackedProperty.serializedObject.targetObject);
 					}
 				});
 
@@ -69,7 +82,7 @@ namespace EditorAttributes.Editor
 			DisplayErrorBox(root, errorBox);
 
 			return root;
-    	}
+		}
 
 		private List<string> GetAnimatorParams(AnimatorParamDropdownAttribute animatorParamAttribute, SerializedProperty property, HelpBox errorBox)
 		{

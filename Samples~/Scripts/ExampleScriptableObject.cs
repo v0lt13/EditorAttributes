@@ -50,7 +50,7 @@ namespace EditorAttributesSamples
 		[SelectionButtons]
 #endif
 		public Season season;
-		[Suffix(nameof(GetTimeOfDay), stringInputMode: StringInputMode.Dynamic), TimeField(TimeFormat.HourMinuteSecond, Unit.Minute)]
+		[Suffix(nameof(GetTimeOfDay), stringInputMode: StringInputMode.Dynamic), UnitField(Unit.Hour, Unit.Minute)]
 		public float timeOfDay;
 		[Space]
 		[Dropdown(nameof(GetAudioClips))] public string backgroundMusic;

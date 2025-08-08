@@ -1,10 +1,11 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-	[CustomPropertyDrawer(typeof(TimeFieldAttribute))]
+	[CustomPropertyDrawer(typeof(TimeFieldAttribute)), Obsolete]
 	public class TimeFieldDrawer : PropertyDrawerBase
 	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -60,7 +61,7 @@ namespace EditorAttributes.Editor
 
 				ExecuteLater(timeField, () =>
 				{
-					var labels = timeField.Query<Label>(className: "unity-base-text-field__label").ToList();
+					var labels = timeField.Query<Label>(className: TextInputBaseField<Void>.labelUssClassName).ToList();
 
 					foreach (var label in labels)
 					{

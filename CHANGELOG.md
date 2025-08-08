@@ -1,3 +1,20 @@
+EditorAttributes v2.9.0 Changelog:
+- Added checks for duplicate units and empty unit names when defining custom units
+- Added an additional parameter to ValueButtons Attribute for displaying custom labels for items
+- Added property space parameter in the HorizontalGroup Attribute
+- Added support for multiple inline buttons
+- Added percentage units
+- Added custom serialized objects support to ShowInInspector Attribute
+- Removed the widthOffset parameter from Vertical, Foldout and Toggle groups
+- Deprecated TimeField Attribute in favor of UnitField
+- HideProperty now will now hide nested properties as well
+- MinMaxSlider handles now snap when using Vector2Int
+- Fixed an issue where some attributes don't change the display value when that value is changed by script
+- Fixed null reference exception in addressables validation during build
+- Fixed object reference exception when using UnitField Attribute in a fresh project
+- Fixed HideLabel Attribute not working in horizontal groups
+- Fixed coloring issues with unit fields
+
 EditorAttributes v2.8.0 Changelog:
 - Added UnitField Attribute
 - Added TypeDropdown attribute

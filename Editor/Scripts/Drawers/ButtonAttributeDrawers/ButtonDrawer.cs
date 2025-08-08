@@ -79,6 +79,13 @@ namespace EditorAttributes.Editor
 				for (int i = 0; i < functionParameters.Length; i++)
 				{
 					var parameter = functionParameters[i];
+
+					if (!parameter.ParameterType.IsPrimitive)
+					{
+						foldout.Add(new HelpBox($"Parameter type {parameter.ParameterType} is not supported. Only primitive types are supported.", HelpBoxMessageType.Error));
+						continue;
+					}
+
 					var field = PropertyDrawerBase.CreateFieldForType(parameter.ParameterType, parameter.Name, ConvertParameterValue(parameter.ParameterType, parameterValues[function][i]));
 
 					if (EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR)

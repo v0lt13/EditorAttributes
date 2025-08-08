@@ -7,28 +7,28 @@ namespace EditorAttributesSamples
 	public class VerticalGroupSample : MonoBehaviour
 	{
 		[Header("VerticalGroup Attribute:")]
-		[VerticalGroup(-300f, true, nameof(intField01), nameof(stringField01), nameof(boolField01))]
+		[VerticalGroup(true, nameof(intField01), nameof(stringField01), nameof(boolField01))]
 		[SerializeField] private Void groupHolder;
 
 		[HorizontalGroup(true, nameof(boxedGroupHolder), nameof(boxedGroupHolder2))]
 		[SerializeField] private Void horizontalGroupHolder;
 
 		[VerticalGroup(true, nameof(intField02), nameof(stringField02), nameof(boolField02))]
-		[SerializeField, HideInInspector] private Void boxedGroupHolder;
+		[SerializeField, HideProperty] private Void boxedGroupHolder;
 
 		[VerticalGroup(true, nameof(intField03), nameof(stringField03), nameof(boolField03))]
-		[SerializeField, HideInInspector] private Void boxedGroupHolder2;
+		[SerializeField, HideProperty] private Void boxedGroupHolder2;
 
-		[SerializeField, HideInInspector] private int intField01;
-		[SerializeField, HideInInspector] private string stringField01;
-		[SerializeField, HideInInspector] private bool boolField01;
+		[SerializeField, HideProperty] private int intField01;
+		[SerializeField, HideProperty] private string stringField01;
+		[SerializeField, HideProperty] private bool boolField01;
 
-		[SerializeField, HideInInspector] private int intField02;
-		[SerializeField, HideInInspector] private string stringField02;
-		[SerializeField, HideInInspector] private bool boolField02;
+		[SerializeField, HideProperty] private int intField02;
+		[SerializeField, HideProperty] private string stringField02;
+		[SerializeField, HideProperty] private bool boolField02;
 
-		[SerializeField, HideInInspector] private int intField03;
-		[SerializeField, HideInInspector] private string stringField03;
-		[SerializeField, HideInInspector] private bool boolField03;
+		[SerializeField, HideProperty] private int intField03;
+		[SerializeField, HideProperty] private string stringField03;
+		[SerializeField, HideProperty] private bool boolField03;
 	}
 }

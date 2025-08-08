@@ -44,6 +44,6 @@ MonoBehaviour:
     enemyDamage: 10
     enemyPrefab: {fileID: 0}
   season: 0
-  timeOfDay: 750
+  timeOfDay: 60
   backgroundMusic: Music/BackgroundMusic1
   levelBackground: {fileID: 21300000, guid: bcc7dd75abdc1a74497c9d657e1d6cf5, type: 3}

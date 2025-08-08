@@ -3,6 +3,11 @@ using UnityEngine.UIElements;
 
 #if UNITY_6000_0_OR_NEWER
 using System;
+using System.Linq;
+using UnityEngine;
+using System.Reflection;
+using System.Collections;
+using UnityEditor.UIElements;
 using System.Collections.Generic;
 using EditorAttributes.Editor.Utility;
 #endif
@@ -24,35 +29,71 @@ namespace EditorAttributes.Editor
 #else
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
-			var selectionButtonsAttribute = attribute as ValueButtonsAttribute;
+			var valueButtonsAttribute = attribute as ValueButtonsAttribute;
 
 			var root = new VisualElement();
 			var errorBox = new HelpBox();
-			
-			var memberInfo = ReflectionUtility.GetValidMemberInfo(selectionButtonsAttribute.CollectionName, property);
-			var displayNames = ConvertCollectionValuesToStrings(selectionButtonsAttribute.CollectionName, property, memberInfo, errorBox).ToArray();
 
-			var buttonsValue = Array.IndexOf(displayNames, GetPropertyValueAsString(property));
+			var collectionInfo = ReflectionUtility.GetValidMemberInfo(valueButtonsAttribute.CollectionName, property);
 
-			root.Add(DrawButtons(buttonsValue, displayNames, selectionButtonsAttribute, (value) =>
+			string[] propertyValues = ConvertCollectionValuesToStrings(valueButtonsAttribute.CollectionName, property, collectionInfo, errorBox).ToArray();
+			string[] displayValues = GetDisplayValues(collectionInfo, valueButtonsAttribute, property, propertyValues.ToList());
+
+			if (!IsCollectionValid(displayValues))
 			{
-				if (value >= 0 && value < displayNames.Length)
-					SetPropertyValueFromString(displayNames[value], property);
-			}));
+				errorBox.text = "The provided collection is empty";
+				DisplayErrorBox(root, errorBox);
+
+				return root;
+			}
+
+			int buttonsValueIndex = Array.IndexOf(propertyValues, GetPropertyValueAsString(property));
+
+			var valueButtons = DrawButtons(buttonsValueIndex, displayValues, valueButtonsAttribute, (value) =>
+			{
+				if (valueButtonsAttribute.DisplayNames != null || IsDictionary(collectionInfo, property, out _))
+				{
+					if (value >= 0 && value < propertyValues.Length)
+						SetPropertyValueFromString(propertyValues[value], property);
+				}
+				else
+				{
+					if (value >= 0 && value < propertyValues.Length)
+						SetPropertyValueFromString(propertyValues[value], property);
+				}
+			});
+
+			valueButtons.TrackPropertyValue(property, (trackedProperty) =>
+			{
+				if (propertyValues.Contains(trackedProperty.boxedValue.ToString()))
+				{
+					int propertyValueIndex = Array.IndexOf(propertyValues, GetPropertyValueAsString(trackedProperty));
+					bool[] selectionValues = new bool[propertyValues.Length];
+
+					selectionValues[propertyValueIndex] = true;
+
+					valueButtons.SetValueWithoutNotify(ToggleButtonGroupState.CreateFromOptions(selectionValues));
+				}
+				else
+				{
+					Debug.LogWarning($"The value <b>{trackedProperty.boxedValue}</b> set to the <b>{trackedProperty.name}</b> variable is not a value available in the button selection", trackedProperty.serializedObject.targetObject);
+				}
+			});
+
+			AddPropertyContextMenu(valueButtons, property);
+
+			root.Add(valueButtons);
 
 			DisplayErrorBox(root, errorBox);
 
 			return root;
 		}
 
-		private VisualElement DrawButtons(int buttonsValue, string[] valueLabels, ValueButtonsAttribute selectionButtonsAttribute, Action<int> onValueChanged)
+		private ToggleButtonGroup DrawButtons(int buttonsValue, string[] valueLabels, ValueButtonsAttribute selectionButtonsAttribute, Action<int> onValueChanged)
 		{
-			if (valueLabels == null || valueLabels.Length == 0)
-				return new HelpBox("The provided collection is empty", HelpBoxMessageType.Error);
-
 			var activeButtonList = new List<bool>();
 			var buttonGroup = new ToggleButtonGroup(selectionButtonsAttribute.ShowLabel ? preferredLabel : string.Empty);
-			
+
 			foreach (string label in valueLabels)
 			{
 				var toggle = new Button
@@ -81,6 +122,39 @@ namespace EditorAttributes.Editor
 				intArray[i] = boolList[i] ? 1 : 0;
 
 			return new Span<int>(intArray);
+		}
+
+		private string[] GetDisplayValues(MemberInfo collectionInfo, ValueButtonsAttribute valueButtonsAttribute, SerializedProperty serializedProperty, List<string> propertyValues)
+		{
+			var displayStrings = new List<string>();
+
+			if (valueButtonsAttribute.DisplayNames == null)
+			{
+				if (IsDictionary(collectionInfo, serializedProperty, out IDictionary dictionary))
+				{
+					foreach (DictionaryEntry item in dictionary)
+						displayStrings.Add(item.Key == null ? "NULL" : item.Key.ToString());
+				}
+				else
+				{
+					displayStrings = propertyValues;
+				}
+			}
+			else
+			{
+				displayStrings = valueButtonsAttribute.DisplayNames.ToList();
+			}
+
+			return displayStrings.ToArray();
+		}
+
+		private bool IsDictionary(MemberInfo collectionInfo, SerializedProperty serializedProperty, out IDictionary dictionary)
+		{
+			var collectionValue = ReflectionUtility.GetMemberInfoValue(collectionInfo, serializedProperty);
+
+			dictionary = collectionValue as IDictionary;
+
+			return collectionValue is IDictionary;
 		}
 #endif
 	}

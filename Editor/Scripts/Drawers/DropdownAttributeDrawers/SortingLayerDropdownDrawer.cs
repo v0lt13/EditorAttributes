@@ -8,16 +8,16 @@ using System.Collections.Generic;
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(SortingLayerDropdownAttribute))]
-    public class SortingLayerDropdownDrawer : PropertyDrawerBase
-    {
+	public class SortingLayerDropdownDrawer : PropertyDrawerBase
+	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var root = new VisualElement();
 
 			if (property.propertyType == SerializedPropertyType.Integer)
 			{
-				var maskField = new MaskField(property.displayName, GetSortingLayerNames(), property.intValue) 
-				{ 
+				var maskField = new MaskField(property.displayName, GetSortingLayerNames(), property.intValue)
+				{
 					showMixedValue = property.hasMultipleDifferentValues,
 					tooltip = property.tooltip
 				};
@@ -30,6 +30,8 @@ namespace EditorAttributes.Editor
 					property.intValue = maskField.value;
 					property.serializedObject.ApplyModifiedProperties();
 				});
+
+				maskField.TrackPropertyValue(property, (trackedProperty) => maskField.SetValueWithoutNotify(trackedProperty.intValue));
 
 				root.Add(maskField);
 
@@ -60,12 +62,13 @@ namespace EditorAttributes.Editor
 		}
 
 		private List<string> GetSortingLayerNames()
-        {
-            var layerList = new List<string>();
+		{
+			var layerList = new List<string>();
 
-            foreach (var layer in SortingLayer.layers) layerList.Add(layer.name);
+			foreach (var layer in SortingLayer.layers)
+				layerList.Add(layer.name);
 
-            return layerList;
-        }
-    }
+			return layerList;
+		}
+	}
 }

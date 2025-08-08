@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using UnityEngine;
-using UnityEditor;
 using System.Linq;
+using UnityEditor;
+using UnityEngine;
 using System.Reflection;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -96,7 +96,9 @@ namespace EditorAttributes.Editor
 						var field = ReflectionUtility.FindField(property.name, target);
 
 						if (field?.GetCustomAttribute<HidePropertyAttribute>() != null)
-							continue;
+						{
+							propertyField.style.display = DisplayStyle.None;
+						}
 
 						var colorAttribute = field?.GetCustomAttribute<GUIColorAttribute>();
 
@@ -218,7 +220,16 @@ namespace EditorAttributes.Editor
 			var field = PropertyDrawerBase.CreateFieldForType(memberType, memberInfo.Name, memberValue, AreNonSerializedMemberValuesDifferent(memberInfo, targets));
 
 			field.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
-			field.SetEnabled(false);
+
+			if (field is Foldout)
+			{
+				field.contentContainer.SetEnabled(false);
+				field.Q<Label>().SetEnabled(false);
+			}
+			else
+			{
+				field.SetEnabled(false);
+			}
 
 			PropertyDrawerBase.BindFieldToMember(memberType, field, memberInfo, target);
 
@@ -269,7 +280,7 @@ namespace EditorAttributes.Editor
 				return true;
 			}
 
-			if (memberInfo.GetCustomAttribute<SerializeField>() != null)
+			if (memberInfo.GetCustomAttribute<SerializeField>() != null || memberInfo.GetCustomAttribute<SerializeReference>() != null)
 			{
 				errorMessage = $"The member <b>{memberInfo.Name}</b> is already serialized, there is no need to use the ShowInInspector Attribute";
 				return true;

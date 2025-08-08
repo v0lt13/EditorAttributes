@@ -189,7 +189,7 @@ namespace EditorAttributes.Editor
 		
 			// Angle (base = radian)
 			new(Unit.Degree, "°", UnitCategory.Angle, Mathf.PI / 180d),
-			new(Unit.Radian, "rad", UnitCategory.Angle, 1),
+			new(Unit.Radian, "rad", UnitCategory.Angle, 1d),
 			new(Unit.Gradian, "gon", UnitCategory.Angle, Mathf.PI / 200d),
 			new(Unit.MinuteOfArc, "'", UnitCategory.Angle, Mathf.PI / (180d * 60d)),
 			new(Unit.SecondOfArc, "\"", UnitCategory.Angle, Mathf.PI / (180d * 3600d)),

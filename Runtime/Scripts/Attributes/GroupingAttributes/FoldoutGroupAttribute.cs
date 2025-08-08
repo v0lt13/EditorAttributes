@@ -6,8 +6,7 @@ namespace EditorAttributes
 	/// Attribute to display the specified fields in a foldout
 	/// </summary>
 	public class FoldoutGroupAttribute : PropertyAttribute
-    {
-		public float WidthOffset { get; private set; }
+	{
 		public string GroupName { get; private set; }
 		public bool DrawInBox { get; private set; }
 
@@ -36,21 +35,6 @@ namespace EditorAttributes
 			FieldsToGroup = fieldsToGroup;
 			GroupName = groupName;
 			DrawInBox = drawInBox;
-		}
-
-		/// <summary>
-		/// Attribute to display the specified fields in a foldout
-		/// </summary>
-		/// <param name="groupName">The name of the group</param>
-		/// <param name="widthOffset">By how much to offset the width of the properties in pixels</param>
-		/// <param name="drawInBox">Draw the fields in the group in a nice box</param>
-		/// <param name="fieldsToGroup">The name of the fields to group</param>
-		public FoldoutGroupAttribute(string groupName, float widthOffset = 0f, bool drawInBox = false, params string[] fieldsToGroup)
-		{
-			FieldsToGroup = fieldsToGroup;
-			WidthOffset = widthOffset;
-			DrawInBox = drawInBox;
-			GroupName = groupName;
 		}
 	}
 }

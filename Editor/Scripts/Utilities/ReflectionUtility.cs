@@ -271,8 +271,15 @@ namespace EditorAttributes.Editor.Utility
 			var arrayField = FindField(property.propertyPath.Split(".")[0], property);
 			var memberInfoType = GetMemberInfoType(arrayField);
 
-			return memberInfoType.IsArray || memberInfoType.GetInterfaces().Contains(typeof(IList));
+			return IsTypeCollection(memberInfoType);
 		}
+
+		/// <summary>
+		/// Checks to see if a type is a list or array
+		/// </summary>
+		/// <param name="type">The type to check</param>
+		/// <returns>True if the type is a list or array</returns>
+		public static bool IsTypeCollection(Type type) => type.IsArray || type.GetInterfaces().Contains(typeof(IList));
 
 		/// <summary>
 		/// Checks to see if a member has one of the specified attributes

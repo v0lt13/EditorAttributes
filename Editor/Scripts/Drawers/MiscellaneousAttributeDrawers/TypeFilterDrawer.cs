@@ -7,13 +7,13 @@ using UnityEditor.UIElements;
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(TypeFilterAttribute))]
-    public class TypeFilterDrawer : PropertyDrawerBase
-    {
+	public class TypeFilterDrawer : PropertyDrawerBase
+	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var typeFilterAttribute = attribute as TypeFilterAttribute;
 
-            var root = new VisualElement();
+			var root = new VisualElement();
 
 			if (property.propertyType == SerializedPropertyType.ObjectReference)
 			{
@@ -25,12 +25,12 @@ namespace EditorAttributes.Editor
 				{
 					var objectField = propertyField.Q<ObjectField>();
 
-					objectField.objectType = typeFilterAttribute.TypesToFilter.FirstOrDefault();
+					objectField.objectType = property.objectReferenceValue != null ? property.objectReferenceValue.GetType() : typeFilterAttribute.TypesToFilter.FirstOrDefault();
 
 					objectField.RegisterCallback<DragEnterEvent>(callback =>
-					{					
+					{
 						var draggedObject = DragAndDrop.objectReferences.FirstOrDefault();
-					
+
 						if (draggedObject != null)
 						{
 							Type acceptedDraggedType = null;
@@ -53,7 +53,9 @@ namespace EditorAttributes.Editor
 								objectField.objectType = acceptedDraggedType;
 						}
 					});
-				}, 30);
+
+					objectField.TrackPropertyValue(property, (trackedProperty) => objectField.objectType = trackedProperty.objectReferenceValue != null ? trackedProperty.objectReferenceValue.GetType() : typeFilterAttribute.TypesToFilter.FirstOrDefault());
+				}, 30L);
 			}
 			else
 			{
@@ -62,5 +64,5 @@ namespace EditorAttributes.Editor
 
 			return root;
 		}
-    }
+	}
 }

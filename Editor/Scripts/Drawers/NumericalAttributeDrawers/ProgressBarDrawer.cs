@@ -4,8 +4,8 @@ using UnityEngine.UIElements;
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(ProgressBarAttribute))]
-    public class ProgressBarDrawer : PropertyDrawerBase
-    {
+	public class ProgressBarDrawer : PropertyDrawerBase
+	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var root = new VisualElement();
@@ -19,7 +19,7 @@ namespace EditorAttributes.Editor
 				// Make the visual elements in the progress bar grow
 				progressBar.ElementAt(0).style.flexGrow = 1f;
 				progressBar.ElementAt(0).ElementAt(0).style.flexGrow = 1f;
-				
+
 				progressBar.style.height = progressBarAttribute.BarHeight;
 
 				root.Add(progressBar);
@@ -36,7 +36,7 @@ namespace EditorAttributes.Editor
 
 					progressBar.value = propertyValue;
 					progressBar.title = $"{property.displayName}: {propertyValue}/{progressBarAttribute.MaxValue}";
-				}, 30);
+				}, 30L);
 			}
 			else
 			{

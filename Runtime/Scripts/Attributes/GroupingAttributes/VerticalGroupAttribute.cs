@@ -6,11 +6,9 @@ namespace EditorAttributes
 	/// Attribute to display the specified fields vertically
 	/// </summary>
 	public class VerticalGroupAttribute : PropertyAttribute
-    {
-		public float WidthOffset { get; private set; }
+	{
 		public bool DrawInBox { get; private set; }
-
-        public string[] FieldsToGroup { get; private set; }
+		public string[] FieldsToGroup { get; private set; }
 
 		/// <summary>
 		/// Attribute to display the specified fields vertically
@@ -32,18 +30,5 @@ namespace EditorAttributes
 			FieldsToGroup = fieldsToGroup;
 			DrawInBox = drawInBox;
 		}
-
-		/// <summary>
-		/// Attribute to display the specified fields vertically
-		/// </summary>
-		/// <param name="widthOffset">By how much to offset the width of the properties in pixels</param>
-		/// <param name="drawInBox">Draw the group in a nice box</param>
-		/// <param name="fieldsToGroup">The name of the fields to group</param>
-		public VerticalGroupAttribute(float widthOffset = 0f, bool drawInBox = false, params string[] fieldsToGroup) 
-        {
-			FieldsToGroup = fieldsToGroup;
-            WidthOffset = widthOffset;
-			DrawInBox = drawInBox;
-        }
-    }
+	}
 }

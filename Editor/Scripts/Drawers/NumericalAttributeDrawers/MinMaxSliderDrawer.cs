@@ -1,12 +1,13 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(MinMaxSliderAttribute))]
-    public class MinMaxSliderDrawer : PropertyDrawerBase
-    {
+	public class MinMaxSliderDrawer : PropertyDrawerBase
+	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var minMaxSliderAttribute = attribute as MinMaxSliderAttribute;
@@ -40,7 +41,7 @@ namespace EditorAttributes.Editor
 					}
 				};
 
-				var minMaxSlider = new MinMaxSlider(minValue, maxValue, minMaxSliderAttribute.MinRange, minMaxSliderAttribute.MaxRange) 
+				var minMaxSlider = new MinMaxSlider(minValue, maxValue, minMaxSliderAttribute.MinRange, minMaxSliderAttribute.MaxRange)
 				{
 					style = {
 						flexGrow = 1f,
@@ -53,6 +54,8 @@ namespace EditorAttributes.Editor
 
 				AddPropertyContextMenu(root, property);
 
+				root.TrackPropertyValue(property, (trackedProperty) => minMaxSlider.value = isIntVector ? trackedProperty.vector2IntValue : trackedProperty.vector2Value);
+
 				if (minMaxSliderAttribute.ShowValues)
 				{
 					var minField = new FloatField(5) { showMixedValue = property.hasMultipleDifferentValues, style = { maxWidth = 50f, minWidth = 50f } };
@@ -62,20 +65,26 @@ namespace EditorAttributes.Editor
 					minField.SetValueWithoutNotify(minValue);
 					maxField.SetValueWithoutNotify(maxValue);
 
-					minMaxSlider.RegisterValueChangedCallback((callback) => 
+					minMaxSlider.RegisterValueChangedCallback((callback) =>
 					{
-						minField.SetValueWithoutNotify(isIntVector ? (int)callback.newValue.x : callback.newValue.x);
-						maxField.SetValueWithoutNotify(isIntVector ? (int)callback.newValue.y : callback.newValue.y);
+						minField.SetValueWithoutNotify(isIntVector ? Mathf.RoundToInt(callback.newValue.x) : callback.newValue.x);
+						maxField.SetValueWithoutNotify(isIntVector ? Mathf.RoundToInt(callback.newValue.y) : callback.newValue.y);
 
-						ApplyPropertyValues(property, isIntVector, minMaxSlider.minValue, minMaxSlider.maxValue); 
+						if (isIntVector) // This will snap the handles when changing the values
+						{
+							minMaxSlider.minValue = Mathf.RoundToInt(callback.newValue.x);
+							minMaxSlider.maxValue = Mathf.RoundToInt(callback.newValue.y);
+						}
+
+						ApplyPropertyValues(property, isIntVector, minMaxSlider.minValue, minMaxSlider.maxValue);
 					});
 
-					minField.RegisterValueChangedCallback((callback) => 
+					minField.RegisterValueChangedCallback((callback) =>
 					{
-						if (isIntVector) 
+						if (isIntVector)
 							minField.value = (int)callback.newValue;
-						
-						minMaxSlider.value = isIntVector ? new Vector2Int((int)callback.newValue, (int)minMaxSlider.value.y) : new Vector2(callback.newValue, minMaxSlider.value.y);
+
+						minMaxSlider.value = isIntVector ? new Vector2Int(Mathf.RoundToInt(callback.newValue), Mathf.RoundToInt(minMaxSlider.value.y)) : new Vector2(callback.newValue, minMaxSlider.value.y);
 
 						ApplyPropertyValues(property, isIntVector, minMaxSlider.minValue, minMaxSlider.maxValue);
 					});
@@ -85,7 +94,7 @@ namespace EditorAttributes.Editor
 						if (isIntVector)
 							maxField.value = (int)callback.newValue;
 
-						minMaxSlider.value = isIntVector ? new Vector2Int((int)minMaxSlider.value.x, (int)callback.newValue) : new Vector2(minMaxSlider.value.x, callback.newValue);
+						minMaxSlider.value = isIntVector ? new Vector2Int(Mathf.RoundToInt(minMaxSlider.value.x), Mathf.RoundToInt(callback.newValue)) : new Vector2(minMaxSlider.value.x, callback.newValue);
 
 						ApplyPropertyValues(property, isIntVector, minMaxSlider.minValue, minMaxSlider.maxValue);
 					});
@@ -108,7 +117,16 @@ namespace EditorAttributes.Editor
 				}
 				else
 				{
-					minMaxSlider.RegisterValueChangedCallback((callback) => ApplyPropertyValues(property, isIntVector, minMaxSlider.minValue, minMaxSlider.maxValue));
+					minMaxSlider.RegisterValueChangedCallback((callback) =>
+					{
+						if (isIntVector) // This will snap the handles when changing the values
+						{
+							minMaxSlider.minValue = Mathf.RoundToInt(callback.newValue.x);
+							minMaxSlider.maxValue = Mathf.RoundToInt(callback.newValue.y);
+						}
+
+						ApplyPropertyValues(property, isIntVector, minMaxSlider.minValue, minMaxSlider.maxValue);
+					});
 
 					sliderHolder.Add(minMaxSlider);
 
@@ -145,7 +163,7 @@ namespace EditorAttributes.Editor
 		{
 			if (isIntVector)
 			{
-				property.vector2IntValue = new Vector2Int((int)minValue, (int)maxValue);
+				property.vector2IntValue = new Vector2Int(Mathf.RoundToInt(minValue), Mathf.RoundToInt(maxValue));
 			}
 			else
 			{

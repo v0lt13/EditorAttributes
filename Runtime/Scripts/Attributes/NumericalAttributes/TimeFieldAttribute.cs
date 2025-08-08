@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace EditorAttributes
@@ -14,6 +15,7 @@ namespace EditorAttributes
 	/// <summary>
 	/// Attribute to display a numerical field as a specified time format and convert it to a single value
 	/// </summary>
+	[Obsolete("The TimeField Attribute has been deprecated and it will be removed in the next version. Use UnitField instead.")]
 	public class TimeFieldAttribute : PropertyAttribute
 	{
 		public TimeFormat TimeFormat { get; private set; }

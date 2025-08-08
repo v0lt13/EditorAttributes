@@ -4,6 +4,7 @@ using UnityEditor;
 using System.Reflection;
 using System.Collections;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 using System.Collections.Generic;
 using EditorAttributes.Editor.Utility;
 
@@ -35,6 +36,18 @@ namespace EditorAttributes.Editor
 			{
 				if (!property.hasMultipleDifferentValues)
 					SetPropertyValue(property, callback.newValue, dropdownAttribute, propertyValues, dropdownField, collectionInfo);
+			});
+
+			dropdownField.TrackPropertyValue(property, (trackedProperty) =>
+			{
+				if (propertyValues.Contains(trackedProperty.boxedValue.ToString()))
+				{
+					dropdownField.SetValueWithoutNotify(displayValues[propertyValues.IndexOf(trackedProperty.boxedValue.ToString())]);
+				}
+				else
+				{
+					Debug.LogWarning($"The value <b>{trackedProperty.boxedValue}</b> set to the <b>{trackedProperty.name}</b> variable is not a value available in the dropdown", trackedProperty.serializedObject.targetObject);
+				}
 			});
 
 			if (dropdownField.value != "NULL" && !HasMismatchedDisplayCollectionCounts(dropdownAttribute, propertyValues, displayValues))
