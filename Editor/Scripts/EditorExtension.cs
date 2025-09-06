@@ -27,7 +27,15 @@ namespace EditorAttributes.Editor
 
 		protected virtual void OnEnable()
 		{
-			functions = target.GetType().GetMethods(ReflectionUtility.BINDING_FLAGS);
+            var funcList = new List<MethodInfo>();
+            var targetType = target.GetType();
+            while (targetType != null)
+            {
+                funcList.AddRange(targetType.GetMethods(ReflectionUtility.BINDING_FLAGS));
+                targetType = targetType.BaseType;
+            }
+
+			functions = funcList.ToArray();
 
 			ButtonDrawer.LoadParamsData(functions, target, ref buttonFoldouts, ref buttonParameterValues);
 
@@ -59,7 +67,7 @@ namespace EditorAttributes.Editor
 
 			var root = new VisualElement();
 
-			var nonSerializedMembers = DrawNonSerilizedMembers();
+			var nonSerializedMembers = DrawNonSerializedMembers();
 			var defaultInspector = DrawDefaultInspector();
 			var buttons = DrawButtons();
 
@@ -140,7 +148,7 @@ namespace EditorAttributes.Editor
 		/// Draws all the members marked with the ShowInInspector attribute
 		/// </summary>
 		/// <returns>A visual element containing all non serialized member fields</returns>
-		protected VisualElement DrawNonSerilizedMembers()
+		protected VisualElement DrawNonSerializedMembers()
 		{
 			var root = new VisualElement();
 
