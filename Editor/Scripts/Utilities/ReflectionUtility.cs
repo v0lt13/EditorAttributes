@@ -137,29 +137,33 @@ namespace EditorAttributes.Editor.Utility
 		/// <returns>The member info of the specified member type</returns>
 		public static MemberInfo FindMember(string memberName, Type targetType, BindingFlags bindingFlags, MemberTypes memberType)
 		{
-			switch (memberType)
-			{
-				case MemberTypes.Field:
-				{
-					if (targetType != null)
-						return targetType.GetField(memberName, bindingFlags);
-				}
-				break;
+            MemberInfo memberInfo = null;
+            while (targetType != null)
+            {
+                switch (memberType)
+                {
+                    case MemberTypes.Field:
+                        {
+                            memberInfo = targetType.GetField(memberName, bindingFlags);
+                        }
+                        break;
 
-				case MemberTypes.Property:
-				{
-					if (targetType != null)
-						return targetType.GetProperty(memberName, bindingFlags);
-				}
-				break;
+                    case MemberTypes.Property:
+                        {
+                            memberInfo = targetType.GetProperty(memberName, bindingFlags);
+                        }
+                        break;
 
-				case MemberTypes.Method:
-				{
-					if (targetType != null)
-						return targetType.GetMethod(memberName, bindingFlags);
-				}
-				break;
-			}
+                    case MemberTypes.Method:
+                        {
+                            memberInfo = targetType.GetMethod(memberName, bindingFlags);
+                        }
+                        break;
+                }
+
+                if (memberInfo != null) return memberInfo;
+                targetType = targetType.BaseType;
+            }
 
 			return null;
 		}
