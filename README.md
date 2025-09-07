@@ -65,9 +65,6 @@ A: While the package is lightweight there is a small impact on editor performanc
 3. Attributes like Button, ShowInInspector, GUIColor and PropertyOrder don't work after I create a custom inspector.
 - The logic for Button, ShowInInspector, GUIColor and PropertyOrder attributes is implemented in an EditorExtension class that inherits from the UnityEditor.Editor class, if you want those attributes to work with your custom editor you need to inherit your editor from EditorAttributes.Editor.EditorExtension and call the appropriate functions, you can read more in the Scripting API documentation.
 
-4. Attribute doesn't work on inherited members or doesn't find it.
-- The reflection system can't find inherited members if they are not accesible by the child class, mark those inherited members as protected or another modifier that gives it access to the child class.
-
 # Features
 - The asset adds over 50 Attributes that:
 - Show/Hide or Enable/Disable fields based on one or more conditions
