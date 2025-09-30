@@ -3,7 +3,7 @@ EditorAttributes v2.9.1 Changelog:
 - Added an Asset Preview Load Time setting to the project settings
 - Asset previews now load asynchronously
 - Required Attribute now has the option to add a button on the help box to auto reference the field
-- Attributes can now find private members in child classes
+- Attributes can now find private inhetited members
 - Fixed HideInChildren Attribute no longer working
 - Fixed PropertyDropdown not working on child types deeper in the hierarchy
 - Fixed Button no longer supporting string parameters
