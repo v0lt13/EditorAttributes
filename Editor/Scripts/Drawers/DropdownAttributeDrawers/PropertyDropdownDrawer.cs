@@ -17,7 +17,7 @@ namespace EditorAttributes.Editor
 
 			var root = new VisualElement();
 			var propertyField = CreatePropertyField(property);
-			var errorBox = new HelpBox("The PropertyDropdown Attribute can only be attached to objects deriving from Component or ScriptableObject", HelpBoxMessageType.Error);
+			var errorBox = new HelpBox("The PropertyDropdown Attribute can only be attached to objects deriving from <b>Component</b> or <b>ScriptableObject</b>", HelpBoxMessageType.Error);
 
 			ApplyBoxStyle(root);
 
@@ -132,17 +132,15 @@ namespace EditorAttributes.Editor
 		{
 			if (fieldType.IsArray)
 			{
-				return fieldType.IsSubclassOf(typeToCheck.MakeArrayType()) || fieldType == typeToCheck.MakeArrayType();
+				return typeToCheck.IsAssignableFrom(fieldType.GetElementType());
 			}
 			else if (fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(List<>))
 			{
-				var genericType = fieldType.GetGenericArguments()[0];
-
-				return genericType.IsSubclassOf(typeToCheck) || genericType == typeToCheck;
+				return typeToCheck.IsAssignableFrom(fieldType.GetGenericArguments()[0]);
 			}
 			else
 			{
-				return fieldType.IsSubclassOf(typeToCheck) || fieldType == typeToCheck;
+				return typeToCheck.IsAssignableFrom(fieldType);
 			}
 		}
 	}

@@ -5,8 +5,8 @@ using EditorAttributes.Editor.Utility;
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(HideInChildrenAttribute))]
-    public class HideInChildrenDrawer : PropertyDrawerBase
-    {
+	public class HideInChildrenDrawer : PropertyDrawerBase
+	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var hideInChildrenAttribute = attribute as HideInChildrenAttribute;
@@ -21,7 +21,7 @@ namespace EditorAttributes.Editor
 		private bool IsPropertyInherited(SerializedProperty property, HideInChildrenAttribute attribute)
 		{
 			var targetObjectType = property.serializedObject.targetObject.GetType();
-			var fieldInfo = targetObjectType.GetField(property.name, ReflectionUtility.BINDING_FLAGS);
+			var fieldInfo = ReflectionUtility.FindField(property.name, property);
 
 			foreach (var type in attribute.ChildTypes)
 			{
@@ -29,7 +29,7 @@ namespace EditorAttributes.Editor
 					return false;
 			}
 
-			return fieldInfo == null; // If fieldInfo is null it means that the field was not found in the target, so it must be inherited
+			return targetObjectType != fieldInfo.DeclaringType;
 		}
 	}
 }

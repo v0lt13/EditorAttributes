@@ -3,14 +3,20 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using FilePath = UnityEditor.FilePathAttribute;
+using UnityEditor.UIElements;
 
 namespace EditorAttributes.Editor
 {
 	[@FilePath("ProjectSettings/EditorAttributes/EditorAttributesSettings.asset", FilePath.Location.ProjectFolder)]
 	internal class EditorAttributesSettings : ScriptableSingleton<EditorAttributesSettings>
 	{
+		[Tooltip("Disables automatic validation when building the project")]
 		[SerializeField] internal bool disableBuildValidation;
-		[Space]
+
+		[Tooltip("Time in milliseconds to wait for the asset preview to load, increase this value if the previews are not showing up")]
+		[SerializeField, Suffix("ms")] internal int assetPreviewLoadTime = 20;
+
+		[Space, Tooltip("Define custom units for use with UnitField Attribute")]
 		[SerializeField, DataTable] internal UnitDefinition[] customUnitDefinitions;
 
 		[MessageBox(nameof(messageBoxText), nameof(CheckValidUnitDefinitions), MessageMode.Warning, StringInputMode.Dynamic)]
@@ -84,6 +90,7 @@ namespace EditorAttributes.Editor
 		public override void OnActivate(string searchContext, VisualElement rootElement)
 		{
 			var serializedObject = new SerializedObject(EditorAttributesSettings.instance);
+			var settingsContainer = new VisualElement();
 
 			var header = new Label("Editor Attributes")
 			{
@@ -93,8 +100,9 @@ namespace EditorAttributes.Editor
 					unityFontStyleAndWeight = FontStyle.Bold,
 					justifyContent = Justify.FlexEnd,
 					height = 19f,
-					marginBottom = 12f,
-					paddingLeft = 1f
+					marginTop = 1f,
+					marginLeft = 9f,
+					marginBottom = 12f
 				}
 			};
 
@@ -117,15 +125,9 @@ namespace EditorAttributes.Editor
 			helpButton.RegisterCallback<MouseOverEvent>((callack) => helpButton.style.backgroundColor = new Color(0.3f, 0.3f, 0.3f, 1f));
 			helpButton.RegisterCallback<MouseOutEvent>((callack) => helpButton.style.backgroundColor = Color.clear);
 
-			var settingsContainer = new VisualElement() { style = { marginLeft = 9f, marginTop = 1f } };
+			var inspectorElement = new InspectorElement(serializedObject);
 
-			var disableBuildValidationPropertyField = PropertyDrawerBase.CreatePropertyField(serializedObject.FindProperty("disableBuildValidation"));
-
-			disableBuildValidationPropertyField.tooltip = "Disables automatic validation when building the project";
-
-			var customUnitDefinitionsPropertyField = PropertyDrawerBase.CreatePropertyField(serializedObject.FindProperty("customUnitDefinitions"));
-
-			customUnitDefinitionsPropertyField.tooltip = "Define custom units for use with UnitField Attribute";
+			inspectorElement.Q<ObjectField>("unity-input-m_Script").parent.RemoveFromHierarchy(); // Remove the auto-generated script field
 
 			var clearParamsButton = new Button(() => ButtonDrawer.ClearAllParamsData())
 			{
@@ -134,16 +136,12 @@ namespace EditorAttributes.Editor
 				style = { marginTop = 10f }
 			};
 
-			var messageBoxHolderPropertyField = PropertyDrawerBase.CreatePropertyField(serializedObject.FindProperty("messageBoxHolder"));
-
 			header.Add(helpButton);
 
-			settingsContainer.Add(header);
-			settingsContainer.Add(disableBuildValidationPropertyField);
-			settingsContainer.Add(customUnitDefinitionsPropertyField);
-			settingsContainer.Add(messageBoxHolderPropertyField);
+			settingsContainer.Add(inspectorElement);
 			settingsContainer.Add(clearParamsButton);
 
+			rootElement.Add(header);
 			rootElement.Add(settingsContainer);
 		}
 

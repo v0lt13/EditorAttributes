@@ -1,6 +1,6 @@
 {
 	"name": "com.v0lt.editor-attributes",
-	"version": "2.9.0",
+	"version": "2.9.1",
 	"displayName": "EditorAttributes",
 	"description": "EditorAttributes is a unity package that adds some extra editor attributes to your project to easly customize your editors without having to write any editor code.",
 	"changelogUrl": "https://editorattributesdocs.readthedocs.io/en/latest/changelogs.html",

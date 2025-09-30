@@ -27,13 +27,13 @@ namespace EditorAttributes.Editor
 
 		protected virtual void OnEnable()
 		{
-            var funcList = new List<MethodInfo>();
-            var targetType = target.GetType();
-            while (targetType != null)
-            {
-                funcList.AddRange(targetType.GetMethods(ReflectionUtility.BINDING_FLAGS));
-                targetType = targetType.BaseType;
-            }
+			var funcList = new List<MethodInfo>();
+			var targetType = target.GetType();
+			while (targetType != null)
+			{
+				funcList.AddRange(targetType.GetMethods(ReflectionUtility.BINDING_FLAGS));
+				targetType = targetType.BaseType;
+			}
 
 			functions = funcList.ToArray();
 
@@ -104,9 +104,7 @@ namespace EditorAttributes.Editor
 						var field = ReflectionUtility.FindField(property.name, target);
 
 						if (field?.GetCustomAttribute<HidePropertyAttribute>() != null)
-						{
 							propertyField.style.display = DisplayStyle.None;
-						}
 
 						var colorAttribute = field?.GetCustomAttribute<GUIColorAttribute>();
 
@@ -209,9 +207,6 @@ namespace EditorAttributes.Editor
 		private VisualElement DrawNonSerializedField(MemberInfo memberInfo, Type memberType, object memberValue)
 		{
 			var root = new VisualElement();
-
-			var headerAttribute = memberInfo.GetCustomAttribute<HeaderAttribute>();
-
 			var header = new Label()
 			{
 				style = {
@@ -250,6 +245,8 @@ namespace EditorAttributes.Editor
 				space.AddToClassList("unity-space-drawer");
 				root.Add(space);
 			}
+
+			var headerAttribute = memberInfo.GetCustomAttribute<HeaderAttribute>();
 
 			if (headerAttribute != null)
 			{

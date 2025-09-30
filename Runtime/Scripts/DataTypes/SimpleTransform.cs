@@ -4,12 +4,12 @@ using UnityEngine;
 namespace EditorAttributes
 {
 	/// <summary>
-	/// A simple serializable transform struct that can be used with the DrawHandle Attribute
+	/// A simple unity serializable transform struct that can be used with the DrawHandle Attribute
 	/// </summary>
 	[Serializable]
 	public struct SimpleTransform
-    {
-		public Vector3 position; 
+	{
+		public Vector3 position;
 		public Vector3 rotation;
 		public Vector3 scale;
 

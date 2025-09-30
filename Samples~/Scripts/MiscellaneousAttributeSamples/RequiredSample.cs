@@ -8,5 +8,9 @@ namespace EditorAttributesSamples
 	{
 		[Header("Required Attribute:")]
 		[SerializeField, Required] private GameObject objectField;
+		[SerializeField, Required(fixMode: ReferenceFixMode.Self)] private Collider colliderField;
+		[SerializeField, Required(nameof(GetAudioReference))] private AudioSource audioField;
+
+		private Object GetAudioReference() => GetComponent<AudioSource>();
 	}
 }

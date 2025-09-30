@@ -645,6 +645,10 @@ namespace EditorAttributes.Editor
 			{
 				return new TextField(fieldName) { value = (string)fieldValue, showMixedValue = showMixedValue };
 			}
+			else if (fieldType == typeof(char))
+			{
+				return new TextField(fieldName) { value = fieldValue.ToString(), showMixedValue = showMixedValue, maxLength = 1 };
+			}
 			else if (fieldType == typeof(int))
 			{
 				return new IntegerField(fieldName) { value = (int)fieldValue, showMixedValue = showMixedValue };
@@ -729,7 +733,7 @@ namespace EditorAttributes.Editor
 			{
 				return new BoundsIntField(fieldName) { value = (BoundsInt)fieldValue, showMixedValue = showMixedValue };
 			}
-			else if (fieldType.IsSerializable && !ReflectionUtility.IsTypeCollection(fieldType))
+			else if (fieldType.IsSerializable && !ReflectionUtility.IsTypeCollection(fieldType) && !fieldType.IsPrimitive)
 			{
 				var serializedObjectFoldout = new Foldout { text = fieldName };
 
@@ -770,7 +774,7 @@ namespace EditorAttributes.Editor
 		/// <param name="objectValue">The value of the registered serialized object. This parameter is only required if you need to register value callbacks to serialized objects</param>
 		public static void RegisterValueChangedCallbackByType(Type fieldType, VisualElement field, Action<object> valueCallback, object objectValue = null)
 		{
-			if (fieldType == typeof(string))
+			if (fieldType == typeof(string) || fieldType == typeof(char))
 			{
 				field.RegisterCallback<ChangeEvent<string>>((callback) => valueCallback.Invoke(callback.newValue));
 			}
@@ -858,7 +862,7 @@ namespace EditorAttributes.Editor
 			{
 				field.RegisterCallback<ChangeEvent<BoundsInt>>((callback) => valueCallback.Invoke(callback.newValue));
 			}
-			else if (fieldType.IsSerializable && !ReflectionUtility.IsTypeCollection(fieldType))
+			else if (fieldType.IsSerializable && !ReflectionUtility.IsTypeCollection(fieldType) && !fieldType.IsPrimitive)
 			{
 				if (objectValue == null)
 				{
@@ -956,11 +960,11 @@ namespace EditorAttributes.Editor
 			{
 				if (notify)
 				{
-					textField.value = (string)value;
+					textField.value = value.ToString();
 				}
 				else
 				{
-					textField.SetValueWithoutNotify((string)value);
+					textField.SetValueWithoutNotify(value.ToString());
 				}
 			}
 			else if (field is IntegerField integerField)
@@ -1240,8 +1244,8 @@ namespace EditorAttributes.Editor
 				}
 			});
 
-			static bool IsTypeValid(Type type) => type.IsEnum
-			|| type == typeof(string) || type == typeof(int) || type == typeof(uint) || type == typeof(long) || type == typeof(ulong) || type == typeof(float) || type == typeof(double) || type == typeof(bool)
+			static bool IsTypeValid(Type type) => type.IsEnum || type == typeof(string) || type == typeof(char)
+			|| type == typeof(int) || type == typeof(uint) || type == typeof(long) || type == typeof(ulong) || type == typeof(float) || type == typeof(double) || type == typeof(bool)
 			|| type == typeof(Vector2) || type == typeof(Vector2Int) || type == typeof(Vector3) || type == typeof(Vector3Int) || type == typeof(Vector4) || type == typeof(Color)
 			|| type == typeof(LayerMask) || type == typeof(Rect) || type == typeof(RectInt) || type == typeof(Bounds) || type == typeof(BoundsInt) || type == typeof(Gradient) || type == typeof(AnimationCurve);
 		}

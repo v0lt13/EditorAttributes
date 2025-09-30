@@ -1,13 +1,13 @@
 using UnityEngine;
 using UnityEditor;
-using System.Threading;
 using UnityEngine.UIElements;
+using System.Threading.Tasks;
 
 namespace EditorAttributes.Editor
 {
 	[CustomPropertyDrawer(typeof(AssetPreviewAttribute))]
-    public class AssetPreviewDrawer : PropertyDrawerBase
-    {
+	public class AssetPreviewDrawer : PropertyDrawerBase
+	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var assetPreviewAttribute = attribute as AssetPreviewAttribute;
@@ -17,8 +17,8 @@ namespace EditorAttributes.Editor
 
 			root.Add(propertyField);
 
-            if (property.propertyType == SerializedPropertyType.ObjectReference)
-            {
+			if (property.propertyType == SerializedPropertyType.ObjectReference)
+			{
 				var image = new Image();
 
 				root.Add(image);
@@ -31,15 +31,15 @@ namespace EditorAttributes.Editor
 					propertyField.RegisterValueChangeCallback((changeEvent) => GetAssetPreview(property, assetPreviewAttribute, root, image));
 				});
 			}
-            else
-            {
-                root.Add(new HelpBox("The attached field is not a valid asset", HelpBoxMessageType.Error));
-            }
+			else
+			{
+				root.Add(new HelpBox("The attached field is not a valid asset", HelpBoxMessageType.Error));
+			}
 
 			return root;
 		}
 
-		private void GetAssetPreview(SerializedProperty property, AssetPreviewAttribute assetPreviewAttribute, VisualElement root, Image image)
+		private async void GetAssetPreview(SerializedProperty property, AssetPreviewAttribute assetPreviewAttribute, VisualElement root, Image image)
 		{
 			if (property.objectReferenceValue == null)
 			{
@@ -47,17 +47,19 @@ namespace EditorAttributes.Editor
 				return;
 			}
 
-			int attempts = 0; // Safety measure to prevent an infinite loop if the texture cant be loaded
 			Texture2D texture = null;
 
-			while (texture == null && attempts < 3)
+			// When reassigning the object reference and the preview is not cached yet the texture will return null the first time, so we request it a second time after the first call cached it
+			for (int i = 0; i < 2; i++)
 			{
-				attempts++;
+				if (texture != null)
+					break;
+
 				texture = AssetPreview.GetAssetPreview(property.objectReferenceValue);
 
-				Thread.Sleep(20); // Suspend the main thread for a bit to give time for the asset preview to load since is doing it asynchronously
+				await Task.Delay(EditorAttributesSettings.instance.assetPreviewLoadTime); // Give time for the asset preview to load since is doing it asynchronously under the hood
 			}
-			
+
 			if (texture == null)
 			{
 				RemoveElement(root, image);

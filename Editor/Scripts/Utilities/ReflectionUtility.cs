@@ -128,7 +128,7 @@ namespace EditorAttributes.Editor.Utility
 		}
 
 		/// <summary>
-		/// Finds a member from the target type
+		/// Finds a member from the target and it's inherited types
 		/// </summary>
 		/// <param name="memberName">The name of the member to look for</param>
 		/// <param name="targetType">The type to get the member from</param>
@@ -137,33 +137,30 @@ namespace EditorAttributes.Editor.Utility
 		/// <returns>The member info of the specified member type</returns>
 		public static MemberInfo FindMember(string memberName, Type targetType, BindingFlags bindingFlags, MemberTypes memberType)
 		{
-            MemberInfo memberInfo = null;
-            while (targetType != null)
-            {
-                switch (memberType)
-                {
-                    case MemberTypes.Field:
-                        {
-                            memberInfo = targetType.GetField(memberName, bindingFlags);
-                        }
-                        break;
+			MemberInfo memberInfo = null;
 
-                    case MemberTypes.Property:
-                        {
-                            memberInfo = targetType.GetProperty(memberName, bindingFlags);
-                        }
-                        break;
+			while (targetType != null)
+			{
+				switch (memberType)
+				{
+					case MemberTypes.Field:
+						memberInfo = targetType.GetField(memberName, bindingFlags);
+						break;
 
-                    case MemberTypes.Method:
-                        {
-                            memberInfo = targetType.GetMethod(memberName, bindingFlags);
-                        }
-                        break;
-                }
+					case MemberTypes.Property:
+						memberInfo = targetType.GetProperty(memberName, bindingFlags);
+						break;
 
-                if (memberInfo != null) return memberInfo;
-                targetType = targetType.BaseType;
-            }
+					case MemberTypes.Method:
+						memberInfo = targetType.GetMethod(memberName, bindingFlags);
+						break;
+				}
+
+				if (memberInfo != null)
+					return memberInfo;
+
+				targetType = targetType.BaseType;
+			}
 
 			return null;
 		}
