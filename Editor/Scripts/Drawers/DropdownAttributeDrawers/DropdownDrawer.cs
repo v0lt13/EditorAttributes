@@ -24,8 +24,9 @@ namespace EditorAttributes.Editor
 
 			var displayValues = GetDisplayValues(collectionInfo, dropdownAttribute, property, propertyValues);
 
-			var dropdownField = IsCollectionValid(displayValues) ? new DropdownField(property.displayName, displayValues, GetDropdownDefaultValueIndex(propertyValues, property))
-				: new DropdownField(property.displayName, new List<string>() { "NULL" }, 0);
+			List<string> nullList = new() { "NULL" };
+
+			DropdownField dropdownField = IsCollectionValid(displayValues) ? new(property.displayName, displayValues, GetDropdownDefaultValueIndex(propertyValues, property)) : new(property.displayName, nullList, 0);
 
 			dropdownField.tooltip = property.tooltip;
 			dropdownField.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
@@ -73,6 +74,12 @@ namespace EditorAttributes.Editor
 					dropdownField.choices = currentDisplayValues;
 
 					propertyValues = currentPropertyValues;
+				}
+				else
+				{
+					dropdownField.choices = nullList;
+					propertyValues = nullList;
+					displayValues = nullList;
 				}
 
 				if (HasMismatchedDisplayCollectionCounts(dropdownAttribute, propertyValues, displayValues))

@@ -53,9 +53,9 @@ namespace EditorAttributes.Editor
 		/// </summary>
 		/// <param name="property">The serialized property</param>
 		/// <returns>The binded property field</returns>
-		public static PropertyField CreatePropertyField(SerializedProperty property)
+		public static PropertyField CreatePropertyField(SerializedProperty property, string label = "")
 		{
-			var propertyField = new PropertyField(property);
+			var propertyField = new PropertyField(property, string.IsNullOrWhiteSpace(label) ? property.displayName : label);
 			propertyField.BindProperty(property.serializedObject);
 
 			return propertyField;
@@ -221,6 +221,13 @@ namespace EditorAttributes.Editor
 				return property.serializedObject.FindProperty(propertyPath).FindPropertyRelative(propertyName);
 			}
 		}
+
+		/// <summary>
+		/// Checks to see if a seralized property is a list or array
+		/// </summary>
+		/// <param name="property">The serialized property to check</param>
+		/// <returns>True if the property is a list or array, false otherwise</returns>
+		public static bool IsPropertyCollection(SerializedProperty property) => property.propertyPath.Contains("Array");
 
 		/// <summary>
 		/// Gets the collection property from a collection item property

@@ -144,7 +144,7 @@ namespace EditorAttributes.Editor
 							alignedFieldLabel.style.marginRight = (attribute as HorizontalGroupAttribute).WidthOffset;
 						}
 					}
-				}, 100L).ForDuration(400L);
+				}, 100L);
 
 				field.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
 			}

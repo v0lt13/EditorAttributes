@@ -104,7 +104,7 @@ namespace EditorAttributes.Editor
 						hiddenField.name = GROUPED_PROPERTY_ID;
 						hiddenField.style.display = DisplayStyle.Flex;
 					}
-				}, 100L).ForDuration(400L);
+				}, 100L);
 
 				field.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
 			}

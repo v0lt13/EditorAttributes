@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
@@ -62,7 +61,7 @@ namespace EditorAttributes.Editor
 			field.style.unityFontStyleAndWeight = FontStyle.Normal;
 
 			// Slightly move foldouts for serialized objects
-			if (variableProperty.propertyType == SerializedPropertyType.Generic && variableProperty.type != "UnityEvent" && !ReflectionUtility.IsPropertyCollection(variableProperty))
+			if (variableProperty.propertyType == SerializedPropertyType.Generic && variableProperty.type != "UnityEvent" && !IsPropertyCollection(variableProperty))
 				field.style.marginLeft = 10f;
 
 			root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
@@ -79,7 +78,7 @@ namespace EditorAttributes.Editor
 						hiddenField.name = GROUPED_PROPERTY_ID;
 						hiddenField.style.display = DisplayStyle.Flex;
 					}
-				}, 100L).ForDuration(400L);
+				}, 100L);
 
 				root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
 			}

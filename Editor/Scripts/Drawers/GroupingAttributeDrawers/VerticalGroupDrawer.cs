@@ -85,7 +85,7 @@ namespace EditorAttributes.Editor
 						alignedFieldLabel.style.width = 0f;
 						alignedFieldLabel.style.minWidth = 100f;
 					}
-				}, 100L).ForDuration(400L);
+				}, 100L);
 
 				field.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
 			}

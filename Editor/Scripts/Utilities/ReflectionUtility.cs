@@ -263,19 +263,6 @@ namespace EditorAttributes.Editor.Utility
 		}
 
 		/// <summary>
-		/// Checks to see if a seralized property is a list or array
-		/// </summary>
-		/// <param name="property">The serialized property to check</param>
-		/// <returns>True if the property is a list or array, false otherwise</returns>
-		public static bool IsPropertyCollection(SerializedProperty property)
-		{
-			var arrayField = FindField(property.propertyPath.Split(".")[0], property);
-			var memberInfoType = GetMemberInfoType(arrayField);
-
-			return IsTypeCollection(memberInfoType);
-		}
-
-		/// <summary>
 		/// Checks to see if a type is a list or array
 		/// </summary>
 		/// <param name="type">The type to check</param>

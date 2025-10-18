@@ -127,7 +127,7 @@ namespace EditorAttributes.Editor
 
 		private bool IsNotFirstArrayElement(SerializedProperty property)
 		{
-			if (ReflectionUtility.IsPropertyCollection(property))
+			if (IsPropertyCollection(property))
 			{
 				var splitName = property.propertyPath.Split(".");
 

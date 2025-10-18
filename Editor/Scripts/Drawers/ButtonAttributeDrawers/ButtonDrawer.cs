@@ -80,9 +80,9 @@ namespace EditorAttributes.Editor
 				{
 					var parameter = functionParameters[i];
 
-					if (!parameter.ParameterType.IsPrimitive && parameter.ParameterType != typeof(string))
+					if (!parameter.ParameterType.IsPrimitive && parameter.ParameterType != typeof(string) && !parameter.ParameterType.IsEnum)
 					{
-						foldout.Add(new HelpBox($"Parameter type {parameter.ParameterType} is not supported. Only Unity supported primitive types (and strings) are supported.", HelpBoxMessageType.Error));
+						foldout.Add(new HelpBox($"Parameter type {parameter.ParameterType} is not supported. Only Unity supported primitive types, strings and enums are supported.", HelpBoxMessageType.Error));
 						continue;
 					}
 
