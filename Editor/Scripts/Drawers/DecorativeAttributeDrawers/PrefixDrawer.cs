@@ -1,48 +1,47 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace EditorAttributes.Editor
 {
-	[CustomPropertyDrawer(typeof(PrefixAttribute))]
+    [CustomPropertyDrawer(typeof(PrefixAttribute))]
     public class PrefixDrawer : PropertyDrawerBase
     {
-		public override VisualElement CreatePropertyGUI(SerializedProperty property)
-		{
-			var prefixAttribute = attribute as PrefixAttribute;
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            var prefixAttribute = attribute as PrefixAttribute;
 
-			var root = new VisualElement();
-			var errorBox = new HelpBox();
-			var propertyField = CreatePropertyField(property);
+            HelpBox errorBox = new();
+            PropertyField propertyField = CreatePropertyField(property);
 
-			var prefixLabel = new Label()
-			{
-				style = {
-					fontSize = 12,
-					maxWidth = 200f,
-					marginRight = prefixAttribute.Offset,
-					unityTextAlign = TextAnchor.MiddleRight,
-					alignSelf = Align.FlexEnd,
-					overflow = Overflow.Hidden
-				}
-			};
+            Label prefixLabel = new()
+            {
+                style = {
+                    fontSize = 12,
+                    maxWidth = 200f,
+                    marginRight = prefixAttribute.Offset,
+                    unityTextAlign = TextAnchor.MiddleRight,
+                    alignSelf = Align.FlexEnd,
+                    overflow = Overflow.Hidden
+                }
+            };
 
-			prefixLabel.style.color = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR : Color.gray;
-			root.Add(propertyField);
+            prefixLabel.style.color = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR : Color.gray;
 
-			ExecuteLater(root, () =>
-			{
-				var field = propertyField.Q<Label>();							
-				field.Add(prefixLabel);
-			});
+            propertyField.RegisterCallbackOnce<GeometryChangedEvent>((callback) =>
+            {
+                var field = propertyField.Q<Label>();
+                field.Add(prefixLabel);
+            });
 
-			UpdateVisualElement(prefixLabel, () =>
-			{
-				prefixLabel.text = GetDynamicString(prefixAttribute.Prefix, property, prefixAttribute, errorBox);		
-				DisplayErrorBox(root, errorBox);
-			});
+            UpdateVisualElement(prefixLabel, () =>
+            {
+                prefixLabel.text = GetDynamicString(prefixAttribute.Prefix, property, prefixAttribute, errorBox);
+                DisplayErrorBox(propertyField, errorBox);
+            });
 
-			return root;
-		}
+            return propertyField;
+        }
     }
 }

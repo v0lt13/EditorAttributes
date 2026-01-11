@@ -6,14 +6,12 @@ namespace EditorAttributes.Editor
     [CustomPropertyDrawer(typeof(DisableInPlayModeAttribute))]
     public class DisableInPlayModeDrawer : PropertyDrawerBase
     {
-		public override VisualElement CreatePropertyGUI(SerializedProperty property)
-		{
-			var root = new VisualElement();
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            VisualElement propertyField = CreatePropertyField(property);
+            propertyField.SetEnabled(!EditorApplication.isPlayingOrWillChangePlaymode);
 
-			root.Add(CreatePropertyField(property));
-			root.SetEnabled(!EditorApplication.isPlayingOrWillChangePlaymode);
-
-			return root;
-		}
-	}
+            return propertyField;
+        }
+    }
 }

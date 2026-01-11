@@ -1,52 +1,54 @@
 using UnityEditor;
+using System.Reflection;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-	[CustomPropertyDrawer(typeof(MessageBoxAttribute))]
+    [CustomPropertyDrawer(typeof(MessageBoxAttribute))]
     public class MessageBoxDrawer : PropertyDrawerBase
     {
-		public override VisualElement CreatePropertyGUI(SerializedProperty property)
-		{
-			var messageBoxAttribute = attribute as MessageBoxAttribute;
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            var messageBoxAttribute = attribute as MessageBoxAttribute;
 
-			var conditionalProperty = ReflectionUtility.GetValidMemberInfo(messageBoxAttribute.ConditionName, property);
+            MemberInfo conditionalProperty = ReflectionUtils.GetValidMemberInfo(messageBoxAttribute.ConditionName, property);
 
-			var root = new VisualElement();
-			var messageBox = new HelpBox(string.Empty, (HelpBoxMessageType)messageBoxAttribute.MessageType);
-			var errorBox = new HelpBox();
+            VisualElement root = new();
+            HelpBox errorBox = new();
+            HelpBox messageBox = new(string.Empty, (HelpBoxMessageType)messageBoxAttribute.MessageType);
 
-			var propertyField = CreatePropertyField(property);
+            PropertyField propertyField = CreatePropertyField(property);
 
-			if (CanApplyGlobalColor)
-			{
-				messageBox.style.color = EditorExtension.GLOBAL_COLOR;
-				messageBox.style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
-			}
+            if (CanApplyGlobalColor)
+            {
+                messageBox.style.color = EditorExtension.GLOBAL_COLOR;
+                messageBox.style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
+            }
 
-			root.Add(propertyField);
+            root.Add(propertyField);
+            root.Add(messageBox);
 
-			UpdateVisualElement(propertyField, () =>
-			{
-				if (GetConditionValue(conditionalProperty, messageBoxAttribute, property, errorBox))
-				{
-					messageBox.text = GetDynamicString(messageBoxAttribute.Message, property, messageBoxAttribute, errorBox);
-			
-					AddElement(root, messageBox);
-			
-					if (messageBoxAttribute.DrawAbove)
-						messageBox.PlaceBehind(propertyField);
-				}
-				else
-				{
-					RemoveElement(root, messageBox);
-				}
-			
-				DisplayErrorBox(root, errorBox);
-			});
+            if (messageBoxAttribute.DrawAbove)
+                messageBox.PlaceBehind(propertyField);
 
-			return root;
-		}
-	}
+            UpdateVisualElement(propertyField, () =>
+            {
+                if (GetConditionValue(conditionalProperty, messageBoxAttribute, property, errorBox))
+                {
+                    messageBox.text = GetDynamicString(messageBoxAttribute.Message, property, messageBoxAttribute, errorBox);
+                    messageBox.style.display = DisplayStyle.Flex;
+                }
+                else
+                {
+                    messageBox.style.display = DisplayStyle.None;
+                }
+
+                DisplayErrorBox(root, errorBox);
+            });
+
+            return root;
+        }
+    }
 }

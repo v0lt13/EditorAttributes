@@ -1,39 +1,29 @@
 using UnityEditor;
+using System.Reflection;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-	[CustomPropertyDrawer(typeof(HideFieldAttribute))]
+    [CustomPropertyDrawer(typeof(HideFieldAttribute))]
     public class HideFieldDrawer : PropertyDrawerBase
     {
-		public override VisualElement CreatePropertyGUI(SerializedProperty property)
-		{
-			var hideAttribute = attribute as HideFieldAttribute;
-			var conditionalProperty = ReflectionUtility.GetValidMemberInfo(hideAttribute.ConditionName, property);
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            var hideAttribute = attribute as HideFieldAttribute;
+            MemberInfo conditionalProperty = ReflectionUtils.GetValidMemberInfo(hideAttribute.ConditionName, property);
 
-			var root = new VisualElement();
-			var errorBox = new HelpBox();
+            HelpBox errorBox = new();
+            PropertyField propertyField = CreatePropertyField(property);
 
-			var propertyField = CreatePropertyField(property);
+            UpdateVisualElement(propertyField, () =>
+            {
+                propertyField.style.display = !GetConditionValue(conditionalProperty, hideAttribute, property, errorBox) ? DisplayStyle.Flex : DisplayStyle.None;
+                DisplayErrorBox(propertyField, errorBox);
+            });
 
-			root.Add(propertyField);
-
-			UpdateVisualElement(root, () =>
-			{
-				if (!GetConditionValue(conditionalProperty, hideAttribute, property, errorBox))
-				{
-					AddElement(root, propertyField);
-				}
-				else
-				{
-					RemoveElement(root, propertyField);
-				}
-
-				DisplayErrorBox(root, errorBox);
-			});
-
-			return root;
-		}
-	}
+            return propertyField;
+        }
+    }
 }

@@ -6,5 +6,5 @@ namespace EditorAttributes
 	/// Empty struct to use as a holder property for attributes
 	/// </summary>
 	[Serializable]
-	public struct Void { }
+	public readonly struct Void { }
 }

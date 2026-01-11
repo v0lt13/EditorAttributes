@@ -1,143 +1,125 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 
 namespace EditorAttributes.Editor
 {
-	[CustomPropertyDrawer(typeof(TypeDropdownAttribute))]
-	public class TypeDropdownDrawer : PropertyDrawerBase
-	{
-		public override VisualElement CreatePropertyGUI(SerializedProperty property)
-		{
-			var root = new VisualElement();
+    [CustomPropertyDrawer(typeof(TypeDropdownAttribute))]
+    public class TypeDropdownDrawer : CollectionDisplayDrawer
+    {
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            if (property.propertyType != SerializedPropertyType.String)
+                return new HelpBox("The TypeDropdown Attribute can only be attached to string fields", HelpBoxMessageType.Error);
 
-			if (property.propertyType == SerializedPropertyType.String)
-			{
-				var dropdownValues = GetAvailableTypes();
+            List<string> dropdownValues = GetTypeList();
+            DropdownField typeDropdown = CreateDropdownField(dropdownValues, property);
 
-				var typeDropdown = new DropdownField(property.displayName, dropdownValues, GetDropdownDefaultValue(dropdownValues, property))
-				{
-					showMixedValue = property.hasMultipleDifferentValues,
-					tooltip = property.tooltip
-				};
+            return typeDropdown;
+        }
 
-				typeDropdown.AddToClassList(BaseField<Void>.alignedFieldUssClassName);
-				AddPropertyContextMenu(typeDropdown, property);
+        protected override void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue)
+        {
+            var dropdown = element as DropdownField;
+            string dropdownValue = ConvertPropertyValueToDropdownValue(clipboardValue);
 
-				typeDropdown.RegisterValueChangedCallback(callback =>
-				{
-					if (callback.newValue == "Null")
-					{
-						property.stringValue = string.Empty;
-					}
-					else if (callback.newValue.StartsWith("Global/"))
-					{
-						property.stringValue = callback.newValue[7..].Replace('/', '.');
-					}
-					else
-					{
-						property.stringValue = callback.newValue.Replace('/', '.');
-					}
+            if (dropdown.choices.Contains(dropdownValue))
+            {
+                base.PasteValue(element, property, clipboardValue);
+                dropdown.SetValueWithoutNotify(dropdownValue);
+            }
+            else
+            {
+                Debug.LogWarning($"Could not paste value <b>{dropdownValue}</b> since is not availiable as an option in the dropdown");
+            }
+        }
 
-					property.serializedObject.ApplyModifiedProperties();
-				});
+        protected override void SetPropertyValueFromDropdown(SerializedProperty property, DropdownField dropdownField)
+        {
+            if (property.hasMultipleDifferentValues)
+                return;
 
-				typeDropdown.TrackPropertyValue(property, (trackedProperty) =>
-				{
-					string dropdownValue = ConvertPropertyValueToDropdownValue(trackedProperty.stringValue);
+            if (dropdownField.value == "Null")
+            {
+                property.stringValue = string.Empty;
+            }
+            else if (dropdownField.value.StartsWith("Global/"))
+            {
+                property.stringValue = dropdownField.value[7..].Replace('/', '.');
+            }
+            else
+            {
+                property.stringValue = dropdownField.value.Replace('/', '.');
+            }
 
-					if (typeDropdown.choices.Contains(dropdownValue))
-					{
-						typeDropdown.SetValueWithoutNotify(dropdownValue);
-					}
-					else
-					{
-						Debug.LogWarning($"The value <b>{trackedProperty.stringValue}</b> set to the <b>{trackedProperty.name}</b> variable is not a valid type string.", trackedProperty.serializedObject.targetObject);
-					}
-				});
+            property.serializedObject.ApplyModifiedProperties();
+        }
 
-				root.Add(typeDropdown);
+        protected override void SetDropdownValueFromProperty(SerializedProperty property, DropdownField dropdownField)
+        {
+            string dropdownValue = ConvertPropertyValueToDropdownValue(property.stringValue);
 
-				ExecuteLater(typeDropdown, () => typeDropdown.Q(className: DropdownField.inputUssClassName).style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f);
-			}
-			else
-			{
-				root.Add(new HelpBox("The TypeDropdown attribute can only be attached to string fields", HelpBoxMessageType.Error));
-			}
+            if (dropdownField.choices.Contains(dropdownValue))
+            {
+                dropdownField.SetValueWithoutNotify(dropdownValue);
+            }
+            else
+            {
+                Debug.LogWarning($"The value <b>{property.stringValue}</b> set to the <b>{property.name}</b> variable is not a valid type string.", property.serializedObject.targetObject);
+            }
+        }
 
-			return root;
-		}
+        private List<string> GetTypeList()
+        {
+            var typeDropdownAttribute = attribute as TypeDropdownAttribute;
 
-		protected override void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue)
-		{
-			var dropdown = element as DropdownField;
+            List<string> typeNameList = new();
+            TypeCache.TypeCollection typeCollection = typeDropdownAttribute.AssemblyName == string.Empty ? TypeCache.GetTypesDerivedFrom<object>() : TypeCache.GetTypesDerivedFrom<object>(typeDropdownAttribute.AssemblyName);
 
-			string dropdownValue = ConvertPropertyValueToDropdownValue(clipboardValue);
+            foreach (var item in typeCollection)
+            {
+                if (typeDropdownAttribute.AssemblyName == string.Empty && !item.IsVisible)
+                    continue;
 
-			if (dropdown.choices.Contains(dropdownValue))
-			{
-				base.PasteValue(element, property, clipboardValue);
-				dropdown.SetValueWithoutNotify(dropdownValue);
-			}
-			else
-			{
-				Debug.LogWarning($"Could not paste value \"{dropdownValue}\" since is not availiable as an option in the dropdown");
-			}
-		}
+                string assemblyName = item.Assembly.ToString().Split(',')[0];
 
-		private List<string> GetAvailableTypes()
-		{
-			var typeDropdownAttribute = attribute as TypeDropdownAttribute;
+                if (!item.FullName.Contains('.'))
+                {
+                    typeNameList.Add($"Global/{item.FullName}, {assemblyName}");
+                }
+                else
+                {
+                    typeNameList.Add($"{item.FullName.Replace('.', '/')}, {assemblyName}");
+                }
+            }
 
-			var typeNameList = new List<string>();
-			var typeCollection = typeDropdownAttribute.AssemblyName == string.Empty ? TypeCache.GetTypesDerivedFrom<object>() : TypeCache.GetTypesDerivedFrom<object>(typeDropdownAttribute.AssemblyName);
+            typeNameList.Sort();
+            typeNameList.Insert(0, "Null");
 
-			foreach (var item in typeCollection)
-			{
-				if (typeDropdownAttribute.AssemblyName == string.Empty && !item.IsVisible)
-					continue;
+            return typeNameList;
+        }
 
-				string assemblyName = item.Assembly.ToString().Split(',')[0];
+        protected override string SetDropdownDefaultValue(List<string> collectionValues, SerializedProperty property)
+        {
+            string propertyStringValue = ConvertPropertyValueToDropdownValue(property.stringValue);
+            return collectionValues.Contains(propertyStringValue) ? propertyStringValue : collectionValues[0];
+        }
 
-				if (!item.FullName.Contains('.'))
-				{
-					typeNameList.Add($"Global/{item.FullName}, {assemblyName}");
-				}
-				else
-				{
-					typeNameList.Add($"{item.FullName.Replace('.', '/')}, {assemblyName}");
-				}
-			}
+        private string ConvertPropertyValueToDropdownValue(string propertyValue)
+        {
+            if (propertyValue == string.Empty)
+                return "Null";
 
-			typeNameList.Sort();
-			typeNameList.Insert(0, "Null");
+            int commaIndex = propertyValue.IndexOf(',');
 
-			return typeNameList;
-		}
+            if (commaIndex == -1)
+                return propertyValue;
 
-		private string GetDropdownDefaultValue(List<string> collectionValues, SerializedProperty property)
-		{
-			string propertyStringValue = ConvertPropertyValueToDropdownValue(property.stringValue);
+            string typeName = propertyValue[..commaIndex].Replace('.', '/');
+            string assemblyName = propertyValue[(commaIndex + 1)..];
 
-			return collectionValues.Contains(propertyStringValue) ? propertyStringValue : collectionValues[0];
-		}
-
-		private string ConvertPropertyValueToDropdownValue(string propertyValue)
-		{
-			if (propertyValue == string.Empty)
-				return "Null";
-
-			int commaIndex = propertyValue.IndexOf(',');
-
-			if (commaIndex == -1)
-				return propertyValue;
-
-			string typeName = propertyValue[..commaIndex].Replace('.', '/');
-			string assemblyName = propertyValue[(commaIndex + 1)..];
-
-			return !typeName.Contains("/") ? $"Global/{propertyValue}" : $"{typeName},{assemblyName}";
-		}
-	}
+            return !typeName.Contains("/") ? $"Global/{propertyValue}" : $"{typeName},{assemblyName}";
+        }
+    }
 }

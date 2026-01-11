@@ -1,3 +1,21 @@
+EditorAttributes v3.0.0 Changelog:
+- Project refactoring
+- Ended support for Unity 2022
+- Added LayerDropdown Attribute
+- Added ApplyMaterial Attribute
+- Added option to toggle whether an object is set to dirty or not on button press
+- Added an optional group title to the vertical group
+- Removed the TimeField Attribute
+- Removed the SelectionButtons Attribute
+- Updated the look of the tab group
+- Made the Void struct readonly
+- AssetPreview Attribute will now display the texture itself instead of its preview if the type is a texture
+- Fixed custom unit definitions throwing null error
+- Fixed Button Attribute enum parameter throwing an argument null error
+- Fixed Button Attribute duplicating from inheritance
+- Fixed Button not supporting vector parameters
+- Fixed member finding getting the member from the base object instead of the nested object if the member has the same name
+
 EditorAttributes v2.9.2 Changelog:
 - PropertyDropdown Attribute now supports any UnityEngine.Object type
 - PropertyDropdown Attribute will now draw custom editors

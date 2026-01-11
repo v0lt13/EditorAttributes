@@ -4,86 +4,43 @@ using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
 {
-	[CustomPropertyDrawer(typeof(FoldoutGroupAttribute))]
-	public class FoldoutGroupDrawer : PropertyDrawerBase
-	{
-		public override VisualElement CreatePropertyGUI(SerializedProperty property)
-		{
-			var foldoutGroup = attribute as FoldoutGroupAttribute;
-			var foldoutSaveKey = CreatePropertySaveKey(property, "IsFoldoutGroupFolded");
+    [CustomPropertyDrawer(typeof(FoldoutGroupAttribute))]
+    public class FoldoutGroupDrawer : GroupDrawer
+    {
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            var foldoutGroup = attribute as FoldoutGroupAttribute;
+            string foldoutSaveKey = CreatePropertySaveKey(property, "IsFoldoutGroupFolded");
 
-			var root = new VisualElement();
+            Foldout foldout = new()
+            {
+                style = { unityFontStyleAndWeight = FontStyle.Bold },
+                text = foldoutGroup.GroupName,
+                tooltip = property.tooltip,
+                value = EditorPrefs.GetBool(foldoutSaveKey)
+            };
 
-			var foldout = new Foldout
-			{
-				style = { unityFontStyleAndWeight = FontStyle.Bold },
-				text = foldoutGroup.GroupName,
-				tooltip = property.tooltip,
-				value = EditorPrefs.GetBool(foldoutSaveKey)
-			};
+            if (foldoutGroup.DrawInBox)
+                ApplyBoxStyle(foldout.contentContainer);
 
-			if (foldoutGroup.DrawInBox)
-				ApplyBoxStyle(foldout.contentContainer);
+            foreach (string variableName in foldoutGroup.FieldsToGroup)
+            {
+                VisualElement groupProperty = CreateGroupProperty(variableName, property);
+                groupProperty.style.unityFontStyleAndWeight = FontStyle.Normal;
 
-			foreach (string variableName in foldoutGroup.FieldsToGroup)
-			{
-				var propertyField = CreateField(variableName, property, root);
+                foldout.Add(groupProperty);
+            }
 
-				foldout.Add(propertyField);
-			}
+            foldout.RegisterCallbackOnce<GeometryChangedEvent>((callback) =>
+            {
+                var toggle = foldout.Q<Toggle>();
+                toggle.style.backgroundColor = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR / 3f : new Color(0.1f, 0.1f, 0.1f, 0.2f);
 
-			root.Add(foldout);
+                // Register this callback later since value changed callbacks are called on inspector initalization and we don't want to save values on initalization
+                foldout.RegisterValueChangedCallback((callback) => EditorPrefs.SetBool(foldoutSaveKey, callback.newValue));
+            });
 
-			ExecuteLater(foldout, () =>
-			{
-				var toggle = foldout.Q<Toggle>();
-
-				toggle.style.backgroundColor = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR / 3f : new Color(0.1f, 0.1f, 0.1f, 0.2f);
-
-				// Register this callback later since value changed callbacks are called on inspector initalization and we don't want to save values on initalization
-				foldout.RegisterValueChangedCallback((callback) => EditorPrefs.SetBool(foldoutSaveKey, callback.newValue));
-			});
-
-			return root;
-		}
-
-		private VisualElement CreateField(string variableName, SerializedProperty property, VisualElement root)
-		{
-			VisualElement field;
-
-			var variableProperty = FindNestedProperty(property, GetSerializedPropertyName(variableName, property));
-
-			if (variableProperty == null)
-				return new HelpBox($"<b>{variableName}</b> is not a valid field or property", HelpBoxMessageType.Error);
-
-			field = CreatePropertyField(variableProperty);
-
-			field.style.unityFontStyleAndWeight = FontStyle.Normal;
-
-			// Slightly move foldouts for serialized objects
-			if (variableProperty.propertyType == SerializedPropertyType.Generic && variableProperty.type != "UnityEvent" && !IsPropertyCollection(variableProperty))
-				field.style.marginLeft = 10f;
-
-			root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-
-			void OnGeometryChanged(GeometryChangedEvent changeEvent)
-			{
-				// Force update this logic to make sure fields are visible
-				UpdateVisualElement(field, () =>
-				{
-					var hiddenField = field.Q<VisualElement>(HidePropertyDrawer.HIDDEN_PROPERTY_ID);
-
-					if (hiddenField != null)
-					{
-						hiddenField.name = GROUPED_PROPERTY_ID;
-						hiddenField.style.display = DisplayStyle.Flex;
-					}
-				}, 100L);
-
-				root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-			}
-
-			return field;
-		}
-	}
+            return foldout;
+        }
+    }
 }

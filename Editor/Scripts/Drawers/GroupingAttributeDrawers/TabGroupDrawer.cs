@@ -1,129 +1,53 @@
-using System.Linq;
-using UnityEngine;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 
 namespace EditorAttributes.Editor
 {
-	[CustomPropertyDrawer(typeof(TabGroupAttribute))]
-	public class TabGroupDrawer : PropertyDrawerBase
-	{
-		private int selectedTab = 0;
-		private Dictionary<ToolbarToggle, int> toolbarToggles = new();
+    [CustomPropertyDrawer(typeof(TabGroupAttribute))]
+    public class TabGroupDrawer : GroupDrawer
+    {
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            var tabGroupAttribute = attribute as TabGroupAttribute;
 
-		public override VisualElement CreatePropertyGUI(SerializedProperty property)
-		{
-			var tabGroupAttribute = attribute as TabGroupAttribute;
-			var root = new VisualElement();
+            string selectedTabSaveKey = CreatePropertySaveKey(property, "SelectedTab");
+            string[] propertyNames = GetPropertyDisplayNames(property, tabGroupAttribute);
 
-			var selectedTabSaveKey = CreatePropertySaveKey(property, "SelectedTab");
+            TabView tabView = new() { selectedTabIndex = EditorPrefs.GetInt(selectedTabSaveKey) };
+            tabView.activeTabChanged += (_, _) => EditorPrefs.SetInt(selectedTabSaveKey, tabView.selectedTabIndex);
 
-			selectedTab = EditorPrefs.GetInt(selectedTabSaveKey);
+            ApplyBoxStyle(tabView);
 
-			ApplyBoxStyle(root);
+            for (int i = 0; i < propertyNames.Length; i++)
+            {
+                string propertyName = propertyNames[i];
+                Tab tab = new(propertyName);
 
-			var toolbar = new Toolbar();
+                ApplyBoxStyle(tab);
 
-			var propertyNames = GetPropertyNames(property, tabGroupAttribute);
+                string fieldName = tabGroupAttribute.FieldsToGroup[i];
+                VisualElement groupProperty = CreateGroupProperty(fieldName, property);
 
-			for (int i = 0; i < propertyNames.Length; i++)
-			{
-				string propertyName = propertyNames[i];
-				var toolbarToggle = new ToolbarToggle()
-				{
-					text = propertyName,
-					value = selectedTab == i,
-					style = {
-						flexGrow = 1f,
-						unityFontStyleAndWeight = FontStyle.Bold,
-					}
-				};
+                tab.Add(groupProperty);
+                tabView.Add(tab);
+            }
 
-				toolbarToggles.Add(toolbarToggle, i);
-				toolbar.Add(toolbarToggle);
-			}
+            return tabView;
+        }
 
-			var propertyField = CreateField(tabGroupAttribute.FieldsToGroup[selectedTab], property);
+        private string[] GetPropertyDisplayNames(SerializedProperty property, TabGroupAttribute tabGroupAttribute)
+        {
+            List<string> stringList = new();
 
-			propertyField.style.marginLeft = 10f;
+            foreach (var field in tabGroupAttribute.FieldsToGroup)
+            {
+                SerializedProperty fieldProperty = FindNestedProperty(property, GetSerializedPropertyName(field, property));
 
-			foreach (var toggle in toolbarToggles)
-			{
-				toggle.Key.RegisterValueChangedCallback((callback) =>
-				{
-					selectedTab = toggle.Value;
+                stringList.Add(fieldProperty == null ? field : fieldProperty.displayName);
+            }
 
-					EditorPrefs.SetInt(selectedTabSaveKey, selectedTab);
-
-					foreach (var toolbarToggle in toolbarToggles.Where((source) => toggle.Key != source.Key))
-						toolbarToggle.Key.SetValueWithoutNotify(false);
-
-					if (selectedTab == toggle.Value && !toggle.Key.value)
-						toggle.Key.SetValueWithoutNotify(true);
-
-					root.Remove(propertyField);
-
-					propertyField = CreateField(tabGroupAttribute.FieldsToGroup[selectedTab], property);
-					propertyField.style.marginLeft = 10f;
-
-					root.Add(propertyField);
-				});
-			}
-
-			root.Add(toolbar);
-			root.Add(propertyField);
-
-			return root;
-		}
-
-		private VisualElement CreateField(string variableName, SerializedProperty property)
-		{
-			VisualElement field;
-
-			var variableProperty = FindNestedProperty(property, GetSerializedPropertyName(variableName, property));
-
-			if (variableProperty == null)
-				return new HelpBox($"<b>{variableName}</b> is not a valid field or property", HelpBoxMessageType.Error);
-
-			field = CreatePropertyField(variableProperty);
-
-			// Replace the hidden field ID with the grouped field ID so the EditorExtension class doesn't remove it when drawing the editor
-			field.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-
-			void OnGeometryChanged(GeometryChangedEvent changeEvent)
-			{
-				// Force update this logic to make sure fields are visible
-				UpdateVisualElement(field, () =>
-				{
-					var hiddenField = field.Q<VisualElement>(HidePropertyDrawer.HIDDEN_PROPERTY_ID);
-
-					if (hiddenField != null)
-					{
-						hiddenField.name = GROUPED_PROPERTY_ID;
-						hiddenField.style.display = DisplayStyle.Flex;
-					}
-				}, 100L);
-
-				field.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-			}
-
-			return field;
-		}
-
-		private string[] GetPropertyNames(SerializedProperty property, TabGroupAttribute tabGroupAttribute)
-		{
-			var stringList = new List<string>();
-
-			foreach (var field in tabGroupAttribute.FieldsToGroup)
-			{
-				var fieldProperty = FindNestedProperty(property, GetSerializedPropertyName(field, property));
-
-				stringList.Add(fieldProperty == null ? field : fieldProperty.displayName);
-			}
-
-			return stringList.ToArray();
-		}
-	}
+            return stringList.ToArray();
+        }
+    }
 }

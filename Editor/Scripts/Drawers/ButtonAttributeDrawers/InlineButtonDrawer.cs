@@ -1,81 +1,84 @@
 using System.Linq;
 using UnityEditor;
+using System.Reflection;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
-	[CustomPropertyDrawer(typeof(InlineButtonAttribute))]
-	public class InlineButtonDrawer : PropertyDrawerBase
-	{
-		public override VisualElement CreatePropertyGUI(SerializedProperty property)
-		{
-			var root = new VisualElement() { style = { flexDirection = FlexDirection.Row } };
+    [CustomPropertyDrawer(typeof(InlineButtonAttribute))]
+    public class InlineButtonDrawer : PropertyDrawerBase
+    {
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            VisualElement root = new() { style = { flexDirection = FlexDirection.Row } };
+            PropertyField propertyField = CreatePropertyField(property);
 
-			var propertyField = CreatePropertyField(property);
+            propertyField.name = "CustomPropertyField"; // This is used to identify the our property field from the one automatically created by unity for the drawer
+            propertyField.style.flexGrow = 1f;
 
-			propertyField.name = "CustomPropertyField"; // This is used to identify the our property field from the one automatically created by unity for the drawer
-			propertyField.style.flexGrow = 1f;
+            root.Add(propertyField);
+            root.RegisterCallbackOnce<GeometryChangedEvent>((callback) =>
+            {
+                // Adding multiple InlineButton attributes on the same property causes a root and propertyField to be continously added to the hierarchy with each property drawer call
+                // So we move children recursively from the bottom of the hierarchy to the root and remove their original parents so there is only one root and property field no matter how many times this attribute is used
+                MoveChildren(root, propertyField.name);
+                MoveChildren(propertyField, propertyField.name);
 
-			root.Add(propertyField);
+                MemberInfo propertyInfo = ReflectionUtils.GetValidMemberInfo(property.name, property);
+                var inlineButtonAttributes = propertyInfo.GetCustomAttributes(typeof(InlineButtonAttribute), true) as InlineButtonAttribute[];
 
-			root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                foreach (var inlineButtonAttribute in inlineButtonAttributes)
+                    root.Add(CreateInlineButton(inlineButtonAttribute, property));
+            });
 
-			void OnGeometryChanged(GeometryChangedEvent changeEvent)
-			{
-				root.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            return root;
+        }
 
-				// Adding multiple InlineButton attributes on the same property causes a root and propertyField to be continously added to the hierarchy with each property drawer call
-				// So we move children recursively from the bottom of the hierarchy to the root and remove their original parents so there is only one root and property field no matter how many times this attribute is used
-				MoveChildren(root, propertyField.name);
-				MoveChildren(propertyField, propertyField.name);
+        private VisualElement CreateInlineButton(InlineButtonAttribute inlineButtonAttribute, SerializedProperty property)
+        {
+            MethodInfo methodInfo = ReflectionUtils.FindFunction(inlineButtonAttribute.FunctionName, property);
 
-				var propertyInfo = ReflectionUtility.GetValidMemberInfo(property.name, property);
-				var inlineButtonAttributes = propertyInfo.GetCustomAttributes(typeof(InlineButtonAttribute), true) as InlineButtonAttribute[];
+            if (methodInfo.GetParameters().Length > 0)
+                return new HelpBox("The function cannot have parameters", HelpBoxMessageType.Error);
 
-				foreach (var inlineButtonAttribute in inlineButtonAttributes)
-					root.Add(CreateInlineButton(inlineButtonAttribute, property));
-			}
+            string buttonLabel = inlineButtonAttribute.ButtonLabel == string.Empty ? inlineButtonAttribute.FunctionName : inlineButtonAttribute.ButtonLabel;
 
-			return root;
-		}
+            if (inlineButtonAttribute.IsRepetable)
+            {
+                RepeatButton repeatButton = new(() => InvokeFunctionOnAllTargets(property.serializedObject.targetObjects, methodInfo.Name, makeTargetsDirty: inlineButtonAttribute.MakeDirty), inlineButtonAttribute.PressDelay, inlineButtonAttribute.RepetitionInterval)
+                {
+                    text = buttonLabel
+                };
 
-		private VisualElement CreateInlineButton(InlineButtonAttribute inlineButtonAttribute, SerializedProperty property)
-		{
-			var methodInfo = ReflectionUtility.FindFunction(inlineButtonAttribute.FunctionName, property.serializedObject.targetObject);
-			string buttonLabel = inlineButtonAttribute.ButtonLabel == string.Empty ? inlineButtonAttribute.FunctionName : inlineButtonAttribute.ButtonLabel;
+                repeatButton.style.width = inlineButtonAttribute.ButtonWidth;
+                repeatButton.AddToClassList(Button.ussClassName);
 
-			if (methodInfo.GetParameters().Length > 0)
-				return new HelpBox("The function cannot have parameters", HelpBoxMessageType.Error);
+                return repeatButton;
+            }
+            else
+            {
+                Button button = new(() => InvokeFunctionOnAllTargets(property.serializedObject.targetObjects, methodInfo.Name, makeTargetsDirty: inlineButtonAttribute.MakeDirty))
+                {
+                    text = buttonLabel
+                };
 
-			if (inlineButtonAttribute.IsRepetable)
-			{
-				var repeatButton = new RepeatButton(() => InvokeFunctionOnAllTargets(property.serializedObject.targetObjects, methodInfo.Name), inlineButtonAttribute.PressDelay, inlineButtonAttribute.RepetitionInterval) { text = buttonLabel };
+                button.style.width = inlineButtonAttribute.ButtonWidth;
 
-				repeatButton.style.width = inlineButtonAttribute.ButtonWidth;
-				repeatButton.AddToClassList(Button.ussClassName);
+                return button;
+            }
+        }
 
-				return repeatButton;
-			}
-			else
-			{
-				var button = new Button(() => InvokeFunctionOnAllTargets(property.serializedObject.targetObjects, methodInfo.Name)) { text = buttonLabel };
+        private void MoveChildren(VisualElement element, string parentName)
+        {
+            if (element.parent.name == parentName)
+            {
+                foreach (var child in element.Children().ToList())
+                    element.parent.Add(child);
 
-				button.style.width = inlineButtonAttribute.ButtonWidth;
-
-				return button;
-			}
-		}
-
-		private void MoveChildren(VisualElement element, string parentName)
-		{
-			if (element.parent.name == parentName)
-			{
-				foreach (var child in element.Children().ToList())
-					element.parent.Add(child);
-
-				element.RemoveFromHierarchy();
-			}
-		}
-	}
+                element.RemoveFromHierarchy();
+            }
+        }
+    }
 }

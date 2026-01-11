@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
@@ -6,14 +7,12 @@ namespace EditorAttributes.Editor
     [CustomPropertyDrawer(typeof(HideInPlayModeAttribute))]
     public class HideInPlayModeDrawer : PropertyDrawerBase
     {
-		public override VisualElement CreatePropertyGUI(SerializedProperty property)
-		{
-			var root = new VisualElement();
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            PropertyField propertyField = CreatePropertyField(property);
+            propertyField.style.display = !EditorApplication.isPlayingOrWillChangePlaymode ? DisplayStyle.Flex : DisplayStyle.None;
 
-			if (!EditorApplication.isPlayingOrWillChangePlaymode)
-				root.Add(CreatePropertyField(property));
-
-			return root;
-		}
-	}
+            return propertyField;
+        }
+    }
 }
