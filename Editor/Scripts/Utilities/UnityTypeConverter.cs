@@ -25,7 +25,7 @@ namespace EditorAttributes.Editor.Utility
 
                 return new Vector2(x, y);
             }
-            if (objectType == typeof(Vector2Int))
+            else if (objectType == typeof(Vector2Int))
             {
                 var x = jsonObject["x"]?.Value<int>() ?? 0;
                 var y = jsonObject["y"]?.Value<int>() ?? 0;
@@ -122,7 +122,7 @@ namespace EditorAttributes.Editor.Utility
 
                 jsonObject.WriteTo(writer);
             }
-            if (value is Vector2Int vector2int)
+            else if (value is Vector2Int vector2int)
             {
 
                 JObject jsonObject = new()
@@ -169,7 +169,6 @@ namespace EditorAttributes.Editor.Utility
 
                 jsonObject.WriteTo(writer);
             }
-
             else if (value is Color color)
             {
                 JObject jsonObject = new()
