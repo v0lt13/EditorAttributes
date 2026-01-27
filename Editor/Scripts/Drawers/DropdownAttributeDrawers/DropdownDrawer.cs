@@ -87,7 +87,7 @@ namespace EditorAttributes.Editor
 
         protected override DropdownField CreateDropdownField(List<string> choices, SerializedProperty property)
         {
-            DropdownField dropdownField = IsCollectionValid(choices) ? new(property.displayName, choices, GetDefaultValueIndex(choices, property)) : new(property.displayName, nullList, 0);
+            DropdownField dropdownField = IsCollectionValid(choices) ? new(property.displayName, choices, GetDefaultValueIndex(propertyValues, property)) : new(property.displayName, nullList, 0);
 
             dropdownField.tooltip = property.tooltip;
             dropdownField.showMixedValue = property.hasMultipleDifferentValues;
