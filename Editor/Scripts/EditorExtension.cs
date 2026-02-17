@@ -25,6 +25,8 @@ namespace EditorAttributes.Editor
 
         private MethodInfo[] functions;
 
+        private bool requiresConstantRepaint = false;
+
         protected virtual void OnEnable()
         {
             List<MethodInfo> functionList = new();
@@ -39,6 +41,8 @@ namespace EditorAttributes.Editor
                     if (!functionList.Contains(methodInfo))
                         functionList.Add(methodInfo);
                 }
+
+                requiresConstantRepaint |= targetType.GetCustomAttribute<RequiresConstantRepaintAttribute>() != null;
 
                 targetType = targetType.BaseType;
             }
@@ -65,6 +69,8 @@ namespace EditorAttributes.Editor
             EditorHandles.handleProperties.Clear();
             EditorHandles.boundsHandleList.Clear();
         }
+
+        public override bool RequiresConstantRepaint() => requiresConstantRepaint;
 
         void OnSceneGUI() => EditorHandles.DrawHandles();
 
