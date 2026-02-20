@@ -75,7 +75,14 @@ namespace EditorAttributes.Editor
             var typeDropdownAttribute = attribute as TypeDropdownAttribute;
 
             List<string> typeNameList = new();
-            TypeCache.TypeCollection typeCollection = typeDropdownAttribute.AssemblyName == string.Empty ? TypeCache.GetTypesDerivedFrom<object>() : TypeCache.GetTypesDerivedFrom<object>(typeDropdownAttribute.AssemblyName);
+
+            TypeCache.TypeCollection typeCollection = (typeDropdownAttribute.Type, typeDropdownAttribute.AssemblyName) switch
+            {
+                (null, "") => TypeCache.GetTypesDerivedFrom<object>(),
+                (null, _) => TypeCache.GetTypesDerivedFrom<object>(typeDropdownAttribute.AssemblyName),
+                (_, "") => TypeCache.GetTypesDerivedFrom(typeDropdownAttribute.Type),
+                (_, _) => TypeCache.GetTypesDerivedFrom(typeDropdownAttribute.Type, typeDropdownAttribute.AssemblyName),
+            };
 
             foreach (var item in typeCollection)
             {
