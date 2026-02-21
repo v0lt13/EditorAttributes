@@ -21,4 +21,5 @@ namespace EditorAttributes
 			AssemblyName = assemblyName;
 			Type         = type;
 		}
-	}}
+	}
+}
