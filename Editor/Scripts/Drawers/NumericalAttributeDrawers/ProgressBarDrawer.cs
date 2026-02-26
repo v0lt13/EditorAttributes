@@ -32,7 +32,10 @@ namespace EditorAttributes.Editor
                 var propertyValue = GetPropertyValue(property);
 
                 progressBar.value = propertyValue;
-                progressBar.title = $"{property.displayName}: {propertyValue}/{progressBarAttribute.MaxValue}";
+                if (progressBarAttribute.HideLabel)
+                    progressBar.title = string.Empty;
+                else
+                    progressBar.title = $"{property.displayName}: {propertyValue}/{progressBarAttribute.MaxValue}";
             }, 30L);
 
             return progressBar;
