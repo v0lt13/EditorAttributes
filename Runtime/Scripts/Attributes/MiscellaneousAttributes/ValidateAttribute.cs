@@ -49,18 +49,20 @@ namespace EditorAttributes
 		/// <param name="conditionName">The name of the condition to evaluate</param>
 		public ValidateAttribute(string conditionName) : base(true) => ConditionName = conditionName;
 
-		/// <summary>
-		/// Attribute to create custom validation
-		/// </summary>
-		/// <param name="validationMessage">The message to display in the console when validation fails</param>
-		/// <param name="conditionName">The name of the condition to evaluate</param>
-		/// <param name="severety">The severety of the failed validation</param>
-		/// <param name="buildKiller">Throws an error during build time and cancels it if validation fails</param>
-		public ValidateAttribute(string validationMessage, string conditionName, MessageMode severety = MessageMode.Error, bool buildKiller = false) : this(conditionName)
-		{
-			ValidationMessage = validationMessage;
+        /// <summary>
+        /// Attribute to create custom validation
+        /// </summary>
+        /// <param name="validationMessage">The message to display in the console when validation fails</param>
+        /// <param name="conditionName">The name of the condition to evaluate</param>
+        /// <param name="severety">The severety of the failed validation</param>
+        /// <param name="buildKiller">Throws an error during build time and cancels it if validation fails</param>
+        /// <param name="applyToCollection">Validate the whole collection instead of individual items</param>
+        public ValidateAttribute(string validationMessage, string conditionName, MessageMode severety = MessageMode.Error, bool buildKiller = false, bool applyToCollection = true) : base(applyToCollection)
+        {
+			ConditionName = conditionName;
+            ValidationMessage = validationMessage;
 			BuildKiller = buildKiller;
 			Severety = severety;
-		}
+        }
 	}
 }

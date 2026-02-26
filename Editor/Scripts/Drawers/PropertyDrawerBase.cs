@@ -1092,6 +1092,30 @@ namespace EditorAttributes.Editor
             || type == typeof(LayerMask) || type == typeof(Rect) || type == typeof(RectInt) || type == typeof(Bounds) || type == typeof(BoundsInt) || type == typeof(Gradient) || type == typeof(AnimationCurve);
         }
 
+        /// <summary>
+        /// Get the index of the element in a collection if its part of a collection
+        /// </summary>
+        /// <param name="property">The serialized property</param>
+        /// <returns>The index of the property if in an collection. Else -1</returns>
+        public static int GetCollectionElementIndex(SerializedProperty property)
+        {
+            string path = property.propertyPath;
+
+            int start = path.LastIndexOf('[');
+            int end = path.LastIndexOf(']');
+
+            if (start != -1 && end != -1)
+            {
+                string indexStr = path.Substring(start + 1, end - start - 1);
+                if (int.TryParse(indexStr, out int index))
+                {
+                    return index;
+                }
+            }
+
+            return -1;
+        }
+
         #region NON_GUI_RELATED_UTILITY_FUNCITONS
 
         /// <summary>

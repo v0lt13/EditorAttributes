@@ -428,7 +428,20 @@ namespace EditorAttributes.Editor.Utility
                 }
                 else if (memberInfo is MethodInfo methodInfo)
                 {
-                    return methodInfo.Invoke(targetObject, null);
+                    try
+                    {
+                        return methodInfo.Invoke(targetObject, null);
+                    }
+                    catch(TargetParameterCountException)
+                    {
+                        int index = PropertyDrawerBase.GetCollectionElementIndex(property);
+                        if(index >= 0)
+                        {
+                            //We are in an collection, try call the method with the collection item index
+                            object[] parameters = new object[] { index };
+                            return methodInfo.Invoke(targetObject, parameters);
+                        }
+                    }
                 }
             }
             catch (Exception exception)
