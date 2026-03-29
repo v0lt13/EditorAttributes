@@ -31,7 +31,7 @@ Q: Should I get the Github version or Asset Store version?
 
 A: There is no content difference between the Github version and the Asset Store version of the package. The only differences are in the licence, installation and update delivery.
 - On Github the package is licenced as public domain while on the Unity Asset Store it licenced with the standard Unity Extension Asset licence.
-- On Github if you install the package from the git URL it will install in the Packages folder of Unity which makes the package read only, installing it from the asset store will add it in the Assets folder which will allow modifications.
+- On Github if you install the package from the git URL it will install in the Packages folder of Unity, installing it from the asset store will add it in the Assets folder.
 - On Github you can receive a package update as soon as it's pushed along with any pull requests done by any contribuitors. On the Asset Store there is a review process the update must go trough which can last up to 3 days and any contributions done after an update will only be added in the next package update.
 
 Q: I found a problem/bug with the package, what do I do?
