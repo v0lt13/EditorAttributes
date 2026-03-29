@@ -274,9 +274,15 @@ namespace EditorAttributes.Editor
             }
         }
 
+#if UNITY_6000_4_OR_NEWER
+        internal static string GetFileName(object target) => $"{(target as Object).GetEntityId()}_{target}_ButtonParameterData.json";
+
+        internal static string GetFunctionID(MethodInfo function, object target) => $"{(target as Object).GetEntityId()}_{target}_{function.Name}_{string.Join("_", function.GetParameters().Select(param => param.ParameterType.Name))}";
+#else
         internal static string GetFileName(object target) => $"{(target as Object).GetInstanceID()}_{target}_ButtonParameterData.json";
 
         internal static string GetFunctionID(MethodInfo function, object target) => $"{(target as Object).GetInstanceID()}_{target}_{function.Name}_{string.Join("_", function.GetParameters().Select(param => param.ParameterType.Name))}";
+#endif
 
         internal static bool IsButtonFunction(MethodInfo function, out bool serializeParameters)
         {

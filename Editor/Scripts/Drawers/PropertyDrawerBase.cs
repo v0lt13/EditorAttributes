@@ -208,6 +208,29 @@ namespace EditorAttributes.Editor
         protected bool IsPropertyEnumFlag() => fieldInfo.FieldType.IsDefined(typeof(FlagsAttribute), false);
 
         /// <summary>
+        /// Get the element index of the property in a collection
+        /// </summary>
+        /// <param name="property">The serialized property</param>
+        /// <returns>The index of the property if in an collection, else -1</returns>
+        public static int GetCollectionElementIndex(SerializedProperty property)
+        {
+            string path = property.propertyPath;
+
+            int start = path.LastIndexOf('[');
+            int end = path.LastIndexOf(']');
+
+            if (start != -1 && end != -1)
+            {
+                string indexString = path.Substring(start + 1, end - start - 1);
+
+                if (int.TryParse(indexString, out int index))
+                    return index;
+            }
+
+            return -1;
+        }
+
+        /// <summary>
         /// Gets the value of a condition for a conditional attribute
         /// </summary>
         /// <param name="memberInfo">The member info of the condition</param>
@@ -420,7 +443,11 @@ namespace EditorAttributes.Editor
             _ => clipboardValue
         };
 
+#if UNITY_6000_4_OR_NEWER
+        private protected string CreatePropertySaveKey(SerializedProperty property, string key) => $"{property.serializedObject.targetObject.GetEntityId()}_{property.propertyPath}_{key}";
+#else
         private protected string CreatePropertySaveKey(SerializedProperty property, string key) => $"{property.serializedObject.targetObject.GetInstanceID()}_{property.propertyPath}_{key}";
+#endif
 
         /// <summary>
         /// Invokes a function on all specified targets
@@ -1090,30 +1117,6 @@ namespace EditorAttributes.Editor
             || type == typeof(int) || type == typeof(uint) || type == typeof(long) || type == typeof(ulong) || type == typeof(float) || type == typeof(double) || type == typeof(bool)
             || type == typeof(Vector2) || type == typeof(Vector2Int) || type == typeof(Vector3) || type == typeof(Vector3Int) || type == typeof(Vector4) || type == typeof(Color)
             || type == typeof(LayerMask) || type == typeof(Rect) || type == typeof(RectInt) || type == typeof(Bounds) || type == typeof(BoundsInt) || type == typeof(Gradient) || type == typeof(AnimationCurve);
-        }
-
-        /// <summary>
-        /// Get the index of the element in a collection if its part of a collection
-        /// </summary>
-        /// <param name="property">The serialized property</param>
-        /// <returns>The index of the property if in an collection. Else -1</returns>
-        public static int GetCollectionElementIndex(SerializedProperty property)
-        {
-            string path = property.propertyPath;
-
-            int start = path.LastIndexOf('[');
-            int end = path.LastIndexOf(']');
-
-            if (start != -1 && end != -1)
-            {
-                string indexStr = path.Substring(start + 1, end - start - 1);
-                if (int.TryParse(indexStr, out int index))
-                {
-                    return index;
-                }
-            }
-
-            return -1;
         }
 
         #region NON_GUI_RELATED_UTILITY_FUNCITONS

@@ -126,7 +126,7 @@ namespace EditorAttributes.Editor
                     width = 16.6f, height = 16.6f,
                     alignSelf = Align.FlexEnd,
                     backgroundColor = Color.clear,
-                    backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("d__Help@2x").image
+                    backgroundImage = (Texture2D)EditorGUIUtility.IconContent("d__Help@2x").image
                 }
             };
 

@@ -1,3 +1,8 @@
+EditorAttributes v3.0.2 Changelog:
+- Added applyToCollection parameter to the Validate Attribute
+- AnimatorParamDropdown can now be attached to an int returning the parameter hash
+- Updated deprecated API's in Unity 6.4
+
 EditorAttributes v3.0.1 Changelog:
 - Added the ability to filter TypeDropdown by certain types
 - Added makeDirty parameter to ButtonField Attribute

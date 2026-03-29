@@ -15,11 +15,11 @@ namespace EditorAttributes.Editor
                 return new HelpBox("The FilePath Attribute can only be attached to a string", HelpBoxMessageType.Error);
 
             var filePathAttribute = attribute as FilePathAttribute;
-            string filePath = property.stringValue;
 
             VisualElement root = new();
             PropertyField propertyField = CreatePropertyField(property);
-            Button button = new(() => filePath = EditorUtility.OpenFilePanel("Select file", "Assets", filePathAttribute.Filters));
+
+            Button button = new(SetFilePath);
             Image buttonIcon = new() { image = EditorGUIUtility.IconContent("d_Folder Icon").image };
 
             button.style.width = 40f;
@@ -31,27 +31,25 @@ namespace EditorAttributes.Editor
             root.Add(propertyField);
             root.Add(button);
 
-            propertyField.RegisterCallbackOnce<GeometryChangedEvent>((callback) =>
-            {
-                UpdateVisualElement(propertyField, () =>
-                {
-                    if (filePathAttribute.GetRelativePath && !string.IsNullOrEmpty(filePath) && Path.IsPathFullyQualified(filePath))
-                    {
-                        string projectRoot = Application.dataPath[..^"Assets".Length];
-
-                        filePath = Path.GetRelativePath(projectRoot, filePath);
-                    }
-
-                    if (property.hasMultipleDifferentValues)
-                        return;
-
-                    propertyField.Q<TextField>().value = filePath;
-                    property.stringValue = filePath;
-                    property.serializedObject.ApplyModifiedProperties();
-                });
-            });
-
             return root;
+
+            void SetFilePath()
+            {
+                string filePath = EditorUtility.OpenFilePanel("Select file", "Assets", filePathAttribute.Filters);
+
+                if (filePathAttribute.GetRelativePath && !string.IsNullOrEmpty(filePath) && Path.IsPathFullyQualified(filePath))
+                {
+                    string projectRoot = Application.dataPath[..^"Assets".Length];
+
+                    filePath = Path.GetRelativePath(projectRoot, filePath);
+                }
+
+                if (property.hasMultipleDifferentValues)
+                    return;
+
+                property.stringValue = filePath;
+                property.serializedObject.ApplyModifiedProperties();
+            }
         }
 
         protected override bool IsSupportedPropertyType(SerializedProperty property) => property.propertyType == SerializedPropertyType.String;

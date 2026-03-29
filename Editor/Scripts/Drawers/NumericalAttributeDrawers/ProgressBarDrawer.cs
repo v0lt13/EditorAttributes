@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace EditorAttributes.Editor
@@ -21,21 +22,25 @@ namespace EditorAttributes.Editor
 
             progressBar.style.height = progressBarAttribute.BarHeight;
 
+            SetProgressBarValue(property);
+
             progressBar.RegisterCallbackOnce<GeometryChangedEvent>((callback) =>
             {
                 if (CanApplyGlobalColor)
                     progressBar.Q(className: AbstractProgressBar.progressUssClassName).style.backgroundColor = EditorExtension.GLOBAL_COLOR / 2f;
             });
 
-            UpdateVisualElement(progressBar, () =>
+            progressBar.TrackPropertyValue(property, SetProgressBarValue);
+
+            return progressBar;
+
+            void SetProgressBarValue(SerializedProperty property)
             {
-                var propertyValue = GetPropertyValue(property);
+                float propertyValue = GetPropertyValue(property);
 
                 progressBar.value = propertyValue;
                 progressBar.title = $"{property.displayName}: {propertyValue}/{progressBarAttribute.MaxValue}";
-            }, 30L);
-
-            return progressBar;
+            }
         }
 
         protected override bool IsSupportedPropertyType(SerializedProperty property) => property.propertyType is SerializedPropertyType.Integer or SerializedPropertyType.Float;

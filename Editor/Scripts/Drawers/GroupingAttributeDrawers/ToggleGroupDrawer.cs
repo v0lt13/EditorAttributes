@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -77,7 +78,7 @@ namespace EditorAttributes.Editor
             });
 
             if (property.propertyType == SerializedPropertyType.Boolean)
-                UpdateVisualElement(toggleBox, () => toggleBox.value = property.boolValue);
+                toggleBox.TrackPropertyValue(property, (serializedProperty) => toggleBox.value = serializedProperty.boolValue);
 
             return root;
         }

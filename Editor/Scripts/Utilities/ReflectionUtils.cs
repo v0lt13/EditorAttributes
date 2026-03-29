@@ -408,8 +408,9 @@ namespace EditorAttributes.Editor.Utility
         /// </summary>
         /// <param name="memberInfo">The member to get the value from</param>
         /// <param name="property">The serialized property</param>
+        /// <param name="methodParameters">Optional parameter data to pass through if the member is a method</param>
         /// <returns>The value of the member</returns>
-        public static object GetMemberInfoValue(MemberInfo memberInfo, SerializedProperty property)
+        public static object GetMemberInfoValue(MemberInfo memberInfo, SerializedProperty property, params object[] methodParameters)
         {
             Object targetObject = property.serializedObject.targetObject;
 
@@ -428,20 +429,7 @@ namespace EditorAttributes.Editor.Utility
                 }
                 else if (memberInfo is MethodInfo methodInfo)
                 {
-                    try
-                    {
-                        return methodInfo.Invoke(targetObject, null);
-                    }
-                    catch(TargetParameterCountException)
-                    {
-                        int index = PropertyDrawerBase.GetCollectionElementIndex(property);
-                        if(index >= 0)
-                        {
-                            //We are in an collection, try call the method with the collection item index
-                            object[] parameters = new object[] { index };
-                            return methodInfo.Invoke(targetObject, parameters);
-                        }
-                    }
+                    return methodInfo.Invoke(targetObject, methodParameters);
                 }
             }
             catch (Exception exception)
@@ -462,7 +450,7 @@ namespace EditorAttributes.Editor.Utility
                         }
                         else if (memberInfo is MethodInfo methodInfo)
                         {
-                            return methodInfo.Invoke(serializedObjectTarget, null);
+                            return methodInfo.Invoke(serializedObjectTarget, methodParameters);
                         }
                     }
                 }

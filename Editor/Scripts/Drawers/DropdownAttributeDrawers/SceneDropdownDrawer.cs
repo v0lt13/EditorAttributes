@@ -81,7 +81,7 @@ namespace EditorAttributes.Editor
             }
             else
             {
-                Debug.LogWarning($"The value <b>{GetPropertyValueAsString(trackedProperty)}</b> set to the <b>{trackedProperty.name}</b> variable is not a valid scene identifier.", trackedProperty.serializedObject.targetObject);
+                Debug.LogWarning($"The value <b>{GetPropertyValueAsString(trackedProperty)}</b> set to the <b>{trackedProperty.name}</b> variable is not a valid scene identifier", trackedProperty.serializedObject.targetObject);
             }
         }
 

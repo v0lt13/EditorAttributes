@@ -50,9 +50,11 @@ namespace EditorAttributes.Editor
                 return false;
             }
 
+            object[] parameterValues = !validateAttribute.applyToCollection ? new object[] { GetCollectionElementIndex(serializedProperty) } : null;
+
             if (memberInfoType == typeof(bool))
             {
-                object memberInfoValue = ReflectionUtils.GetMemberInfoValue(memberInfo, serializedProperty);
+                object memberInfoValue = ReflectionUtils.GetMemberInfoValue(memberInfo, serializedProperty, parameterValues);
 
                 if (memberInfoValue == null)
                     return false;
@@ -61,7 +63,7 @@ namespace EditorAttributes.Editor
             }
             else if (memberInfoType == typeof(ValidationCheck))
             {
-                if (ReflectionUtils.GetMemberInfoValue(memberInfo, serializedProperty) is not ValidationCheck memberInfoValue)
+                if (ReflectionUtils.GetMemberInfoValue(memberInfo, serializedProperty, parameterValues) is not ValidationCheck memberInfoValue)
                     return false;
 
                 if (validateAttribute.ValidationMessage != null)

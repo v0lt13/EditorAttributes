@@ -156,7 +156,7 @@ namespace EditorAttributes.Editor
                 void GetScene()
                 {
                     if (PrefabStageUtility.GetCurrentPrefabStage() == null)
-                        objectReference = Object.FindFirstObjectByType(memberType, FindObjectsInactive.Include);
+                        objectReference = Object.FindAnyObjectByType(memberType, FindObjectsInactive.Include);
                 }
             }
         }
