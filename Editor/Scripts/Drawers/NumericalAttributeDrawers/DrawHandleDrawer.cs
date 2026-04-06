@@ -22,6 +22,8 @@ namespace EditorAttributes.Editor
                 case SerializedPropertyType.Vector3Int:
                 case SerializedPropertyType.Bounds:
                 case SerializedPropertyType.BoundsInt:
+                case SerializedPropertyType.Rect:
+                case SerializedPropertyType.RectInt:
                 case SerializedPropertyType.Generic:
 
                     if (property.serializedObject.targetObject is not Component)
