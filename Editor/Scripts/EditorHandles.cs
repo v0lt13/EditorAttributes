@@ -91,24 +91,6 @@ namespace EditorAttributes.Editor
                             serializedProperty.boundsValue = new Bounds(boundsHandle.center, boundsHandle.size);
                             break;
 
-                        case SerializerPropertyType.BoundsInt:
-                            BoundsInt boundsIntValue = serializedProperty.boundsIntValue;
-
-                            boundsHandleList.TryGetValue(serializedProperty.propertyPath, out boundsHandle);
-
-                            targetPosition = target.transform.position;
-                            targetRotation = target.transform.rotation;
-
-                            boundsHandle.center = boundsIntValue.center;
-                            boundsHandle.size = boundsIntValue.size;
-
-                            boundsHandle.DrawHandle();
-
-                            boundsValue = new Bounds(boundsHandle.center, boundsHandle.size);
-                            boundsIntValue.SetMinMax(Vector3Int.RoundToInt(boundsValue.min), Vector3Int.RoundToInt(boundsValue.max));
-                            serializedProperty.boundsIntValue = boundsIntValue;
-                            break;
-                        
                         case SerializedPropertyType.BoundsInt:
                             BoundsInt boundsIntValue = serializedProperty.boundsIntValue;
 
