@@ -21,7 +21,7 @@ namespace EditorAttributes.Editor
 
                 try
                 {
-                    const float labelPostionAdd = 0.3f;
+                    const float labelPositionAdd = 0.3f;
                     var target = serializedProperty.serializedObject.targetObject as Component;
 
                     if (drawHandleAttribute.HandleSpace == Space.Self)
