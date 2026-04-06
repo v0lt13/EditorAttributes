@@ -37,14 +37,16 @@ namespace EditorAttributes.Editor
                     {
                         EditorHandles.handleProperties.Add(property.propertyPath, (property, drawHandleAttribute));
 
-                        if (property.propertyType is SerializedPropertyType.Bounds or SerializedPropertyType.BoundsInt)
+                        if (property.propertyType is SerializedPropertyType.Rect or SerializedPropertyType.RectInt)
+                            EditorHandles.boundsHandleList.Add(property.propertyPath, new BoxBoundsHandle() { axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y });
+                        else if (property.propertyType is SerializedPropertyType.Bounds or SerializedPropertyType.BoundsInt)
                             EditorHandles.boundsHandleList.Add(property.propertyPath, new BoxBoundsHandle());
                     }
 
                     break;
 
                 default:
-                    return new HelpBox("The DrawHandle Attribute can only be used on int, float, Vector2, Vector2Int, Vector3, Vector3Int, Bounds, BoundsInt, and SimpleTransform fields", HelpBoxMessageType.Error);
+                    return new HelpBox("The DrawHandle Attribute can only be used on int, float, Vector2, Vector2Int, Vector3, Vector3Int, Rect, RectInt, Bounds, BoundsInt, and SimpleTransform fields", HelpBoxMessageType.Error);
             }
 
             return base.CreatePropertyGUI(property);

@@ -108,6 +108,64 @@ namespace EditorAttributes.Editor
                             boundsIntValue.SetMinMax(Vector3Int.RoundToInt(boundsValue.min), Vector3Int.RoundToInt(boundsValue.max));
                             serializedProperty.boundsIntValue = boundsIntValue;
                             break;
+                        
+                        case SerializedPropertyType.BoundsInt:
+                            BoundsInt boundsIntValue = serializedProperty.boundsIntValue;
+
+                            boundsHandleList.TryGetValue(serializedProperty.propertyPath, out boundsHandle);
+
+                            targetPosition = target.transform.position;
+                            targetRotation = target.transform.rotation;
+
+                            boundsHandle.center = boundsIntValue.center;
+                            boundsHandle.size = boundsIntValue.size;
+
+                            boundsHandle.DrawHandle();
+
+                            boundsValue = new Bounds(boundsHandle.center, boundsHandle.size);
+                            boundsIntValue.SetMinMax(Vector3Int.RoundToInt(boundsValue.min), Vector3Int.RoundToInt(boundsValue.max));
+                            serializedProperty.boundsIntValue = boundsIntValue;
+                            break;
+
+                        case SerializedPropertyType.Rect:
+                            Rect rectValue = serializedProperty.rectValue;
+
+                            boundsHandleList.TryGetValue(serializedProperty.propertyPath, out boundsHandle);
+
+                            targetPosition = target.transform.position;
+                            targetRotation = target.transform.rotation;
+
+                            boundsHandle.center = rectValue.center;
+                            boundsHandle.size = rectValue.size;
+
+                            boundsHandle.DrawHandle();
+
+                            serializedProperty.rectValue = new Rect() {
+                                size = boundsHandle.size, // 'size' must be assigned first
+                                center = boundsHandle.center, // otherwise the new position will be wrong.
+                            };
+                            break;
+
+                        case SerializedPropertyType.RectInt:
+                            RectInt rectIntValue = serializedProperty.rectIntValue;
+
+                            boundsHandleList.TryGetValue(serializedProperty.propertyPath, out boundsHandle);
+
+                            targetPosition = target.transform.position;
+                            targetRotation = target.transform.rotation;
+
+                            boundsHandle.center = rectIntValue.center;
+                            boundsHandle.size = VectorUtils.Vector2IntToVector2(rectIntValue.size);
+
+                            boundsHandle.DrawHandle();
+
+                            rectValue = new Rect() {
+                                size = boundsHandle.size,
+                                center = boundsHandle.center
+                            };
+                            rectIntValue.SetMinMax(Vector2Int.RoundToInt(rectValue.min), Vector2Int.RoundToInt(rectValue.max));
+                            serializedProperty.rectIntValue = rectIntValue;
+                            break;
 
                         case SerializedPropertyType.Generic: // SimpleTransform type
                             SimpleTransform transformValue = GetSimpleTransformValuesFromSerializedProperty(serializedProperty);
