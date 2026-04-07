@@ -21,7 +21,7 @@ namespace EditorAttributes.Editor
 
                 try
                 {
-                    const float labelPostionAdd = 0.3f;
+                    const float labelPositionAdd = 0.3f;
                     var target = serializedProperty.serializedObject.targetObject as Component;
 
                     if (drawHandleAttribute.HandleSpace == Space.Self)
@@ -45,7 +45,7 @@ namespace EditorAttributes.Editor
 
                             serializedProperty.vector2Value = handlePositionVector2;
 
-                            Handles.Label(VectorUtils.AddVector(positionVector2, labelPostionAdd), serializedProperty.displayName, EditorStyles.boldLabel);
+                            Handles.Label(VectorUtils.AddVector(positionVector2, labelPositionAdd), serializedProperty.displayName, EditorStyles.boldLabel);
                             break;
 
                         case SerializedPropertyType.Vector3:
@@ -54,7 +54,7 @@ namespace EditorAttributes.Editor
 
                             serializedProperty.vector3Value = handlePositionVector3;
 
-                            Handles.Label(VectorUtils.AddVector(positionVector3, labelPostionAdd), serializedProperty.displayName, EditorStyles.boldLabel);
+                            Handles.Label(VectorUtils.AddVector(positionVector3, labelPositionAdd), serializedProperty.displayName, EditorStyles.boldLabel);
                             break;
 
                         case SerializedPropertyType.Vector2Int:
@@ -63,7 +63,7 @@ namespace EditorAttributes.Editor
 
                             serializedProperty.vector2IntValue = VectorUtils.Vector2ToVector2Int(handlePositionVector2Int);
 
-                            Handles.Label(VectorUtils.AddVector(VectorUtils.Vector2IntToVector2(positionVector2Int), labelPostionAdd), serializedProperty.displayName, EditorStyles.boldLabel);
+                            Handles.Label(VectorUtils.AddVector(VectorUtils.Vector2IntToVector2(positionVector2Int), labelPositionAdd), serializedProperty.displayName, EditorStyles.boldLabel);
                             break;
 
                         case SerializedPropertyType.Vector3Int:
@@ -72,7 +72,7 @@ namespace EditorAttributes.Editor
 
                             serializedProperty.vector3IntValue = VectorUtils.Vector3ToVector3Int(handlePositionVector3Int);
 
-                            Handles.Label(VectorUtils.AddVector(positionVector3Int, labelPostionAdd), serializedProperty.displayName, EditorStyles.boldLabel);
+                            Handles.Label(VectorUtils.AddVector(positionVector3Int, labelPositionAdd), serializedProperty.displayName, EditorStyles.boldLabel);
                             break;
 
                         case SerializedPropertyType.Bounds:
@@ -91,6 +91,64 @@ namespace EditorAttributes.Editor
                             serializedProperty.boundsValue = new Bounds(boundsHandle.center, boundsHandle.size);
                             break;
 
+                        case SerializedPropertyType.BoundsInt:
+                            BoundsInt boundsIntValue = serializedProperty.boundsIntValue;
+
+                            boundsHandleList.TryGetValue(serializedProperty.propertyPath, out boundsHandle);
+
+                            targetPosition = target.transform.position;
+                            targetRotation = target.transform.rotation;
+
+                            boundsHandle.center = boundsIntValue.center;
+                            boundsHandle.size = boundsIntValue.size;
+
+                            boundsHandle.DrawHandle();
+
+                            boundsValue = new Bounds(boundsHandle.center, boundsHandle.size);
+                            boundsIntValue.SetMinMax(Vector3Int.RoundToInt(boundsValue.min), Vector3Int.RoundToInt(boundsValue.max));
+                            serializedProperty.boundsIntValue = boundsIntValue;
+                            break;
+
+                        case SerializedPropertyType.Rect:
+                            Rect rectValue = serializedProperty.rectValue;
+
+                            boundsHandleList.TryGetValue(serializedProperty.propertyPath, out boundsHandle);
+
+                            targetPosition = target.transform.position;
+                            targetRotation = target.transform.rotation;
+
+                            boundsHandle.center = rectValue.center;
+                            boundsHandle.size = rectValue.size;
+
+                            boundsHandle.DrawHandle();
+
+                            serializedProperty.rectValue = new Rect() {
+                                size = boundsHandle.size, // 'size' must be assigned first
+                                center = boundsHandle.center, // otherwise the new position will be wrong.
+                            };
+                            break;
+
+                        case SerializedPropertyType.RectInt:
+                            RectInt rectIntValue = serializedProperty.rectIntValue;
+
+                            boundsHandleList.TryGetValue(serializedProperty.propertyPath, out boundsHandle);
+
+                            targetPosition = target.transform.position;
+                            targetRotation = target.transform.rotation;
+
+                            boundsHandle.center = rectIntValue.center;
+                            boundsHandle.size = VectorUtils.Vector2IntToVector2(rectIntValue.size);
+
+                            boundsHandle.DrawHandle();
+
+                            rectValue = new Rect() {
+                                size = boundsHandle.size,
+                                center = boundsHandle.center
+                            };
+                            rectIntValue.SetMinMax(Vector2Int.RoundToInt(rectValue.min), Vector2Int.RoundToInt(rectValue.max));
+                            serializedProperty.rectIntValue = rectIntValue;
+                            break;
+
                         case SerializedPropertyType.Generic: // SimpleTransform type
                             SimpleTransform transformValue = GetSimpleTransformValuesFromSerializedProperty(serializedProperty);
                             Vector3 positionValue = transformValue.position;
@@ -101,7 +159,7 @@ namespace EditorAttributes.Editor
                             transformValue.position = positionValue;
                             transformValue.rotation = rotationValue.eulerAngles;
 
-                            Handles.Label(VectorUtils.AddVector(positionValue, labelPostionAdd), serializedProperty.displayName, EditorStyles.boldLabel);
+                            Handles.Label(VectorUtils.AddVector(positionValue, labelPositionAdd), serializedProperty.displayName, EditorStyles.boldLabel);
 
                             SetSimpleTransformValueFromSerializedProperty(serializedProperty, transformValue);
                             break;
