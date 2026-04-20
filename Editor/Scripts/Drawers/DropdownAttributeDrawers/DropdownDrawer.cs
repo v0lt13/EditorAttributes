@@ -19,6 +19,7 @@ namespace EditorAttributes.Editor
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
+            VisualElement root = new();
             HelpBox errorBox = new();
 
             collectionInfo = ReflectionUtils.GetValidMemberInfo(DropdownAttribute.CollectionName, property);
@@ -26,6 +27,8 @@ namespace EditorAttributes.Editor
             displayValues = GetDisplayValues(collectionInfo, DropdownAttribute, property, propertyValues);
 
             DropdownField dropdownField = CreateDropdownField(displayValues, property);
+
+            root.Add(dropdownField);
 
             UpdateVisualElement(dropdownField, () =>
             {
@@ -50,10 +53,10 @@ namespace EditorAttributes.Editor
                 if (HasMismatchedDisplayCollectionCounts(currentPropertyValues, currentDisplayValues))
                     errorBox.text = "The value collection item count and display names count do not match";
 
-                DisplayErrorBox(dropdownField, errorBox);
+                DisplayErrorBox(root, errorBox);
             });
 
-            return dropdownField;
+            return root;
         }
 
         protected override string CopyValue(VisualElement element, SerializedProperty property)

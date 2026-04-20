@@ -2251,6 +2251,12 @@ MonoBehaviour:
   boundsField:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 1, y: 1, z: 1}
+  rectField:
+    serializedVersion: 2
+    x: -0.5
+    y: 0
+    width: 1.1800001
+    height: 0.6521609
 --- !u!1 &1546774659
 GameObject:
   m_ObjectHideFlags: 0

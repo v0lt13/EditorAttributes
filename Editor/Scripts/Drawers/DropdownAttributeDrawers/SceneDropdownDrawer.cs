@@ -14,7 +14,9 @@ namespace EditorAttributes.Editor
             if (!IsSupportedPropertyType(property))
                 return new HelpBox("The SceneDropdown Attribute can only be attached to a string or int", HelpBoxMessageType.Error);
 
+            VisualElement root = new();
             HelpBox errorBox = new();
+
             List<string> sceneNames = GetSceneList(errorBox);
             DropdownField dropdownField = CreateDropdownField(sceneNames, property);
 
@@ -26,8 +28,10 @@ namespace EditorAttributes.Editor
                     dropdownField.choices = sceneNames;
             });
 
-            DisplayErrorBox(dropdownField, errorBox);
-            return dropdownField;
+            root.Add(dropdownField);
+
+            DisplayErrorBox(root, errorBox);
+            return root;
         }
 
         protected override void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue)

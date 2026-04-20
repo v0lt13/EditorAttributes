@@ -21,9 +21,13 @@ namespace EditorAttributes.Editor
 
             var animatorParamAttribute = attribute as AnimatorParamDropdownAttribute;
 
+            VisualElement root = new();
             HelpBox errorBox = new();
+
             List<string> animatorParameters = GetAnimatorParameters(animatorParamAttribute, property, errorBox, out animatorParametersHash);
             DropdownField dropdownField = CreateDropdownField(animatorParameters, property);
+
+            root.Add(dropdownField);
 
             UpdateVisualElement(dropdownField, () =>
             {
@@ -33,8 +37,8 @@ namespace EditorAttributes.Editor
                     dropdownField.choices = animatorParams;
             });
 
-            DisplayErrorBox(dropdownField, errorBox);
-            return dropdownField;
+            DisplayErrorBox(root, errorBox);
+            return root;
         }
 
         protected override void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue)
@@ -119,23 +123,32 @@ namespace EditorAttributes.Editor
             List<string> paramList = new();
             paramterHashTable = new Dictionary<int, string>();
 
-            MemberInfo memberInfo = ReflectionUtils.GetValidMemberInfo(animatorParamAttribute.AnimatorFieldName, property);
-            Type memberInfoType = ReflectionUtils.GetMemberInfoType(memberInfo);
+            Animator animator;
 
-            if (memberInfoType != typeof(Animator))
+            if (animatorParamAttribute.AnimatorFieldName != string.Empty)
             {
-                errorBox.text = $"The provided field <b>{animatorParamAttribute.AnimatorFieldName}</b> is not of type <b>Animator</b>";
+                MemberInfo memberInfo = ReflectionUtils.GetValidMemberInfo(animatorParamAttribute.AnimatorFieldName, property);
+                Type memberInfoType = ReflectionUtils.GetMemberInfoType(memberInfo);
 
-                paramterHashTable = null;
-                return null;
+                if (memberInfoType != typeof(Animator))
+                {
+                    errorBox.text = $"The provided field <b>{animatorParamAttribute.AnimatorFieldName}</b> is not of type <b>Animator</b>";
+
+                    paramterHashTable = null;
+                    return null;
+                }
+
+                animator = ReflectionUtils.GetMemberInfoValue(memberInfo, property) as Animator;
+            }
+            else
+            {
+                animator = (property.serializedObject.targetObject as Component).GetComponent<Animator>();
             }
 
-            var memberInfoValue = ReflectionUtils.GetMemberInfoValue(memberInfo, property) as Animator;
-
-            if (memberInfoValue != null && memberInfoValue.runtimeAnimatorController != null)
+            if (animator != null && animator.runtimeAnimatorController != null)
             {
                 // Hack for having the animator refesh its parameters when editing them in edit mode otherwise the parameters array will be empty
-                var editorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(memberInfoValue.runtimeAnimatorController));
+                var editorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(animator.runtimeAnimatorController));
 
                 foreach (var parameter in editorController.parameters)
                 {

@@ -4,8 +4,8 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using System.Reflection;
-using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 using System.Collections.Generic;
 using EditorAttributes.Editor.Utility;
 using Object = UnityEngine.Object;
@@ -30,19 +30,20 @@ namespace EditorAttributes.Editor
         protected virtual void OnEnable()
         {
             List<MethodInfo> functionList = new();
-            Type targetType = target.GetType();
+            HashSet<(Type, int)> existingMethods = new();
 
-            while (targetType != null)
+            for (Type type = target.GetType(); type != null; type = type.BaseType)
             {
-                var buttonMethods = targetType.GetMethods(ReflectionUtils.BINDING_FLAGS ^ BindingFlags.FlattenHierarchy).Where((method) => method.GetCustomAttribute<ButtonAttribute>() != null);
-
-                foreach (var methodInfo in buttonMethods)
+                foreach (var method in type.GetMethods(ReflectionUtils.BINDING_FLAGS & ~BindingFlags.FlattenHierarchy))
                 {
-                    if (!functionList.Contains(methodInfo))
-                        functionList.Add(methodInfo);
-                }
+                    if (method.GetCustomAttribute<ButtonAttribute>() == null)
+                        continue;
 
-                targetType = targetType.BaseType;
+                    (Type, int) methodID = (method.DeclaringType, method.MetadataToken);
+
+                    if (existingMethods.Add(methodID))
+                        functionList.Add(method);
+                }
             }
 
             functions = functionList.ToArray();

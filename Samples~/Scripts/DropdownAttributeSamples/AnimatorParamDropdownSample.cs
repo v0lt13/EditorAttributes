@@ -8,7 +8,7 @@ namespace EditorAttributesSamples
     {
         [Header("AnimatorParamDropdown Attribute:")]
         [SerializeField] private Animator animator;
-        [SerializeField, AnimatorParamDropdown(nameof(animator))] private int parameterHash;
+        [SerializeField, AnimatorParamDropdown] private int parameterHash;
         [SerializeField, AnimatorParamDropdown(nameof(animator))] private string parameterName;
     }
 }
