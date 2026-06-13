@@ -3,7 +3,7 @@ EditorAttributes v3.0.4 Changelog:
 - Fixed DataTable not removing labels from dropdowns
 - Fixed foldout fields not aligning properly in a DataTable
 - Fixed box style color being inconsistent with the editor theme
-- Fxied AssetPreview throwing an error when the asset is not assigned
+- Fixed AssetPreview throwing an error when the asset is not assigned
 - Fixed AssetPreview using the main atlas size for sliced sprites by default
 
 EditorAttributes v3.0.3 Changelog:
