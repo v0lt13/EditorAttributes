@@ -477,12 +477,14 @@ namespace EditorAttributes.Editor
         /// <param name="visualElement">The element to apply the style to</param>
         public static void ApplyBoxStyle(VisualElement visualElement)
         {
+            Color boxBackgroundColor = EditorGUIUtility.isProSkin ? new(63f / 255f, 63f / 255f, 63f / 255f) : new(202f / 255f, 202f / 255f, 202f / 255f);
+
             visualElement.AddToClassList(HelpBox.ussClassName);
 
             visualElement.style.paddingRight = 5f;
             visualElement.style.alignItems = Align.Stretch;
             visualElement.style.flexDirection = FlexDirection.Column;
-            visualElement.style.backgroundColor = EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR ? EditorExtension.GLOBAL_COLOR / 2f : new Color(63f / 255f, 63f / 255f, 63f / 255f);
+            visualElement.style.backgroundColor = EditorExtension.GLOBAL_COLOR != EditorExtension.DEFAULT_GLOBAL_COLOR ? EditorExtension.GLOBAL_COLOR / 2f : boxBackgroundColor;
         }
 
         /// <summary>
@@ -1133,13 +1135,6 @@ namespace EditorAttributes.Editor
         /// <param name="collection">The collection to check</param>
         /// <returns>False is the collection is null or has no members, true otherwise</returns>
         public static bool IsCollectionValid(ICollection collection) => collection != null && collection.Count != 0;
-
-        /// <summary>
-        /// Gets the size of a 2D texture
-        /// </summary>
-        /// <param name="texture">The texture to get the size from</param>
-        /// <returns>The width and height of the texture as a Vector2</returns>
-        public static Vector2 GetTextureSize(Texture2D texture) => new(texture.width, texture.height);
         #endregion
     }
 }

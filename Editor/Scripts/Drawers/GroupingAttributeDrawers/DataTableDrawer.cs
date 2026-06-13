@@ -92,10 +92,7 @@ namespace EditorAttributes.Editor
                     }
                     else
                     {
-                        var labels = propertyField.Query<Label>(className: PropertyField.labelUssClassName).ToList();
-
-                        foreach (var label in labels)
-                            label.style.display = DisplayStyle.None;
+                        RemoveGeneratedPropertyLabels(propertyField);
                     }
                 });
 
@@ -128,7 +125,21 @@ namespace EditorAttributes.Editor
             var labels = propertyField.Query<Label>(className: PropertyField.labelUssClassName).ToList();
 
             foreach (var label in labels)
+            {
                 label.style.flexGrow = 1f;
+                label.style.maxWidth = 100f;
+            }
+        }
+
+        private async void RemoveGeneratedPropertyLabels(PropertyField propertyField)
+        {
+            await Task.Delay(1);
+
+            var labels = propertyField.Query<Label>(className: PropertyField.labelUssClassName).ToList();
+            labels.AddRange(propertyField.Query<Label>(className: PopupField<Void>.labelUssClassName).ToList());
+
+            foreach (var label in labels)
+                label.style.display = DisplayStyle.None;
         }
     }
 }

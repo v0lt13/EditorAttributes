@@ -21,11 +21,12 @@ namespace EditorAttributes.Editor
             Image image = new();
             PropertyField propertyField = CreatePropertyField(property);
 
-            GetAssetPreview(property, assetPreviewAttribute, root, image);
             propertyField.RegisterValueChangeCallback((changeEvent) => GetAssetPreview(property, assetPreviewAttribute, root, image));
 
             root.Add(propertyField);
             root.Add(image);
+
+            GetAssetPreview(property, assetPreviewAttribute, root, image);
 
             return root;
         }
@@ -42,6 +43,7 @@ namespace EditorAttributes.Editor
 
             string assetPath = AssetDatabase.GetAssetPath(property.objectReferenceValue);
             Texture2D texture = null;
+            Vector2 previewSize;
 
             // See if the asset is a texture first if so display the texture itself instead of it's lower res preview
             if (AssetDatabase.GetMainAssetTypeAtPath(assetPath) == typeof(Texture2D))
@@ -55,11 +57,14 @@ namespace EditorAttributes.Editor
 
                     texture = selectedSprite.texture;
                     image.sprite = selectedSprite;
+                    previewSize = selectedSprite.rect.size;
                 }
                 else
                 {
                     texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
+
                     image.image = texture;
+                    previewSize = new Vector2(texture.width, texture.height);
                 }
             }
             else
@@ -76,10 +81,11 @@ namespace EditorAttributes.Editor
                 }
 
                 image.image = texture;
+                previewSize = new Vector2(texture.width, texture.height);
             }
 
-            float imageWidth = assetPreviewAttribute.PreviewWidth == 0f ? GetTextureSize(texture).x : assetPreviewAttribute.PreviewWidth;
-            float imageHeight = assetPreviewAttribute.PreviewHeight == 0f ? GetTextureSize(texture).y : assetPreviewAttribute.PreviewHeight;
+            float imageWidth = assetPreviewAttribute.PreviewWidth == 0f ? previewSize.x : assetPreviewAttribute.PreviewWidth;
+            float imageHeight = assetPreviewAttribute.PreviewHeight == 0f ? previewSize.y : assetPreviewAttribute.PreviewHeight;
 
             image.style.width = imageWidth;
             image.style.height = imageHeight;

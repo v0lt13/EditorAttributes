@@ -31,8 +31,8 @@ namespace EditorAttributes.Editor
 
                 RemoveElement(root, errorBox);
 
-                float imageWidth = imageAttribute.ImageWidth == 0f ? GetTextureSize(texture).x : imageAttribute.ImageWidth;
-                float imageHeight = imageAttribute.ImageHeight == 0f ? GetTextureSize(texture).y : imageAttribute.ImageHeight;
+                float imageWidth = imageAttribute.ImageWidth == 0f ? texture.width : imageAttribute.ImageWidth;
+                float imageHeight = imageAttribute.ImageHeight == 0f ? texture.height : imageAttribute.ImageHeight;
 
                 image.image = texture;
                 image.style.width = imageWidth;
