@@ -56,7 +56,7 @@ namespace EditorAttributes.Editor
             }
             else
             {
-                Debug.LogWarning($"Could not paste value <b>{clipboardValue}</b> since is not availiable as an option in the dropdown");
+                Debug.LogWarning($"Could not paste value <b>{clipboardValue}</b> since it is not available as an option in the dropdown");
             }
         }
 
@@ -118,10 +118,10 @@ namespace EditorAttributes.Editor
 
         protected override bool IsSupportedPropertyType(SerializedProperty property) => property.propertyType is SerializedPropertyType.String or SerializedPropertyType.Integer;
 
-        private List<string> GetAnimatorParameters(AnimatorParamDropdownAttribute animatorParamAttribute, SerializedProperty property, HelpBox errorBox, out Dictionary<int, string> paramterHashTable)
+        private List<string> GetAnimatorParameters(AnimatorParamDropdownAttribute animatorParamAttribute, SerializedProperty property, HelpBox errorBox, out Dictionary<int, string> parameterHashTable)
         {
             List<string> paramList = new();
-            paramterHashTable = new Dictionary<int, string>();
+            parameterHashTable = new Dictionary<int, string>();
 
             Animator animator;
 
@@ -134,7 +134,7 @@ namespace EditorAttributes.Editor
                 {
                     errorBox.text = $"The provided field <b>{animatorParamAttribute.AnimatorFieldName}</b> is not of type <b>Animator</b>";
 
-                    paramterHashTable = null;
+                    parameterHashTable = null;
                     return null;
                 }
 
@@ -147,20 +147,26 @@ namespace EditorAttributes.Editor
 
             if (animator != null && animator.runtimeAnimatorController != null)
             {
-                // Hack for having the animator refesh its parameters when editing them in edit mode otherwise the parameters array will be empty
-                var editorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(animator.runtimeAnimatorController));
+                var runtimeController = animator.runtimeAnimatorController;
+                if (runtimeController is AnimatorOverrideController overrideController)
+                {
+                    runtimeController = overrideController.runtimeAnimatorController;
+                }
+
+                // Hack for having the animator refresh its parameters when editing them in edit mode otherwise the parameters array will be empty
+                var editorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(runtimeController));
 
                 foreach (var parameter in editorController.parameters)
                 {
                     paramList.Add(parameter.name);
-                    paramterHashTable.Add(parameter.nameHash, parameter.name);
+                    parameterHashTable.Add(parameter.nameHash, parameter.name);
                 }
             }
             else
             {
                 errorBox.text = "The <b>Animator</b> or <b>Animator Controller</b> is null, make sure they are assigned";
 
-                paramterHashTable = null;
+                parameterHashTable = null;
                 return null;
             }
 
